@@ -814,9 +814,18 @@
       if(r.status === 'Lulus') statusBadge = `<span style="color:#16a34a; font-weight:bold;">Lulus</span>`;
       if(r.status === 'Tidak') statusBadge = `<span style="color:#dc2626; font-weight:bold;">Ditolak</span>`;
 
-      let infoDetail = (r.jenis === 'Cuti' || r.jenis === 'Mesyuarat / Kursus') 
-        ? `Tarikh: ${formatTarikhDMY(r.tarikh)} ${r.tarikhAkhir ? 'hingga ' + formatTarikhDMY(r.tarikhAkhir) : ''}` 
-        : `Tarikh: ${formatTarikhDMY(r.tarikh)} (${format12H(r.masaMula)} - ${format12H(r.masaTamat)})`;
+      let infoDetail = '';
+      if (r.jenis === 'Cuti' || r.jenis === 'Mesyuarat / Kursus') {
+        const tMula = formatTarikhDMY(r.tarikh);
+        const tAkhir = formatTarikhDMY(r.tarikhAkhir);
+        if (tAkhir && tAkhir !== tMula) {
+          infoDetail = `Tarikh: ${tMula} hingga ${tAkhir}`;
+        } else {
+          infoDetail = `Tarikh: ${tMula}`;
+        }
+      } else {
+        infoDetail = `Tarikh: ${formatTarikhDMY(r.tarikh)} (${format12H(r.masaMula)} - ${format12H(r.masaTamat)})`;
+      }
 
       return `
         <div class="feedback-item">
@@ -952,9 +961,18 @@
 
     container.innerHTML = senaraiMenunggu.length ? senaraiMenunggu.map(r => {
       const idx = rekodPergerakan.indexOf(r);
-      let infoDetail = (r.jenis === 'Cuti' || r.jenis === 'Mesyuarat / Kursus') 
-        ? `Tarikh: ${formatTarikhDMY(r.tarikh)} ${r.tarikhAkhir ? 'hingga ' + formatTarikhDMY(r.tarikhAkhir) : ''}` 
-        : `Tarikh: ${formatTarikhDMY(r.tarikh)} (${format12H(r.masaMula)} - ${format12H(r.masaTamat)})`;
+      let infoDetail = '';
+      if (r.jenis === 'Cuti' || r.jenis === 'Mesyuarat / Kursus') {
+        const tMula = formatTarikhDMY(r.tarikh);
+        const tAkhir = formatTarikhDMY(r.tarikhAkhir);
+        if (tAkhir && tAkhir !== tMula) {
+          infoDetail = `Tarikh: ${tMula} hingga ${tAkhir}`;
+        } else {
+          infoDetail = `Tarikh: ${tMula}`;
+        }
+      } else {
+        infoDetail = `Tarikh: ${formatTarikhDMY(r.tarikh)} (${format12H(r.masaMula)} - ${format12H(r.masaTamat)})`;
+      }
 
       return `
         <div class="feedback-item" style="background:#ffffff; border-color:#cbd5e1;">
@@ -1007,7 +1025,12 @@
           if (act.jenis === 'Cuti' || act.jenis === 'Mesyuarat / Kursus') {
             const tMula = formatTarikhDMY(act.tarikh);
             const tAkhir = formatTarikhDMY(act.tarikhAkhir);
-            rentetanTarikh = tAkhir ? `${tMula} hingga ${tAkhir}` : `${tMula}`;
+            // Semak sama ada tarikh akhir wujud dan berbeza daripada tarikh mula
+            if (tAkhir && tAkhir !== tMula) {
+              rentetanTarikh = `${tMula} hingga ${tAkhir}`;
+            } else {
+              rentetanTarikh = `${tMula}`;
+            }
           } else {
             const tMula = formatTarikhDMY(act.tarikh);
             const mRange = (act.masaMula && act.masaTamat) ? ` (${format12H(act.masaMula)} - ${format12H(act.masaTamat)})` : '';
