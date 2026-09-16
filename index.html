@@ -212,7 +212,7 @@
       flex-direction: column;
       min-height: 550px;
       width: 100%;
-      max-width: 100%; /* Diubah ke 100% agar sama dengan lebar tab di atas */
+      max-width: 100%;
       box-shadow: 0 1px 3px rgba(0,0,0,0.05);
     }
     .calendar-header { text-align: center; font-size: 1.3rem; font-weight: bold; margin-bottom: 8px; color: #1e293b; }
@@ -317,13 +317,18 @@
   <div id="staffStrip" class="staff-strip"></div>
 
   <div class="view-tabs">
-    <button id="btnTabBulan" class="tab-btn active" onclick="switchView('bulan')">Paparan Bulan</button>
-    <button id="btnTabList" class="tab-btn" onclick="switchView('list')">List Pergerakan</button>
-    <button id="btnTabHariIni" class="tab-btn" onclick="switchView('hari-ini')">Pergerakan Hari Ini</button>
+    <button id="btnTabList" class="tab-btn active" onclick="switchView('list')">Pegerakan Keluar</button>
+    <button id="btnTabBulan" class="tab-btn" onclick="switchView('bulan')">Paparan Bulan</button>
+    <button id="btnTabHariIni" class="tab-btn" onclick="switchView('hari-ini')">Hari Ini</button>
+  </div>
+
+  <!-- VIEW: PEGERAKAN KELUAR -->
+  <div id="viewList" class="list-pergerakan-container" style="display: flex;">
+    <div id="listPergerakanContent"></div>
   </div>
 
   <!-- VIEW: PAPARAN BULAN -->
-  <div id="viewBulan" class="calendar-wrapper" style="display: flex;">
+  <div id="viewBulan" class="calendar-wrapper" style="display: none;">
     <div class="calendar-container">
       <div id="calendarHeader" class="calendar-header">September 2026</div>
       <div class="calendar-grid">
@@ -339,12 +344,7 @@
     </div>
   </div>
 
-  <!-- VIEW: LIST PERGERAKAN -->
-  <div id="viewList" class="list-pergerakan-container" style="display: none;">
-    <div id="listPergerakanContent"></div>
-  </div>
-
-  <!-- VIEW: PERGERAKAN HARI INI -->
+  <!-- VIEW: HARI INI -->
   <div id="viewHariIni" class="columns-container" style="display: none;">
     <div class="column col-pejabat">
       <div class="column-title"><span>Di Pejabat</span><span id="countPejabat">0</span></div>
@@ -621,16 +621,16 @@
   }
 
   function switchView(view) {
-    document.getElementById('btnTabBulan').classList.toggle('active', view === 'bulan');
     document.getElementById('btnTabList').classList.toggle('active', view === 'list');
+    document.getElementById('btnTabBulan').classList.toggle('active', view === 'bulan');
     document.getElementById('btnTabHariIni').classList.toggle('active', view === 'hari-ini');
     
-    document.getElementById('viewBulan').style.display = view === 'bulan' ? 'flex' : 'none';
     document.getElementById('viewList').style.display = view === 'list' ? 'flex' : 'none';
+    document.getElementById('viewBulan').style.display = view === 'bulan' ? 'flex' : 'none';
     document.getElementById('viewHariIni').style.display = view === 'hari-ini' ? 'grid' : 'none';
     
-    if(view === 'bulan') renderCalendar();
     if(view === 'list') renderListPergerakan();
+    if(view === 'bulan') renderCalendar();
     if(view === 'hari-ini') renderHariIni();
   }
 
@@ -1145,7 +1145,7 @@
   }
 
   renderStaffStrip();
-  renderCalendar();
+  renderListPergerakan();
 </script>
 
 </body>
