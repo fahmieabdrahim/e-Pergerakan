@@ -450,11 +450,9 @@
       <div class="form-group">
         <label>Jenis Aktiviti</label>
         <select id="permJenis" onchange="tukarJenisPermohonanForm()">
-          <option value="Kebenaran Keluar Pejabat">Kebenaran Keluar Pejabat</option>
-          <option value="Cuti / MC">Cuti / MC</option>
-          <option value="Mesyuarat">Mesyuarat</option>
-          <option value="Kursus">Kursus</option>
-          <option value="Lain-lain">Lain-lain</option>
+          <option value="Cuti">Cuti</option>
+          <option value="Kebenaran Keluar Pejabat (4 jam)">Kebenaran Keluar Pejabat (4 jam)</option>
+          <option value="Mesyuarat / Kursus">Mesyuarat / Kursus</option>
         </select>
       </div>
       <div class="form-group">
@@ -476,8 +474,8 @@
         </div>
       </div>
       <div class="form-group">
-        <label id="labelCatatan">Tujuan / Catatan</label>
-        <input type="text" id="permTujuan" placeholder="Contoh: Perbincangan projek">
+        <label id="labelCatatan">Tujuan / Butiran</label>
+        <input type="text" id="permTujuan" placeholder="Contoh: Cuti rehat / Mesyuarat projek">
       </div>
       <div class="modal-btns">
         <button id="btnSubmitAktiviti" class="btn-submit" onclick="hantarPergerakan()">Hantar</button>
@@ -512,6 +510,15 @@
     return `hsl(${hue}, 75%, 90%)`;
   }
 
+  function formatTarikhDMY(tkhStr) {
+    if (!tkhStr) return '';
+    const parts = tkhStr.split('-');
+    if (parts.length === 3) {
+      return `${parseInt(parts[2], 10)}-${parseInt(parts[1], 10)}-${parts[0]}`;
+    }
+    return tkhStr;
+  }
+
   let senaraiStaf = JSON.parse(localStorage.getItem('senaraiStaf')) || [
     { nama: "Siti", jawatan: "Penyelia Kanan", kumpulan: "Ketua", hbh: [], foto: "" },
     { nama: "Aminah", jawatan: "Pegawai Tadbir", kumpulan: "Kakitangan", hbh: ["Selasa", "Khamis"], foto: "" },
@@ -519,7 +526,7 @@
   ];
 
   let rekodPergerakan = JSON.parse(localStorage.getItem('rekodPergerakan')) || [
-    { id: 1, nama: "Aminah", jenis: "Kebenaran Keluar Pejabat", tarikh: new Date().toISOString().slice(0, 10), tarikhAkhir: "", masaMula: "09:30", masaTamat: "12:00", catatan: "Rawatan gigi", status: "Lulus", sebab: "" }
+    { id: 1, nama: "Aminah", jenis: "Cuti", tarikh: "2026-09-01", tarikhAkhir: "2026-09-04", masaMula: "", masaTamat: "", catatan: "Cuti rehat", status: "Lulus", sebab: "" }
   ];
 
   let appTitleText = localStorage.getItem('appTitleText') || "E-Pergerakan";
@@ -807,9 +814,9 @@
       if(r.status === 'Lulus') statusBadge = `<span style="color:#16a34a; font-weight:bold;">Lulus</span>`;
       if(r.status === 'Tidak') statusBadge = `<span style="color:#dc2626; font-weight:bold;">Ditolak</span>`;
 
-      let infoDetail = (r.jenis === 'Cuti / MC' || r.jenis === 'Kursus') 
-        ? `Tarikh: ${r.tarikh} ${r.tarikhAkhir ? 'hingga ' + r.tarikhAkhir : ''}` 
-        : `Tarikh: ${r.tarikh} (${format12H(r.masaMula)} - ${format12H(r.masaTamat)})`;
+      let infoDetail = (r.jenis === 'Cuti' || r.jenis === 'Mesyuarat / Kursus') 
+        ? `Tarikh: ${formatTarikhDMY(r.tarikh)} ${r.tarikhAkhir ? 'hingga ' + formatTarikhDMY(r.tarikhAkhir) : ''}` 
+        : `Tarikh: ${formatTarikhDMY(r.tarikh)} (${format12H(r.masaMula)} - ${format12H(r.masaTamat)})`;
 
       return `
         <div class="feedback-item">
@@ -833,7 +840,7 @@
     const labelTarikhMula = document.getElementById('labelTarikhMula');
     const labelCatatan = document.getElementById('labelCatatan');
 
-    if(jenis === 'Cuti / MC' || jenis === 'Kursus') {
+    if(jenis === 'Cuti' || jenis === 'Mesyuarat / Kursus') {
       groupMasa.style.display = 'none';
       groupTarikhAkhir.style.display = 'block';
       labelTarikhMula.innerText = 'Tarikh Mula';
@@ -842,7 +849,7 @@
       groupMasa.style.display = 'flex';
       groupTarikhAkhir.style.display = 'none';
       labelTarikhMula.innerText = 'Tarikh';
-      labelCatatan.innerText = 'Tujuan / Catatan';
+      labelCatatan.innerText = 'Tujuan / Butiran';
     }
   }
 
@@ -850,7 +857,7 @@
     editIndexAktiviti = null;
     document.getElementById('formAktiviti').style.display = 'block';
     document.getElementById('btnBukaBorangAktiviti').style.display = 'none';
-    document.getElementById('permJenis').value = 'Kebenaran Keluar Pejabat';
+    document.getElementById('permJenis').value = 'Cuti';
     tukarJenisPermohonanForm();
     document.getElementById('permTarikh').value = new Date().toISOString().slice(0, 10);
     document.getElementById('permTarikhAkhir').value = '';
@@ -878,7 +885,7 @@
     const stafObj = senaraiStaf.find(s => s.nama === pemohonAktif);
     const isKetua = stafObj?.kumpulan === 'Ketua';
     const statusDefault = isKetua ? 'Lulus' : 'Menunggu';
-    const isTempohPanjang = (jenis === 'Cuti / MC' || jenis === 'Kursus');
+    const isTempohPanjang = (jenis === 'Cuti' || jenis === 'Mesyuarat / Kursus');
 
     if(editIndexAktiviti !== null) {
       rekodPergerakan[editIndexAktiviti].jenis = jenis;
@@ -915,7 +922,7 @@
     const r = rekodPergerakan[idx];
     document.getElementById('formAktiviti').style.display = 'block';
     document.getElementById('btnBukaBorangAktiviti').style.display = 'none';
-    document.getElementById('permJenis').value = r.jenis || 'Kebenaran Keluar Pejabat';
+    document.getElementById('permJenis').value = r.jenis || 'Cuti';
     tukarJenisPermohonanForm();
     document.getElementById('permTarikh').value = r.tarikh;
     if(r.tarikhAkhir) document.getElementById('permTarikhAkhir').value = r.tarikhAkhir;
@@ -945,9 +952,9 @@
 
     container.innerHTML = senaraiMenunggu.length ? senaraiMenunggu.map(r => {
       const idx = rekodPergerakan.indexOf(r);
-      let infoDetail = (r.jenis === 'Cuti / MC' || r.jenis === 'Kursus') 
-        ? `Tarikh: ${r.tarikh} ${r.tarikhAkhir ? 'hingga ' + r.tarikhAkhir : ''}` 
-        : `Tarikh: ${r.tarikh} (${format12H(r.masaMula)} - ${format12H(r.masaTamat)})`;
+      let infoDetail = (r.jenis === 'Cuti' || r.jenis === 'Mesyuarat / Kursus') 
+        ? `Tarikh: ${formatTarikhDMY(r.tarikh)} ${r.tarikhAkhir ? 'hingga ' + formatTarikhDMY(r.tarikhAkhir) : ''}` 
+        : `Tarikh: ${formatTarikhDMY(r.tarikh)} (${format12H(r.masaMula)} - ${format12H(r.masaTamat)})`;
 
       return `
         <div class="feedback-item" style="background:#ffffff; border-color:#cbd5e1;">
@@ -996,12 +1003,20 @@
       let aktivitiHtml = '';
       if (aktivitiStaf.length > 0) {
         aktivitiHtml = aktivitiStaf.map((act, actIdx) => {
-          let det = (act.jenis === 'Cuti / MC' || act.jenis === 'Kursus')
-            ? `${act.tarikh}${act.tarikhAkhir ? ' hingga ' + act.tarikhAkhir : ''}`
-            : `${act.tarikh} (${format12H(act.masaMula)} - ${format12H(act.masaTamat)})`;
+          let det = '';
+          if (act.jenis === 'Cuti' || act.jenis === 'Mesyuarat / Kursus') {
+            const tMula = formatTarikhDMY(act.tarikh);
+            const tAkhir = formatTarikhDMY(act.tarikhAkhir);
+            det = tAkhir ? `${tMula} hingga ${tAkhir}` : `${tMula}`;
+          } else {
+            const tMula = formatTarikhDMY(act.tarikh);
+            const mRange = (act.masaMula && act.masaTamat) ? ` (${format12H(act.masaMula)} - ${format12H(act.masaTamat)})` : '';
+            det = `${tMula}${mRange}`;
+          }
+
           return `
             <div class="activity-sub-item">
-              <div><strong>${actIdx + 1}. [${act.jenis}]</strong> ${act.catatan}</div>
+              <div><strong>${actIdx + 1}.</strong> ${act.catatan}</div>
               <span class="file-note">${det}</span>
             </div>
           `;
@@ -1040,7 +1055,7 @@
     senaraiStaf.forEach((staf, index) => {
       const aktifLulus = rekodPergerakan.find(r => {
         if (r.nama !== staf.nama || r.status !== 'Lulus') return false;
-        if (r.jenis === 'Cuti / MC' || r.jenis === 'Kursus') {
+        if (r.jenis === 'Cuti' || r.jenis === 'Mesyuarat / Kursus') {
           return hariIniStr >= r.tarikh && hariIniStr <= (r.tarikhAkhir || r.tarikh);
         } else {
           if (r.tarikh !== hariIniStr) return false;
@@ -1059,7 +1074,7 @@
         let subTime = (aktifLulus.masaMula && aktifLulus.masaTamat) 
           ? `<span class="staff-time-sub">${format12H(aktifLulus.masaMula)} - ${format12H(aktifLulus.masaTamat)}</span>` 
           : '';
-        infoKanan = `[${aktifLulus.jenis}] ${aktifLulus.catatan}${subTime}`;
+        infoKanan = `${aktifLulus.catatan}${subTime}`;
       } else if(staf.hbh && staf.hbh.includes(namaHariIni)) {
         kategori = 'HBH';
         infoKanan = 'Hari Bekerja Hibrid'; 
@@ -1113,7 +1128,7 @@
       const tkhStr = `${tahun}-${String(bulan + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
       const lulusHari = rekodPergerakan.filter(r => {
         if(r.status !== 'Lulus') return false;
-        if(r.jenis === 'Cuti / MC' || r.jenis === 'Kursus') {
+        if(r.jenis === 'Cuti' || r.jenis === 'Mesyuarat / Kursus') {
           return tkhStr >= r.tarikh && tkhStr <= (r.tarikhAkhir || r.tarikh);
         } else {
           return r.tarikh === tkhStr;
