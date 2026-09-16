@@ -520,28 +520,34 @@
     return tkhStr;
   }
 
-  let senaraiStaf = JSON.parse(localStorage.getItem('senaraiStaf')) || [
+  // DATA ASAS DALAM HTML (EMBEDDED)
+  const defaultSenaraiStaf = [
     { nama: "Siti", jawatan: "Penyelia Kanan", kumpulan: "Ketua", hbh: [], foto: "" },
     { nama: "Aminah", jawatan: "Pegawai Tadbir", kumpulan: "Kakitangan", hbh: ["Selasa", "Khamis"], foto: "" },
     { nama: "Farid", jawatan: "Pegawai Teknologi", kumpulan: "Kakitangan", hbh: ["Rabu"], foto: "" }
   ];
 
-  let rekodPergerakan = JSON.parse(localStorage.getItem('rekodPergerakan')) || [
+  const defaultRekodPergerakan = [
     { id: 1, nama: "Aminah", jenis: "Cuti", tarikh: "2026-09-01", tarikhAkhir: "2026-09-04", masaMula: "", masaTamat: "", catatan: "Cuti rehat", status: "Lulus", sebab: "" }
   ];
 
+  let senaraiStaf = JSON.parse(localStorage.getItem('senaraiStaf')) || defaultSenaraiStaf;
+  let rekodPergerakan = JSON.parse(localStorage.getItem('rekodPergerakan')) || defaultRekodPergerakan;
   let appTitleText = localStorage.getItem('appTitleText') || "E-Pergerakan";
+
   document.getElementById('appTitle').innerText = `📌 ${appTitleText}`;
   document.getElementById('tajukAplikasi').value = appTitleText;
 
   let pemohonAktif = '';
   let editIndexAktiviti = null;
+  let sedangMenyimpan = false;
 
   async function simpanKeLocalStorage() {
     localStorage.setItem('senaraiStaf', JSON.stringify(senaraiStaf));
     localStorage.setItem('rekodPergerakan', JSON.stringify(rekodPergerakan));
     localStorage.setItem('appTitleText', appTitleText);
 
+    sedangMenyimpan = true;
     try {
       await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_ID}`, {
         method: 'PUT',
@@ -557,12 +563,14 @@
         })
       });
     } catch (error) {
-      console.error('Gagal kemaskini ke awan:', error);
+      console.error('Gagal kemaskini ke awan (data disimpan secara tempatan):', error);
+    } finally {
+      setTimeout(() => { sedangMenyimpan = false; }, 2000);
     }
   }
 
   async function muatTurunDataAwan() {
-    if (!JSONBIN_ID) return;
+    if (!JSONBIN_ID || sedangMenyimpan) return;
     try {
       const response = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_ID}/latest`, {
         headers: {
@@ -576,6 +584,10 @@
         rekodPergerakan = result.record.rekodPergerakan || rekodPergerakan;
         appTitleText = result.record.appTitleText || appTitleText;
         
+        localStorage.setItem('senaraiStaf', JSON.stringify(senaraiStaf));
+        localStorage.setItem('rekodPergerakan', JSON.stringify(rekodPergerakan));
+        localStorage.setItem('appTitleText', appTitleText);
+
         document.getElementById('appTitle').innerText = `📌 ${appTitleText}`;
         document.getElementById('tajukAplikasi').value = appTitleText;
         renderStaffStrip();
@@ -586,11 +598,11 @@
         }
       }
     } catch (error) {
-      console.error('Gagal memuat turun data:', error);
+      console.error('Gagal memuat turun data, menggunakan data simpanan tempatan/kod:', error);
     }
   }
 
-  setInterval(muatTurunDataAwan, 5000);
+  setInterval(muatTurunDataAwan, 15000);
   muatTurunDataAwan();
 
   function format12H(timeStr) {
