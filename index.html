@@ -1139,6 +1139,7 @@
         const stafIndex = senaraiStaf.findIndex(s => s.nama === l.nama);
         const warnaTag = stafIndex !== -1 ? generateAutoColor(stafIndex, totalStaf) : '#f1f5f9';
         let masaTag = (l.masaMula && l.masaTamat) ? ` (${format12H(l.masaMula)})` : '';
+        // Paparan pada kalendar kini menggunakan catatan terus (cth: "Cuti rehat") tanpa label jenis
         return `<div class="event-tag" style="background-color: ${warnaTag};" title="${l.nama}: ${l.catatan}">${l.nama}: ${l.catatan}${masaTag}</div>`;
       }).join('');
       
