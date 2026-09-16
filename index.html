@@ -197,7 +197,7 @@
       margin-top: 2px;
     }
 
-    /* Calendar Container Centered & Equal Box Widths */
+    /* Calendar Container Full Width */
     .calendar-wrapper {
       display: flex;
       justify-content: center;
@@ -210,9 +210,9 @@
       padding: 12px;
       display: flex;
       flex-direction: column;
-      min-height: 500px;
+      min-height: 550px;
       width: 100%;
-      max-width: 1000px;
+      max-width: 100%; /* Diubah ke 100% agar sama dengan lebar tab di atas */
       box-shadow: 0 1px 3px rgba(0,0,0,0.05);
     }
     .calendar-header { text-align: center; font-size: 1.3rem; font-weight: bold; margin-bottom: 8px; color: #1e293b; }
@@ -244,7 +244,7 @@
       flex-direction: column;
       background: #ffffff;
       cursor: pointer;
-      min-height: 85px;
+      min-height: 95px;
       position: relative;
       width: 100%;
       overflow: hidden;
