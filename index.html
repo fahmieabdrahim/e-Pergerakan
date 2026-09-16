@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sistem Pergerakan Staf</title>
+  <title>E-Pergerakan</title>
   <style>
     :root {
       --primary: #475569;
@@ -16,15 +16,14 @@
     * { box-sizing: border-box; margin: 0; padding: 0; }
     
     html, body {
-      height: 100vh;
-      overflow: hidden;
+      min-height: 100vh;
       background-color: var(--bg);
     }
 
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       color: var(--text);
-      padding: 10px 40px; 
+      padding: 10px 20px; 
       display: flex;
       flex-direction: column;
     }
@@ -32,7 +31,6 @@
     .container { 
       max-width: 1400px; 
       width: 100%; 
-      height: 100%;
       margin: 0 auto; 
       display: flex; 
       flex-direction: column; 
@@ -43,18 +41,21 @@
       justify-content: space-between;
       align-items: center;
       margin-bottom: 8px;
+      flex-wrap: wrap;
+      gap: 10px;
     }
     .title-controls { display: flex; align-items: center; gap: 10px; }
     
-    h1 { font-size: 1.5rem; color: #0f172a; font-weight: 800; }
+    h1 { font-size: 1.4rem; color: #0f172a; font-weight: 800; }
     
     .staff-strip {
       display: flex;
       align-items: flex-start;
       gap: 12px;
-      flex-wrap: wrap;
+      overflow-x: auto;
       margin-bottom: 8px;
       padding: 4px 0;
+      scrollbar-width: thin;
     }
     .profile-chip {
       display: flex;
@@ -66,6 +67,7 @@
       font-size: 0.85rem;
       font-weight: bold;
       cursor: pointer;
+      flex-shrink: 0;
     }
     .profile-chip .avatar, .staff-avatar { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; }
     .avatar-empty { display: block; background: #cbd5e1; border: 2px solid #94a3b8; border-radius: 50%; width: 45px; height: 45px; }
@@ -79,10 +81,10 @@
     
     .chat-box { background: #f1f5f9; border-radius: 6px; padding: 6px; margin-top: 4px; font-size: 0.75rem; border-left: 3px solid #ef4444; }
     
-    .view-tabs { display: flex; gap: 10px; margin-bottom: 8px; }
+    .view-tabs { display: flex; gap: 6px; margin-bottom: 10px; overflow-x: auto; }
     .tab-btn {
       flex: 1;
-      padding: 8px;
+      padding: 8px 12px;
       border: none;
       background: #f1f5f9;
       border-radius: 6px;
@@ -90,8 +92,9 @@
       cursor: pointer;
       color: #64748b;
       text-align: center;
-      font-size: 1.05rem;
+      font-size: 0.95rem;
       border: 1px solid #e2e8f0;
+      white-space: nowrap;
     }
     .tab-btn.active {
       background: #0f172a;
@@ -100,10 +103,10 @@
       border-color: #0f172a;
     }
 
-    .columns-container { display: grid; grid-template-columns: 1fr; gap: 10px; flex: 1; overflow: hidden; }
+    .columns-container { display: grid; grid-template-columns: 1fr; gap: 10px; }
     @media (min-width: 768px) { .columns-container { grid-template-columns: repeat(3, 1fr); } }
 
-    .column { background: #ffffff; border: 1px solid var(--border-color); border-radius: 8px; padding: 10px; display: flex; flex-direction: column; max-height: calc(100vh - 170px); box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+    .column { background: #ffffff; border: 1px solid var(--border-color); border-radius: 8px; padding: 10px; display: flex; flex-direction: column; max-height: 70vh; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
     .column-scroll { overflow-y: auto; flex: 1; padding-right: 4px; }
     .column-title {
       font-size: 1.05rem;
@@ -114,6 +117,44 @@
       display: flex;
       justify-content: space-between;
       color: #1e293b;
+    }
+
+    /* List Pergerakan Styles */
+    .list-pergerakan-container {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .staff-group-card {
+      background: #ffffff;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 12px;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+    }
+    .staff-group-header {
+      font-size: 1rem;
+      font-weight: bold;
+      color: #0f172a;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-bottom: 1px solid #f1f5f9;
+      padding-bottom: 4px;
+    }
+    .activity-sub-item {
+      font-size: 0.85rem;
+      padding: 6px 8px;
+      background: #f8fafc;
+      border-radius: 6px;
+      margin-bottom: 4px;
+      border-left: 3px solid #475569;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 6px;
     }
 
     .staff-card {
@@ -161,10 +202,9 @@
       border: 1px solid var(--border-color);
       border-radius: 8px;
       padding: 12px;
-      flex: 1;
       display: flex;
       flex-direction: column;
-      overflow: hidden;
+      min-height: 500px;
       box-shadow: 0 1px 3px rgba(0,0,0,0.05);
     }
     .calendar-header { text-align: center; font-size: 1.3rem; font-weight: bold; margin-bottom: 8px; color: #1e293b; }
@@ -172,16 +212,14 @@
     .calendar-grid { 
       display: grid; 
       grid-template-columns: repeat(7, 1fr); 
-      grid-template-rows: auto repeat(6, 1fr);
       gap: 4px; 
       flex: 1;
-      min-height: 0;
     }
     .cal-day-head { 
       text-align: center; 
       font-weight: bold; 
-      font-size: 0.95rem; 
-      padding: 6px; 
+      font-size: 0.85rem; 
+      padding: 6px 2px; 
       background: #f1f5f9; 
       border-radius: 6px; 
       color: #475569;
@@ -196,35 +234,21 @@
       flex-direction: column;
       background: #ffffff;
       cursor: pointer;
-      overflow: hidden;
+      min-height: 85px;
       position: relative;
-      transition: all 0.2s ease;
     }
     .cal-day.empty { background: #fafafa; border-color: #f1f5f9; cursor: default; }
-    .cal-day.zoomed {
-      position: absolute;
-      top: 10%; left: 5%; right: 5%; bottom: 10%;
-      z-index: 50;
-      background: #ffffff;
-      border: 2px solid #0f172a;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.25);
-      font-size: 1.1rem;
-      padding: 16px;
-    }
-    .cal-day.zoomed .event-tag { font-size: 0.95rem; padding: 5px 8px; margin-bottom: 4px; }
-    
-    .cal-day-num { font-weight: bold; font-size: 0.95rem; margin-bottom: 4px; color: #475569; }
+    .cal-day-num { font-weight: bold; font-size: 0.9rem; margin-bottom: 4px; color: #475569; }
     .event-tag { 
-      padding: 4px 8px; 
-      border-radius: 5px; 
-      margin-bottom: 3px; 
-      font-size: 0.75rem; 
+      padding: 3px 6px; 
+      border-radius: 4px; 
+      margin-bottom: 2px; 
+      font-size: 0.7rem; 
       overflow: hidden; 
       text-overflow: ellipsis; 
       white-space: nowrap; 
       font-weight: 700; 
       border: 1px solid rgba(0,0,0,0.08); 
-      box-shadow: 0 1px 2px rgba(0,0,0,0.03);
     }
 
     .modal {
@@ -271,7 +295,7 @@
 <div class="container">
   <header>
     <div class="title-controls">
-      <h1 id="appTitle">📌 Pergerakan Pegawai</h1>
+      <h1 id="appTitle">📌 E-Pergerakan</h1>
     </div>
     <div style="display: flex; gap: 8px;">
       <button class="btn-header" onclick="openModal('modalStaf')">⚙️ Tetapan</button>
@@ -281,8 +305,14 @@
   <div id="staffStrip" class="staff-strip"></div>
 
   <div class="view-tabs">
-    <button id="btnTabBulan" class="tab-btn" onclick="switchView('bulan')">Paparan Bulan</button>
+    <button id="btnTabList" class="tab-btn" onclick="switchView('list')">List Pergerakan</button>
     <button id="btnTabHariIni" class="tab-btn active" onclick="switchView('hari-ini')">Bertugas Hari Ini</button>
+    <button id="btnTabBulan" class="tab-btn" onclick="switchView('bulan')">Paparan Bulan</button>
+  </div>
+
+  <!-- VIEW: LIST PERGERAKAN -->
+  <div id="viewList" class="list-pergerakan-container" style="display: none;">
+    <div id="listPergerakanContent"></div>
   </div>
 
   <!-- VIEW: HARI INI -->
@@ -305,13 +335,13 @@
   <div id="viewBulan" class="calendar-container" style="display: none;">
     <div id="calendarHeader" class="calendar-header">September 2026</div>
     <div class="calendar-grid">
-      <div class="cal-day-head">Ahad</div>
-      <div class="cal-day-head">Isnin</div>
-      <div class="cal-day-head">Selasa</div>
-      <div class="cal-day-head">Rabu</div>
-      <div class="cal-day-head">Khamis</div>
-      <div class="cal-day-head">Jumaat</div>
-      <div class="cal-day-head">Sabtu</div>
+      <div class="cal-day-head">Ah</div>
+      <div class="cal-day-head">Is</div>
+      <div class="cal-day-head">Se</div>
+      <div class="cal-day-head">Ra</div>
+      <div class="cal-day-head">Kh</div>
+      <div class="cal-day-head">Ju</div>
+      <div class="cal-day-head">Sa</div>
       <div id="calendarDays" style="display: contents;"></div>
     </div>
   </div>
@@ -324,7 +354,7 @@
     <div class="settings-section">
       <div class="form-group">
         <label>Nama Sistem / Aplikasi</label>
-        <input type="text" id="tajukAplikasi" value="Pergerakan Pegawai">
+        <input type="text" id="tajukAplikasi" value="E-Pergerakan">
       </div>
       <button type="button" class="btn-submit" style="width:100%; margin-top:4px;" onclick="bukaPanelPengurusanStaf()">Pengurusan Staf</button>
     </div>
@@ -408,6 +438,9 @@
         <select id="permJenis" onchange="tukarJenisPermohonanForm()">
           <option value="Kebenaran Keluar Pejabat">Kebenaran Keluar Pejabat</option>
           <option value="Cuti / MC">Cuti / MC</option>
+          <option value="Mesyuarat">Mesyuarat</option>
+          <option value="Kursus">Kursus</option>
+          <option value="Lain-lain">Lain-lain</option>
         </select>
       </div>
       <div class="form-group">
@@ -430,7 +463,7 @@
       </div>
       <div class="form-group">
         <label id="labelCatatan">Tujuan / Catatan</label>
-        <input type="text" id="permTujuan" placeholder="Contoh: Rawatan gigi">
+        <input type="text" id="permTujuan" placeholder="Contoh: Perbincangan projek">
       </div>
       <div class="modal-btns">
         <button id="btnSubmitAktiviti" class="btn-submit" onclick="hantarPergerakan()">Hantar</button>
@@ -456,8 +489,7 @@
 </div>
 
 <script>
-  // Konfigurasi JSONbin.io Mengikut Kunci Anda
-  const JSONBIN_ID = '67d16f3fe41b4d34e402e3eb'; // Sila masukkan Bin ID anda di sini jika belum dikemas kini
+  const JSONBIN_ID = '67d16f3fe41b4d34e402e3eb';
   const JSONBIN_API_KEY = '$2a$10$KhOhb3FWCQpWIUWcZLY4xeUvXDMY/gxG8j/vcvJZtHdvaZoaseqFu';
 
   function generateAutoColor(index, total) {
@@ -476,14 +508,13 @@
     { id: 1, nama: "Aminah", jenis: "Kebenaran Keluar Pejabat", tarikh: new Date().toISOString().slice(0, 10), tarikhAkhir: "", masaMula: "09:30", masaTamat: "12:00", catatan: "Rawatan gigi", status: "Lulus", sebab: "" }
   ];
 
-  let appTitleText = localStorage.getItem('appTitleText') || "Pergerakan Pegawai";
+  let appTitleText = localStorage.getItem('appTitleText') || "E-Pergerakan";
   document.getElementById('appTitle').innerText = `📌 ${appTitleText}`;
   document.getElementById('tajukAplikasi').value = appTitleText;
 
   let pemohonAktif = '';
   let editIndexAktiviti = null;
 
-  // Fungsi Simpan ke LocalStorage & Sync ke Awan JSONbin
   async function simpanKeLocalStorage() {
     localStorage.setItem('senaraiStaf', JSON.stringify(senaraiStaf));
     localStorage.setItem('rekodPergerakan', JSON.stringify(rekodPergerakan));
@@ -507,9 +538,8 @@
     }
   }
 
-  // Fungsi Muat Turun Data dari Awan supaya Pengguna Lain Dapat Lihat Info Terkini
   async function muatTurunDataAwan() {
-    if (!JSONBIN_ID || JSONBIN_ID === 'MASukkan_BIN_ID_ANDA_DI_SINI') return;
+    if (!JSONBIN_ID) return;
     try {
       const response = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_ID}/latest`, {
         headers: {
@@ -526,6 +556,7 @@
         document.getElementById('tajukAplikasi').value = appTitleText;
         renderStaffStrip();
         renderHariIni();
+        renderListPergerakan();
         if (document.getElementById('viewBulan').style.display === 'flex') {
           renderCalendar();
         }
@@ -535,7 +566,6 @@
     }
   }
 
-  // Auto-sync setiap 5 saat untuk kemas kini paparan peranti lain secara langsung
   setInterval(muatTurunDataAwan, 5000);
   muatTurunDataAwan();
 
@@ -577,10 +607,15 @@
   }
 
   function switchView(view) {
+    document.getElementById('btnTabList').classList.toggle('active', view === 'list');
     document.getElementById('btnTabHariIni').classList.toggle('active', view === 'hari-ini');
     document.getElementById('btnTabBulan').classList.toggle('active', view === 'bulan');
+    
+    document.getElementById('viewList').style.display = view === 'list' ? 'flex' : 'none';
     document.getElementById('viewHariIni').style.display = view === 'hari-ini' ? 'grid' : 'none';
     document.getElementById('viewBulan').style.display = view === 'bulan' ? 'flex' : 'none';
+    
+    if(view === 'list') renderListPergerakan();
     if(view === 'bulan') renderCalendar();
     if(view === 'hari-ini') renderHariIni();
   }
@@ -631,10 +666,10 @@
   function bukaPanelPengurusanStaf() {
     closeModal('modalStaf');
     openModal('modalPengurusanStaf');
-    renderSenaraiStafPengurusan();
+    r9yMnTm4NSzvG9rrwjM2ec8xZgh1cafXH8();
   }
 
-  function renderSenaraiStafPengurusan() {
+  function r9yMnTm4NSzvG9rrwjM2ec8xZgh1cafXH8() {
     const container = document.getElementById('senaraiStafContainer');
     const totalStaf = senaraiStaf.length;
     container.innerHTML = senaraiStaf.map((s, idx) => {
@@ -709,18 +744,17 @@
     } else {
       const namaLama = senaraiStaf[idx].nama;
       if (namaLama !== nama) {
-        rekodPergerakan.forEach(r => {
-          if (r.nama === namaLama) r.nama = nama;
-        });
+        rekodPergerakan.forEach(r => { if (r.nama === namaLama) r.nama = nama; });
       }
       senaraiStaf[idx] = { nama, jawatan, kumpulan, hbh, foto };
     }
 
     await simpanKeLocalStorage();
     closeModal('modalFormStaf');
-    renderSenaraiStafPengurusan();
+    r9yMnTm4NSzvG9rrwjM2ec8xZgh1cafXH8();
     renderStaffStrip();
     renderHariIni();
+    renderListPergerakan();
   }
 
   async function padamStaf(idx) {
@@ -735,9 +769,10 @@
     rekodPergerakan = rekodPergerakan.filter(r => r.nama !== namaStafDipadam);
 
     await simpanKeLocalStorage();
-    renderSenaraiStafPengurusan();
+    r9yMnTm4NSzvG9rrwjM2ec8xZgh1cafXH8();
     renderStaffStrip();
     renderHariIni();
+    renderListPergerakan();
     renderCalendar();
   }
 
@@ -758,7 +793,7 @@
       if(r.status === 'Lulus') statusBadge = `<span style="color:#16a34a; font-weight:bold;">Lulus</span>`;
       if(r.status === 'Tidak') statusBadge = `<span style="color:#dc2626; font-weight:bold;">Ditolak</span>`;
 
-      let infoDetail = r.jenis === 'Cuti / MC' 
+      let infoDetail = (r.jenis === 'Cuti / MC' || r.jenis === 'Kursus') 
         ? `Tarikh: ${r.tarikh} ${r.tarikhAkhir ? 'hingga ' + r.tarikhAkhir : ''}` 
         : `Tarikh: ${r.tarikh} (${format12H(r.masaMula)} - ${format12H(r.masaTamat)})`;
 
@@ -784,11 +819,11 @@
     const labelTarikhMula = document.getElementById('labelTarikhMula');
     const labelCatatan = document.getElementById('labelCatatan');
 
-    if(jenis === 'Cuti / MC') {
+    if(jenis === 'Cuti / MC' || jenis === 'Kursus') {
       groupMasa.style.display = 'none';
       groupTarikhAkhir.style.display = 'block';
       labelTarikhMula.innerText = 'Tarikh Mula';
-      labelCatatan.innerText = 'Jenis Cuti / Catatan';
+      labelCatatan.innerText = 'Butiran / Catatan';
     } else {
       groupMasa.style.display = 'flex';
       groupTarikhAkhir.style.display = 'none';
@@ -829,13 +864,14 @@
     const stafObj = senaraiStaf.find(s => s.nama === pemohonAktif);
     const isKetua = stafObj?.kumpulan === 'Ketua';
     const statusDefault = isKetua ? 'Lulus' : 'Menunggu';
+    const isTempohPanjang = (jenis === 'Cuti / MC' || jenis === 'Kursus');
 
     if(editIndexAktiviti !== null) {
       rekodPergerakan[editIndexAktiviti].jenis = jenis;
       rekodPergerakan[editIndexAktiviti].tarikh = tarikh;
-      rekodPergerakan[editIndexAktiviti].tarikhAkhir = jenis === 'Cuti / MC' ? tarikhAkhir : '';
-      rekodPergerakan[editIndexAktiviti].masaMula = jenis === 'Kebenaran Keluar Pejabat' ? masaMula : '';
-      rekodPergerakan[editIndexAktiviti].masaTamat = jenis === 'Kebenaran Keluar Pejabat' ? masaTamat : '';
+      rekodPergerakan[editIndexAktiviti].tarikhAkhir = isTempohPanjang ? tarikhAkhir : '';
+      rekodPergerakan[editIndexAktiviti].masaMula = !isTempohPanjang ? masaMula : '';
+      rekodPergerakan[editIndexAktiviti].masaTamat = !isTempohPanjang ? masaTamat : '';
       rekodPergerakan[editIndexAktiviti].catatan = catatan;
       rekodPergerakan[editIndexAktiviti].status = statusDefault;
       rekodPergerakan[editIndexAktiviti].sebab = '';
@@ -844,9 +880,9 @@
         nama: pemohonAktif,
         jenis,
         tarikh,
-        tarikhAkhir: jenis === 'Cuti / MC' ? tarikhAkhir : '',
-        masaMula: jenis === 'Kebenaran Keluar Pejabat' ? masaMula : '',
-        masaTamat: jenis === 'Kebenaran Keluar Pejabat' ? masaTamat : '',
+        tarikhAkhir: isTempohPanjang ? tarikhAkhir : '',
+        masaMula: !isTempohPanjang ? masaMula : '',
+        masaTamat: !isTempohPanjang ? masaTamat : '',
         catatan,
         status: statusDefault,
         sebab: ''
@@ -857,7 +893,7 @@
     renderStaffStrip();
     renderSenaraiAktivitiPegawai();
     renderHariIni();
-    renderCalendar();
+    renderListPergerakan();
   }
 
   function ubahSemula(idx) {
@@ -881,6 +917,7 @@
     renderStaffStrip();
     renderSenaraiAktivitiPegawai();
     renderHariIni();
+    renderListPergerakan();
     renderCalendar();
   }
 
@@ -894,7 +931,7 @@
 
     container.innerHTML = senaraiMenunggu.length ? senaraiMenunggu.map(r => {
       const idx = rekodPergerakan.indexOf(r);
-      let infoDetail = r.jenis === 'Cuti / MC' 
+      let infoDetail = (r.jenis === 'Cuti / MC' || r.jenis === 'Kursus') 
         ? `Tarikh: ${r.tarikh} ${r.tarikhAkhir ? 'hingga ' + r.tarikhAkhir : ''}` 
         : `Tarikh: ${r.tarikh} (${format12H(r.masaMula)} - ${format12H(r.masaTamat)})`;
 
@@ -929,7 +966,45 @@
     renderPermohonanPenyelia();
     renderStaffStrip();
     renderHariIni();
+    renderListPergerakan();
     renderCalendar();
+  }
+
+  function renderListPergerakan() {
+    const container = document.getElementById('listPergerakanContent');
+    container.innerHTML = '';
+    const totalStaf = senaraiStaf.length;
+
+    senaraiStaf.forEach((staf, index) => {
+      const aktivitiStaf = rekodPergerakan.filter(r => r.nama === staf.nama && r.status === 'Lulus');
+      const autoColor = generateAutoColor(index, totalStaf);
+
+      let aktivitiHtml = '';
+      if (aktivitiStaf.length > 0) {
+        aktivitiHtml = aktivitiStaf.map((act, actIdx) => {
+          let det = (act.jenis === 'Cuti / MC' || act.jenis === 'Kursus')
+            ? `${act.tarikh}${act.tarikhAkhir ? ' hingga ' + act.tarikhAkhir : ''}`
+            : `${act.tarikh} (${format12H(act.masaMula)} - ${format12H(act.masaTamat)})`;
+          return `
+            <div class="activity-sub-item">
+              <div><strong>${actIdx + 1}. [${act.jenis}]</strong> ${act.catatan}</div>
+              <span class="file-note">${det}</span>
+            </div>
+          `;
+        }).join('');
+      } else {
+        aktivitiHtml = `<div class="file-note" style="padding:4px 0;">Tiada aktiviti luar / cuti aktif direkodkan.</div>`;
+      }
+
+      container.innerHTML += `
+        <div class="staff-group-card" style="border-left: 5px solid ${autoColor};">
+          <div class="staff-group-header">
+            <span>${staf.nama}</span> <span style="font-size:0.8rem; color:#64748b; font-weight:normal;">(${staf.jawatan || staf.kumpulan})</span>
+          </div>
+          <div>${aktivitiHtml}</div>
+        </div>
+      `;
+    });
   }
 
   function renderHariIni() {
@@ -951,7 +1026,7 @@
     senaraiStaf.forEach((staf, index) => {
       const aktifLulus = rekodPergerakan.find(r => {
         if (r.nama !== staf.nama || r.status !== 'Lulus') return false;
-        if (r.jenis === 'Cuti / MC') {
+        if (r.jenis === 'Cuti / MC' || r.jenis === 'Kursus') {
           return hariIniStr >= r.tarikh && hariIniStr <= (r.tarikhAkhir || r.tarikh);
         } else {
           if (r.tarikh !== hariIniStr) return false;
@@ -970,7 +1045,7 @@
         let subTime = (aktifLulus.masaMula && aktifLulus.masaTamat) 
           ? `<span class="staff-time-sub">${format12H(aktifLulus.masaMula)} - ${format12H(aktifLulus.masaTamat)}</span>` 
           : '';
-        infoKanan = `${aktifLulus.catatan}${subTime}`;
+        infoKanan = `[${aktifLulus.jenis}] ${aktifLulus.catatan}${subTime}`;
       } else if(staf.hbh && staf.hbh.includes(namaHariIni)) {
         kategori = 'HBH';
         infoKanan = 'Hari Bekerja Hibrid'; 
@@ -1024,7 +1099,7 @@
       const tkhStr = `${tahun}-${String(bulan + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
       const lulusHari = rekodPergerakan.filter(r => {
         if(r.status !== 'Lulus') return false;
-        if(r.jenis === 'Cuti / MC') {
+        if(r.jenis === 'Cuti / MC' || r.jenis === 'Kursus') {
           return tkhStr >= r.tarikh && tkhStr <= (r.tarikhAkhir || r.tarikh);
         } else {
           return r.tarikh === tkhStr;
@@ -1034,29 +1109,16 @@
       let tagHtml = lulusHari.map(l => {
         const stafIndex = senaraiStaf.findIndex(s => s.nama === l.nama);
         const warnaTag = stafIndex !== -1 ? generateAutoColor(stafIndex, totalStaf) : '#f1f5f9';
-        let masaTag = (l.masaMula && l.masaTamat) ? ` (${format12H(l.masaMula)} - ${format12H(l.masaTamat)})` : '';
-        return `<div class="event-tag" style="background-color: ${warnaTag};">${l.nama}: ${l.catatan}${masaTag}</div>`;
+        let masaTag = (l.masaMula && l.masaTamat) ? ` (${format12H(l.masaMula)})` : '';
+        return `<div class="event-tag" style="background-color: ${warnaTag};" title="${l.nama}: ${l.catatan}">${l.nama}: ${l.catatan}${masaTag}</div>`;
       }).join('');
       
       const dayEl = document.createElement('div');
       dayEl.className = 'cal-day';
       dayEl.innerHTML = `<div class="cal-day-num">${i}</div>${tagHtml}`;
-      
-      dayEl.onclick = function(e) {
-        e.stopPropagation();
-        document.querySelectorAll('.cal-day.zoomed').forEach(el => {
-          if(el !== dayEl) el.classList.remove('zoomed');
-        });
-        dayEl.classList.toggle('zoomed');
-      };
-
       container.appendChild(dayEl);
     }
   }
-
-  document.addEventListener('click', () => {
-    document.querySelectorAll('.cal-day.zoomed').forEach(el => el.classList.remove('zoomed'));
-  });
 
   async function simpanTetapan() {
     const tajuk = document.getElementById('tajukAplikasi').value.trim();
@@ -1070,7 +1132,7 @@
 
   renderStaffStrip();
   renderHariIni();
-  renderCalendar();
+  renderListPergerakan();
 </script>
 
 </body>
