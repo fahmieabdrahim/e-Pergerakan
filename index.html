@@ -824,7 +824,7 @@
           <span class="file-note">${infoDetail} | Status: ${statusBadge}</span>
           ${r.sebab ? `<div class="chat-box"><strong>Nota Tolak:</strong> ${r.sebab}</div>` : ''}
           <div class="feedback-actions">
-            ${r.status === 'Tidak' ? `<button style="background:#475569;" onclick="ubahSemula(${idx})">Edit</button>` : ''}
+            <button style="background:#475569;" onclick="ubahSemula(${idx})">Edit</button>
             <button style="background:#dc2626;" onclick="padamAktiviti(${idx})">Padam</button>
           </div>
         </div>
@@ -1003,21 +1003,20 @@
       let aktivitiHtml = '';
       if (aktivitiStaf.length > 0) {
         aktivitiHtml = aktivitiStaf.map((act, actIdx) => {
-          let det = '';
+          let rentetanTarikh = '';
           if (act.jenis === 'Cuti' || act.jenis === 'Mesyuarat / Kursus') {
             const tMula = formatTarikhDMY(act.tarikh);
             const tAkhir = formatTarikhDMY(act.tarikhAkhir);
-            det = tAkhir ? `${tMula} hingga ${tAkhir}` : `${tMula}`;
+            rentetanTarikh = tAkhir ? `${tMula} hingga ${tAkhir}` : `${tMula}`;
           } else {
             const tMula = formatTarikhDMY(act.tarikh);
             const mRange = (act.masaMula && act.masaTamat) ? ` (${format12H(act.masaMula)} - ${format12H(act.masaTamat)})` : '';
-            det = `${tMula}${mRange}`;
+            rentetanTarikh = `${tMula}${mRange}`;
           }
 
           return `
             <div class="activity-sub-item">
-              <div><strong>${actIdx + 1}.</strong> ${act.catatan}</div>
-              <span class="file-note">${det}</span>
+              <div><strong>${actIdx + 1}.</strong> ${act.catatan} ${rentetanTarikh}</div>
             </div>
           `;
         }).join('');
@@ -1139,7 +1138,6 @@
         const stafIndex = senaraiStaf.findIndex(s => s.nama === l.nama);
         const warnaTag = stafIndex !== -1 ? generateAutoColor(stafIndex, totalStaf) : '#f1f5f9';
         let masaTag = (l.masaMula && l.masaTamat) ? ` (${format12H(l.masaMula)})` : '';
-        // Paparan pada kalendar kini menggunakan catatan terus (cth: "Cuti rehat") tanpa label jenis
         return `<div class="event-tag" style="background-color: ${warnaTag};" title="${l.nama}: ${l.catatan}">${l.nama}: ${l.catatan}${masaTag}</div>`;
       }).join('');
       
