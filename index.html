@@ -4,15 +4,19 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sistem E-Pergerakan</title>
+  <!-- Google Material Symbols -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
   <style>
     :root {
-      --bg-color: hsl(210, 15%, 98%);
-      --app-bg: hsl(210, 15%, 95%);
-      --text-color: hsl(210, 15%, 15%);
-      --card-border: hsl(210, 15%, 85%);
-      --box-shadow: rgba(0,0,0,0.08);
-      --header-bg: hsl(210, 15%, 92%);
+      --bg-color: #ffffff;
+      --app-bg: #f8fafc;
+      --text-color: #1e293b;
+      --card-border: #e2e8f0;
+      --box-shadow: rgba(0,0,0,0.04);
+      --header-bg: #f1f5f9;
       --primary: #475569;
+      --grey-text: #64748b;
+      --light-gray-bg: #f8fafc;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -25,11 +29,12 @@
     }
 
     .plain-icon-btn { 
-      background: transparent; border: none; padding: 4px; 
-      font-size: 1.6rem; cursor: pointer; line-height: 1;
-      transition: opacity 0.2s; 
+      background: transparent; border: none; padding: 6px; 
+      font-size: 1.5rem; cursor: pointer; line-height: 1; color: var(--grey-text);
+      display: inline-flex; align-items: center; justify-content: center;
+      transition: color 0.2s; 
     }
-    .plain-icon-btn:hover { opacity: 0.7; }
+    .plain-icon-btn:hover { color: var(--text-color); }
 
     /* SKRIN MUKA DEPAN */
     #welcomeScreen {
@@ -59,87 +64,110 @@
       flex-direction: column; min-height: 100vh; position: relative;
     }
 
+    /* Header tanpa garisan bawah */
     header {
-      display: flex; justify-content: space-between; align-items: flex-start;
+      display: flex; justify-content: space-between; align-items: center;
       margin-bottom: 15px; gap: 15px;
-      padding-bottom: 15px; border-bottom: 2px solid var(--card-border);
+      padding-bottom: 5px; border-bottom: none;
     }
     
     .header-title-container { flex: 1; min-width: 0; }
-    h1 { font-size: 1.5rem; color: var(--text-color); font-weight: 800; word-break: break-word; line-height: 1.3; }
+    h1 { font-size: 1.4rem; color: var(--text-color); font-weight: 700; word-break: break-word; line-height: 1.3; }
     .header-action-container { flex-shrink: 0; }
 
-    .staff-strip { display: flex; align-items: flex-start; gap: 12px; overflow-x: auto; margin-bottom: 12px; padding: 4px 0; scrollbar-width: thin; }
-    .profile-chip { display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 60px; color: var(--text-color); font-size: 0.85rem; font-weight: bold; cursor: pointer; flex-shrink: 0; text-align: center;}
-    .profile-chip .avatar, .staff-avatar { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; display: block; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-    .avatar-empty { display: block; border-radius: 50%; width: 50px; height: 50px; }
-    .profile-photo-wrap { position: relative; display: flex; align-items: center; justify-content: center; border-radius: 50%; width: 54px; height: 54px; }
+    .staff-strip { display: flex; align-items: flex-start; gap: 14px; overflow-x: auto; margin-bottom: 20px; padding: 6px 0; scrollbar-width: thin; }
+    .profile-chip { display: flex; flex-direction: column; align-items: center; gap: 6px; min-width: 65px; color: var(--text-color); font-size: 0.85rem; font-weight: 600; cursor: pointer; flex-shrink: 0; text-align: center;}
+    .profile-chip .avatar, .staff-avatar { width: 54px; height: 54px; border-radius: 50%; object-fit: cover; display: block; border: 2px solid white; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
+    .avatar-empty { display: block; border-radius: 50%; width: 54px; height: 54px; background: #e2e8f0; }
+    .profile-photo-wrap { position: relative; display: flex; align-items: center; justify-content: center; border-radius: 50%; width: 58px; height: 58px; }
     
-    .feedback-item { margin-bottom: 8px; padding: 8px; background: var(--header-bg); border: 1px solid var(--card-border); border-radius: 6px; font-size: 0.85rem; }
+    .notification-badge {
+      position: absolute; top: 0; right: 0;
+      width: 14px; height: 14px; background: #dc2626;
+      border: 2px solid #ffffff; border-radius: 50%; display: none;
+    }
+    .profile-photo-wrap.has-notif .notification-badge { display: block; }
+
+    .feedback-item { margin-bottom: 10px; padding: 12px; background: var(--header-bg); border-radius: 8px; font-size: 0.9rem; }
     
-    .view-tabs { display: flex; gap: 8px; margin-bottom: 15px; overflow-x: auto; }
-    .tab-btn { flex: 1; padding: 10px 15px; border: none; background: var(--header-bg); border-radius: 8px; font-weight: bold; cursor: pointer; color: var(--text-color); text-align: center; font-size: 0.95rem; border: 1px solid var(--card-border); white-space: nowrap; transition: background 0.3s; }
-    .tab-btn.active { background: #3b82f6; color: white; border-color: #2563eb; }
+    /* TAB UTAMA (Teks Sahaja, Segitiga & Bold Tanpa Garisan) */
+    .view-tabs { display: flex; justify-content: flex-start; gap: 28px; margin-bottom: 20px; overflow-x: auto; padding-bottom: 4px; }
+    .tab-btn { background: transparent; border: none; padding: 6px 0; font-weight: 500; cursor: pointer; color: var(--grey-text); font-size: 0.95rem; white-space: nowrap; transition: color 0.2s; display: flex; align-items: center; gap: 4px; }
+    .tab-btn.active { color: var(--text-color); font-weight: 700; }
+    .tab-indicator { font-size: 0.7rem; display: none; color: var(--text-color); }
+    .tab-btn.active .tab-indicator { display: inline-block; }
+
+    /* MENU GAYA ANDROID (Tanpa Box, Garis Halus) */
+    .clean-menu-list {
+      display: flex; flex-direction: column;
+      background: var(--light-gray-bg); border-radius: 12px; border: 1px solid var(--card-border); overflow: hidden;
+    }
+    .clean-menu-item {
+      padding: 14px 18px; background: transparent; border: none; border-bottom: 1px solid var(--card-border);
+      text-align: left; font-size: 0.95rem; font-weight: 500; color: var(--text-color); cursor: pointer;
+      display: flex; align-items: center; gap: 14px; transition: background 0.2s; width: 100%;
+    }
+    .clean-menu-item:last-child { border-bottom: none; }
+    .clean-menu-item:hover { background: #f1f5f9; }
+    .clean-menu-item span.material-symbols-outlined { font-size: 1.3rem; color: var(--grey-text); }
 
     .columns-container { display: grid; grid-template-columns: 1fr; gap: 15px; }
     @media (min-width: 768px) { .columns-container { grid-template-columns: repeat(3, 1fr); } }
 
-    .column { background: var(--bg-color); border: 1px solid var(--card-border); border-radius: 10px; padding: 12px; display: flex; flex-direction: column; max-height: 70vh; box-shadow: 0 2px 5px var(--box-shadow); }
+    .column { background: var(--bg-color); border: 1px solid var(--card-border); border-radius: 12px; padding: 15px; display: flex; flex-direction: column; max-height: 70vh; box-shadow: 0 2px 4px var(--box-shadow); }
     .column-scroll { overflow-y: auto; flex: 1; padding-right: 4px; }
-    .column-title { font-size: 1.1rem; font-weight: bold; padding-bottom: 8px; margin-bottom: 10px; border-bottom: 2px solid var(--card-border); display: flex; justify-content: space-between; color: var(--text-color); }
+    .column-title { font-size: 1.05rem; font-weight: 700; padding-bottom: 10px; margin-bottom: 12px; border-bottom: 1px solid var(--card-border); display: flex; justify-content: space-between; color: var(--text-color); }
 
     .list-pergerakan-container { display: flex; flex-direction: column; gap: 12px; }
-    .staff-group-card { background: var(--bg-color); border: 1px solid var(--card-border); border-radius: 10px; padding: 12px; box-shadow: 0 2px 4px var(--box-shadow); }
-    .staff-group-header { font-size: 1.05rem; font-weight: bold; color: var(--text-color); margin-bottom: 8px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid var(--card-border); padding-bottom: 6px; }
+    .staff-group-card { background: #ffffff; border: 1px solid var(--card-border); border-radius: 12px; padding: 15px; box-shadow: 0 2px 4px var(--box-shadow); }
+    .staff-group-header { font-size: 1.05rem; font-weight: 700; color: var(--text-color); margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--card-border); padding-bottom: 8px; }
     
-    .activity-sub-item { font-size: 0.9rem; padding: 8px 10px; background: var(--header-bg); border-radius: 6px; margin-bottom: 6px; border-left: 4px solid #475569; display: flex; justify-content: space-between; align-items: center; gap: 10px; }
-    .activity-left { display: flex; align-items: center; gap: 8px; flex: 1; word-break: break-word; }
-    .activity-right { font-weight: 700; text-align: right; white-space: nowrap; font-size: 0.85rem; color: #334155; }
+    .activity-sub-item { font-size: 0.9rem; padding: 10px 12px; background: #f8fafc; border-radius: 8px; margin-bottom: 8px; border-left: 4px solid var(--primary); display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+    .activity-left { display: flex; align-items: center; gap: 10px; flex: 1; word-break: break-word; }
+    .activity-right { font-weight: 600; text-align: right; white-space: nowrap; font-size: 0.85rem; color: var(--grey-text); }
 
-    .staff-card { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 12px; border-radius: 8px; margin-bottom: 10px; border: 1px solid rgba(0,0,0,0.1); box-shadow: 0 2px 4px var(--box-shadow); color: #1e293b; }
+    .staff-card { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 12px 14px; border-radius: 10px; margin-bottom: 10px; border: 1px solid rgba(0,0,0,0.06); box-shadow: 0 1px 3px var(--box-shadow); color: #1e293b; }
     .staff-card-left { display: flex; align-items: center; gap: 12px; }
-    .staff-name { font-weight: bold; font-size: 0.95rem; display: block; }
-    .staff-right { font-size: 0.85rem; font-weight: 700; text-align: right; max-width: 50%; word-break: break-word; line-height: 1.3; }
+    .staff-name { font-weight: 600; font-size: 0.95rem; display: block; }
+    .staff-right { font-size: 0.85rem; font-weight: 600; text-align: right; max-width: 50%; word-break: break-word; line-height: 1.3; color: var(--grey-text); }
 
-    .calendar-container { background: var(--bg-color); border: 1px solid var(--card-border); border-radius: 10px; padding: 15px; display: flex; flex-direction: column; min-height: 600px; width: 100%; box-shadow: 0 2px 5px var(--box-shadow); }
-    .calendar-header { text-align: center; font-size: 1.4rem; font-weight: bold; margin-bottom: 12px; color: var(--text-color); }
-    .calendar-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; flex: 1; width: 100%; }
-    .cal-day-head { text-align: center; font-weight: bold; font-size: 0.9rem; padding: 8px 2px; background: var(--header-bg); border-radius: 6px; color: var(--text-color); border: 1px solid var(--card-border); }
-    .cal-day { border: 1px solid var(--card-border); border-radius: 8px; padding: 8px; font-size: 0.85rem; display: flex; flex-direction: column; background: var(--bg-color); min-height: 100px; }
-    .cal-day.empty { background: transparent; border-color: transparent; }
-    .cal-day-num { font-weight: bold; font-size: 1rem; margin-bottom: 6px; color: var(--text-color); }
-    .event-tag { padding: 4px 6px; border-radius: 4px; margin-bottom: 4px; font-size: 0.75rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 700; color: #1e293b; border: 1px solid rgba(0,0,0,0.1); }
+    .calendar-container { background: #ffffff; border: 1px solid var(--card-border); border-radius: 12px; padding: 20px; display: flex; flex-direction: column; min-height: 600px; width: 100%; box-shadow: 0 2px 4px var(--box-shadow); }
+    .calendar-header { text-align: center; font-size: 1.3rem; font-weight: 700; margin-bottom: 16px; color: var(--text-color); }
+    .calendar-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; flex: 1; width: 100%; }
+    .cal-day-head { text-align: center; font-weight: 600; font-size: 0.85rem; padding: 10px 4px; background: var(--header-bg); border-radius: 8px; color: var(--grey-text); }
+    .cal-day { border: 1px solid var(--card-border); border-radius: 10px; padding: 10px; font-size: 0.85rem; display: flex; flex-direction: column; background: #ffffff; min-height: 110px; cursor: pointer; transition: border-color 0.2s, background 0.2s; }
+    .cal-day:hover { border-color: #94a3b8; background: #fafafa; }
+    .cal-day.empty { background: transparent; border-color: transparent; cursor: default; }
+    .cal-day-num { font-weight: 700; font-size: 1rem; margin-bottom: 6px; color: var(--text-color); }
+    .event-tag { padding: 4px 8px; border-radius: 6px; margin-bottom: 4px; font-size: 0.75rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 600; color: #1e293b; border: 1px solid rgba(0,0,0,0.08); }
 
-    .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); align-items: center; justify-content: center; padding: 15px; z-index: 100; backdrop-filter: blur(3px); }
-    .modal-content { background: white; padding: 20px; border-radius: 12px; width: 100%; max-width: 500px; max-height: 85vh; overflow-y: auto; box-shadow: 0 10px 25px rgba(0,0,0,0.2); color: #0f172a; }
+    .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; padding: 20px; z-index: 100; backdrop-filter: blur(2px); }
+    .modal-content { background: #ffffff; padding: 24px; border-radius: 16px; width: 100%; max-width: 480px; max-height: 85vh; overflow-y: auto; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); color: #0f172a; }
     
-    .form-group { margin-bottom: 12px; }
-    .form-group label { display: block; font-size: 0.9rem; font-weight: bold; margin-bottom: 5px; color: #334155; }
-    .form-group input[type="text"], .form-group input[type="date"], .form-group input[type="time"], .form-group input[type="file"], .form-group select { width: 100%; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font: inherit; font-size: 0.95rem; }
+    .form-group { margin-bottom: 16px; }
+    .form-group label { display: block; font-size: 0.9rem; font-weight: 600; margin-bottom: 6px; color: #334155; }
+    .form-group input[type="text"], .form-group input[type="date"], .form-group input[type="time"], .form-group input[type="file"], .form-group select { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; font: inherit; font-size: 0.95rem; }
     
-    .modal-btns { display: flex; gap: 10px; margin-top: 15px; }
-    .btn-submit { background: #0f172a; color: white; border: none; padding: 10px; border-radius: 8px; flex: 1; cursor: pointer; font-weight: bold; font-size: 0.95rem; }
-    .btn-cancel { background: #94a3b8; color: white; border: none; padding: 10px; border-radius: 8px; flex: 1; cursor: pointer; font-weight: bold; font-size: 0.95rem; }
-    .btn-danger { background: #dc2626; color: white; border: none; padding: 10px; border-radius: 8px; flex: 1; cursor: pointer; font-weight: bold; font-size: 0.95rem; }
-    
-    .board-list-item { display: flex; flex-direction: column; padding: 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; margin-bottom: 8px; cursor: pointer; transition: background 0.2s; }
+    .board-list-item { display: flex; flex-direction: column; padding: 14px 16px; background: var(--light-gray-bg); border: 1px solid #e2e8f0; border-radius: 10px; margin-bottom: 10px; cursor: pointer; transition: background 0.2s; }
     .board-list-item:hover { background: #f1f5f9; }
   </style>
 </head>
 <body>
 
-<!-- ================= SKRIN PERMULAAN ================= -->
+<!-- ================= SKRIN MUKA DEPAN ================= -->
 <div id="welcomeScreen">
   <div class="top-right-nav">
-    <button class="plain-icon-btn" onclick="openModal('modalTetapanUtama')">⚙️</button>
+    <button class="plain-icon-btn" onclick="openModal('modalTetapanUtama')" title="Tetapan">
+      <span class="material-symbols-outlined">tune</span>
+    </button>
   </div>
 
   <div class="instruction-box">
     <h2>Cara guna e-Pergerakan</h2>
     <ol>
-      <li>Klik ikon <strong>⚙️</strong> di penjuru atas kanan.</li>
+      <li>Klik ikon <strong>⚙️ (Tetapan)</strong> di penjuru atas kanan.</li>
       <li>Pilih <strong>+ Cipta Board Baru</strong>.</li>
-      <li>Buka Board tersebut dan mula masukkan senarai nama <strong>Staf</strong> (Kakitangan / Penyelia) beserta gambar.</li>
+      <li>Buka Board tersebut dan mula masukkan senarai nama <strong>Staf</strong> beserta gambar.</li>
     </ol>
   </div>
 </div>
@@ -148,20 +176,29 @@
 <div id="mainDashboard">
   <header>
     <div class="header-title-container">
-      <h1 id="appTitle">📌 E-Pergerakan bulan ini</h1>
+      <h1 id="appTitle">📌 E-Pergerakan</h1>
     </div>
     
     <div class="header-action-container">
-      <button class="plain-icon-btn" onclick="bukaTetapanDalamBoard()">⚙️</button>
+      <button class="plain-icon-btn" onclick="bukaTetapanDalamBoard()" title="Tetapan Board">
+        <span class="material-symbols-outlined">tune</span>
+      </button>
     </div>
   </header>
 
   <div id="staffStrip" class="staff-strip"></div>
 
+  <!-- TAB UTAMA (Teks Sahaja, Segitiga & Bold Tanpa Garisan) -->
   <div class="view-tabs">
-    <button id="btnTabList" class="tab-btn active" onclick="switchView('list')">Pegerakan Keluar</button>
-    <button id="btnTabBulan" class="tab-btn" onclick="switchView('bulan')">Paparan Bulan</button>
-    <button id="btnTabHariIni" class="tab-btn" onclick="switchView('hari-ini')">Hari Ini</button>
+    <button id="btnTabList" class="tab-btn active" onclick="switchView('list')">
+      <span>Pegerakan Keluar</span> <span class="tab-indicator">▼</span>
+    </button>
+    <button id="btnTabBulan" class="tab-btn" onclick="switchView('bulan')">
+      <span>Paparan Bulan</span> <span class="tab-indicator">▼</span>
+    </button>
+    <button id="btnTabHariIni" class="tab-btn" onclick="switchView('hari-ini')">
+      <span>Hari Ini</span> <span class="tab-indicator">▼</span>
+    </button>
   </div>
 
   <div id="viewList" class="list-pergerakan-container" style="display: flex;">
@@ -198,63 +235,96 @@
   </div>
 </div>
 
-<!-- ================= MODAL TETAPAN UTAMA ================= -->
+<!-- ================= MODAL TETAPAN UTAMA (SENARAI BOARD) ================= -->
 <div id="modalTetapanUtama" class="modal">
-  <div class="modal-content">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-      <span style="font-weight: bold; color: #475569; font-size: 1.1rem;">Senarai Board:</span>
-      <button class="btn-submit" style="padding: 6px 12px; font-size: 0.85rem; flex: none; background: #16a34a;" onclick="ciptaBoardBaru()">+ Cipta Board Baru</button>
-    </div>
+  <div class="modal-content" style="background: var(--light-gray-bg); border: 1px solid var(--card-border);">
+    <div style="font-weight: 700; color: var(--text-color); font-size: 1.1rem; margin-bottom: 12px;">Senarai Board:</div>
     
-    <div id="senaraiBoardContainer" style="max-height: 350px; overflow-y: auto; margin-bottom: 15px;"></div>
+    <div id="senaraiBoardContainer" style="max-height: 280px; overflow-y: auto; margin-bottom: 14px;"></div>
 
-    <div class="modal-btns">
-      <button class="btn-cancel" onclick="closeModal('modalTetapanUtama')" style="width: 100%;">Tutup</button>
+    <div class="clean-menu-list" style="margin-bottom: 14px;">
+      <button class="clean-menu-item" onclick="ciptaBoardBaru()">
+        <span class="material-symbols-outlined">add_circle</span>
+        <span>Cipta Board Baru</span>
+      </button>
+    </div>
+
+    <div class="clean-menu-list">
+      <button class="clean-menu-item" style="justify-content: center; font-weight: 600;" onclick="closeModal('modalTetapanUtama')">
+        <span>Tutup</span>
+      </button>
     </div>
   </div>
 </div>
 
-<!-- ================= MODAL EDIT BOARD ================= -->
+<!-- ================= MODAL EDIT BOARD (MENU GAYA ANDROID TANPA KOTAK) ================= -->
 <div id="modalEditBoard" class="modal">
-  <div class="modal-content" style="max-width: 400px;">
+  <div class="modal-content" style="max-width: 400px; background: var(--light-gray-bg); border: 1px solid var(--card-border);">
     <input type="hidden" id="editBoardId">
     
-    <div style="display: flex; flex-direction: column; gap: 10px;">
-      <button class="btn-submit" style="background: #0284c7; padding: 12px; width: 100%;" onclick="bukaPanelPengurusanStaf()">Urus Senarai Staf Board Ini</button>
-      
-      <div style="display: flex; gap: 10px;">
-        <button class="btn-submit" style="background: #ef4444; padding: 12px; flex: 1;" onclick="keluarKeSkrinUtamaDariSetting()">Tutup Board</button>
-        <button class="btn-submit" style="background: #10b981; padding: 12px; flex: 1;" onclick="salinLinkBoard()">Share</button>
-      </div>
+    <div class="clean-menu-list" style="margin-bottom: 14px;">
+      <button class="clean-menu-item" onclick="bukaPanelPengurusanStaf()">
+        <span class="material-symbols-outlined">group</span>
+        <span>Urus Pengguna</span>
+      </button>
+      <button class="clean-menu-item" onclick="keluarEditBoard()">
+        <span class="material-symbols-outlined">logout</span>
+        <span>Keluar</span>
+      </button>
+      <button class="clean-menu-item" onclick="salinLinkBoard()">
+        <span class="material-symbols-outlined">share</span>
+        <span>Share</span>
+      </button>
+      <button class="clean-menu-item" onclick="keluarKeSkrinUtamaDariSetting()">
+        <span class="material-symbols-outlined">folder_off</span>
+        <span>Tutup Board</span>
+      </button>
+      <button class="clean-menu-item" onclick="padamBoard()">
+        <span class="material-symbols-outlined" style="color:#dc2626;">delete</span>
+        <span style="color:#dc2626; font-weight:600;">Hapus Board</span>
+      </button>
+    </div>
 
-      <div style="display: flex; gap: 10px;">
-        <button class="btn-cancel" style="flex: 1;" onclick="keluarEditBoard()">Keluar</button>
-        <button class="btn-danger" id="btnDeleteBoard" style="flex: 1;" onclick="padamBoard()">Padam</button>
-      </div>
+    <div class="clean-menu-list">
+      <button class="clean-menu-item" style="justify-content: center; font-weight: 600;" onclick="closeModal('modalEditBoard')">
+        <span>Tutup</span>
+      </button>
     </div>
   </div>
 </div>
 
 <!-- ================= MODAL PENGURUSAN STAF ================= -->
 <div id="modalPengurusanStaf" class="modal">
-  <div class="modal-content" style="max-width: 480px;">
-    <div style="margin-bottom: 15px;">
-      <h3 style="margin:0 0 10px 0; font-size: 1.1rem;">👥 Staf</h3>
-      <button type="button" class="btn-submit" style="padding: 10px; width: 100%; background: #16a34a;" onclick="bukaFormStafModal(-1)">+ Tambah Staf Baru</button>
+  <div class="modal-content" style="max-width: 480px; background: var(--light-gray-bg);">
+    <div style="margin-bottom: 16px;">
+      <h3 style="margin:0 0 10px 0; font-size: 1.1rem;">👥 Pengguna</h3>
     </div>
-    <div id="senaraiStafContainer" style="max-height: 300px; overflow-y: auto; margin-bottom: 15px;"></div>
     
-    <div class="modal-btns">
-      <button class="btn-submit" style="background: #0284c7;" onclick="closeModal('modalPengurusanStaf'); openModal('modalEditBoard');">Kembali</button>
-      <button class="btn-cancel" onclick="closeModal('modalPengurusanStaf')">Tutup</button>
+    <div class="clean-menu-list" style="margin-bottom: 14px;">
+      <button class="clean-menu-item" onclick="bukaFormStafModal(-1)">
+        <span class="material-symbols-outlined">person_add</span>
+        <span>Tambah Pengguna baru</span>
+      </button>
+    </div>
+
+    <div id="senaraiStafContainer" style="max-height: 260px; overflow-y: auto; margin-bottom: 14px;"></div>
+    
+    <div class="clean-menu-list">
+      <button class="clean-menu-item" onclick="closeModal('modalPengurusanStaf'); openModal('modalEditBoard');">
+        <span class="material-symbols-outlined">arrow_back</span>
+        <span>Kembali</span>
+      </button>
+      <button class="clean-menu-item" style="justify-content: center; font-weight: 600;" onclick="closeModal('modalPengurusanStaf')">
+        <span>Tutup</span>
+      </button>
     </div>
   </div>
 </div>
 
 <!-- ================= MODAL TAMBAH/EDIT STAF ================= -->
 <div id="modalFormStaf" class="modal" style="z-index: 110;">
-  <div class="modal-content" style="max-width: 400px;">
-    <h3 id="tajukFormStafModal" style="margin-bottom: 15px;">Maklumat Staf</h3>
+  <div class="modal-content" style="max-width: 400px; background: var(--light-gray-bg);">
+    <h3 id="tajukFormStafModal" style="margin-bottom: 16px;">Maklumat Pengguna</h3>
     <input type="hidden" id="editIndexStaf" value="-1">
     
     <div class="form-group"><label>Nama *</label><input type="text" id="stafNamaInput" required></div>
@@ -276,62 +346,88 @@
     </div>
 
     <div class="form-group"><label>Hari Bekerja Hibrid (HBH)</label>
-      <div style="display: flex; gap: 15px; margin-top: 5px;">
+      <div style="display: flex; gap: 15px; margin-top: 8px;">
         <label><input type="checkbox" name="hbhHari" value="Selasa"> Selasa</label>
         <label><input type="checkbox" name="hbhHari" value="Rabu"> Rabu</label>
         <label><input type="checkbox" name="hbhHari" value="Khamis"> Khamis</label>
       </div>
     </div>
-    <div class="modal-btns">
-      <button type="button" class="btn-submit" onclick="simpanStafData()">Simpan</button>
-      <button type="button" class="btn-cancel" onclick="closeModal('modalFormStaf')">Batal</button>
+    
+    <div class="clean-menu-list" style="margin-top: 15px;">
+      <button class="clean-menu-item" style="justify-content: center; font-weight: 600; color:#16a34a;" onclick="simpanStafData()">
+        <span>Simpan</span>
+      </button>
+      <button class="clean-menu-item" style="justify-content: center; font-weight: 600; color:#dc2626;" onclick="closeModal('modalFormStaf')">
+        <span>Batal</span>
+      </button>
     </div>
   </div>
 </div>
 
 <!-- ================= MODAL AKTIVITI & SEMAKAN ================= -->
 <div id="modalPermohonan" class="modal">
-  <div class="modal-content">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+  <div class="modal-content" style="background: var(--light-gray-bg);">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
       <h3 id="tajukModalPermohonan" style="margin:0;">Nama</h3>
-      <!-- Loceng Khas untuk Penyelia -->
-      <div id="containerLocengPenyelia" style="display:none; align-items: center; gap: 6px; cursor: pointer; background: #fee2e2; padding: 4px 10px; border-radius: 20px;" onclick="bukaModulSemakan()" title="Semakan Kelulusan">
-        <span style="font-size:1.2rem;">🔔</span>
+      <div id="containerLocengPenyelia" style="display:none; align-items: center; gap: 6px; cursor: pointer; background: #fee2e2; padding: 6px 12px; border-radius: 20px;" onclick="bukaModulSemakan()" title="Semakan Kelulusan">
+        <span class="material-symbols-outlined" style="font-size:1.3rem; color:#dc2626;">notifications</span>
         <span id="badgeBilanganMenunggu" style="background: #dc2626; color: white; border-radius: 50%; padding: 1px 6px; font-size: 0.75rem; font-weight: bold;">0</span>
       </div>
     </div>
 
     <div id="senaraiAktivitiPegawai" style="margin: 10px 0; max-height: 150px; overflow-y: auto;"></div>
     
-    <button id="btnBukaBorangAktiviti" class="btn-submit" onclick="bukaFormTambahAktiviti()" style="width:100%;">+ Tambah Aktiviti</button>
+    <div class="clean-menu-list" style="margin-bottom: 12px;">
+      <button id="btnBukaBorangAktiviti" class="clean-menu-item" onclick="bukaFormTambahAktiviti()">
+        <span class="material-symbols-outlined">add</span>
+        <span>Tambah Aktiviti</span>
+      </button>
+    </div>
     
-    <div id="formAktiviti" style="display:none; margin-top: 15px; border-top: 1px solid #e2e8f0; padding-top: 15px;">
+    <div id="formAktiviti" style="display:none; margin-top: 15px; border-top: 1px solid var(--card-border); padding-top: 15px;">
       <div class="form-group"><label>Jenis</label><select id="permJenis" onchange="tukarJenisPermohonanForm()"><option value="Cuti">Cuti</option><option value="Keluar">Keluar Pejabat</option><option value="Mesyuarat / Kursus">Mesyuarat / Kursus</option></select></div>
       <div class="form-group"><label>Tarikh Mula</label><input type="date" id="permTarikh"></div>
       <div class="form-group" id="groupTarikhAkhir" style="display:none;"><label>Tarikh Akhir</label><input type="date" id="permTarikhAkhir"></div>
       <div id="groupMasa" style="display: flex; gap: 10px;"><div class="form-group" style="flex:1;"><label>Masa Mula</label><input type="time" id="permMasaMula" value="09:00"></div><div class="form-group" style="flex:1;"><label>Masa Tamat</label><input type="time" id="permMasaTamat" value="13:00"></div></div>
       <div class="form-group"><label>Tujuan / Butiran</label><input type="text" id="permTujuan" placeholder="Cth: Cuti rehat"></div>
       
-      <div class="modal-btns">
-        <button id="btnSimpanAtauHantar" class="btn-submit" onclick="hantarPergerakan()">Hantar</button>
-        <button class="btn-cancel" onclick="tutupFormAktiviti()">Batal</button>
+      <div class="clean-menu-list" style="margin-top: 12px;">
+        <button id="btnSimpanAtauHantar" class="clean-menu-item" style="justify-content: center; font-weight: 600;" onclick="hantarPergerakan()">Hantar</button>
+        <button class="clean-menu-item" style="justify-content: center; font-weight: 600; color: #dc2626;" onclick="tutupFormAktiviti()">Batal</button>
       </div>
     </div>
 
-    <div class="modal-btns" style="margin-top:15px;"><button class="btn-cancel" onclick="closeModal('modalPermohonan')" style="width:100%;">Tutup</button></div>
+    <div class="clean-menu-list" style="margin-top:15px;">
+      <button class="clean-menu-item" style="justify-content: center; font-weight: 600;" onclick="closeModal('modalPermohonan')">Tutup</button>
+    </div>
   </div>
 </div>
 
 <div id="modalPengesahan" class="modal" style="z-index: 110;">
-  <div class="modal-content">
-    <h3 style="margin-bottom: 10px;">🔔 Senarai Kelulusan Kakitangan</h3>
+  <div class="modal-content" style="background: var(--light-gray-bg);">
+    <h3 style="margin-bottom: 12px;">🔔 Senarai Kelulusan Kakitangan</h3>
     <div id="senaraiPermohonanMenunggu" style="margin: 10px 0; max-height: 250px; overflow-y: auto;"></div>
-    <div class="modal-btns"><button class="btn-cancel" onclick="closeModal('modalPengesahan'); openModal('modalPermohonan');" style="width:100%;">Kembali</button></div>
+    <div class="clean-menu-list" style="margin-top: 15px;">
+      <button class="clean-menu-item" style="justify-content: center; font-weight: 600;" onclick="closeModal('modalPengesahan'); openModal('modalPermohonan');">Kembali</button>
+    </div>
+  </div>
+</div>
+
+<!-- ================= MODAL ZOOM IN PAPARAN BULAN ================= -->
+<div id="modalDetailHari" class="modal" style="z-index: 120;">
+  <div class="modal-content" style="max-width: 420px; background: var(--light-gray-bg);">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+      <h3 id="tajukModalDetailHari" style="margin:0; font-size: 1.1rem;">Tarikh</h3>
+      <button class="plain-icon-btn" onclick="closeModal('modalDetailHari')"><span class="material-symbols-outlined">close</span></button>
+    </div>
+    <div id="senaraiAktivitiHariTerpilih" style="max-height: 300px; overflow-y: auto;"></div>
+    <div class="clean-menu-list" style="margin-top: 15px;">
+      <button class="clean-menu-item" style="justify-content: center; font-weight: 600;" onclick="closeModal('modalDetailHari')">Tutup</button>
+    </div>
   </div>
 </div>
 
 <script>
-  // --- TETAPAN JSONBIN ANDA ---
   const JSONBIN_ID = '6aab5fb7ac6210605ad6e552';
   const JSONBIN_MASTER_KEY = '$2a$10$KhOhb3FWCQpWIUWcZLY4xeUvXDMY/gxG8j/vcvJZtHdvaZoaseqFu';
 
@@ -372,17 +468,12 @@
     }
     localStorage.setItem('boards', JSON.stringify(boards));
     try {
-      const res = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_ID}`, {
+      await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_ID}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json', 'X-Master-Key': JSONBIN_MASTER_KEY },
         body: JSON.stringify({ boards: boards })
       });
-      if (!res.ok) {
-        console.error("Gagal simpan ke awan JSONBin");
-      }
-    } catch (e) {
-      console.error("Ralat rangkaian simpan awan:", e);
-    }
+    } catch (e) {}
   }
 
   function salinLinkBoard() {
@@ -390,9 +481,9 @@
     const baseUrl = window.location.href.split('?')[0];
     const shareUrl = `${baseUrl}?board=${activeBoardId}`;
     if (navigator.clipboard && window.isSecureContext) {
-      navigator.clipboard.writeText(shareUrl).then(() => alert("✅ Link Berjaya Disalin!\n\nSila 'Paste' di WhatsApp/Telegram kumpulan anda.")).catch(err => prompt("Sila Copy link ini secara manual:", shareUrl));
+      navigator.clipboard.writeText(shareUrl).then(() => alert("✅ Link Berjaya Disalin!")).catch(err => prompt("Copy link:", shareUrl));
     } else {
-      prompt("Sila Copy link ini secara manual:", shareUrl);
+      prompt("Copy link:", shareUrl);
     }
   }
 
@@ -406,7 +497,7 @@
       document.getElementById('welcomeScreen').style.display = 'none';
       document.getElementById('mainDashboard').style.display = 'flex';
       
-      document.getElementById('appTitle').innerText = `📌 ${b.name || 'E-Pergerakan bulan ini'}`;
+      document.getElementById('appTitle').innerText = `📌 ${b.name || 'E-Pergerakan'}`;
       
       kemaskiniPaparan();
       closeModal('modalTetapanUtama');
@@ -440,7 +531,7 @@
   }
 
   function ciptaBoardBaru() {
-    const namabaru = prompt("Masukkan Tajuk/Nama Board (Contoh: Bahagian IT):");
+    const namabaru = prompt("Masukkan Tajuk/Nama Board (Contoh: SEKSYEN PROMOSI):");
     if(namabaru) {
       boards.push({ id: 'board_' + Date.now(), name: namabaru, senaraiStaf: [], rekodPergerakan: [] });
       simpanKeLocalStorage(); renderSenaraiBoard();
@@ -472,7 +563,7 @@
     const id = document.getElementById('editBoardId').value;
     const bIndex = boards.findIndex(x => x.id === id);
     if(bIndex > -1) {
-      if(confirm(`Padam Board "${boards[bIndex].name}" secara kekal?`)) {
+      if(confirm(`Hapus Board "${boards[bIndex].name}" secara kekal?`)) {
         boards.splice(bIndex, 1);
         if(activeBoardId === id) kembaliKeSkrinPutih();
         await simpanKeLocalStorage(); 
@@ -548,7 +639,7 @@
   async function simpanStafData() {
     const idx = parseInt(document.getElementById('editIndexStaf').value);
     const nama = document.getElementById('stafNamaInput').value.trim();
-    if(!nama) return alert('Nama staf wajib diisi.');
+    if(!nama) return alert('Nama pengguna wajib diisi.');
     const hbh = []; document.querySelectorAll('input[name="hbhHari"]:checked').forEach(cb => hbh.push(cb.value));
     
     const objBaru = { 
@@ -570,7 +661,7 @@
   }
 
   async function padamStaf(idx) {
-    if(confirm(`Padam staf ${senaraiStaf[idx].nama}?`)) {
+    if(confirm(`Padam pengguna ${senaraiStaf[idx].nama}?`)) {
       const nm = senaraiStaf[idx].nama; senaraiStaf.splice(idx, 1); rekodPergerakan = rekodPergerakan.filter(r => r.nama !== nm);
       await simpanKeLocalStorage(); r9yMnTm4NSzvG9rrwjM2ec8xZgh1cafXH8(); if(activeBoardId) kemaskiniPaparan();
     }
@@ -584,9 +675,9 @@
           ${avatarHTML}
           <div><strong>${s.nama}</strong> <span style="font-size:0.75rem; background:#e2e8f0; padding:2px 6px; border-radius:4px;">${s.kumpulan || 'Kakitangan'}</span></div>
         </div>
-        <div style="display:flex; gap:6px;"><button style="background:#475569; color:white; border:none; padding:5px 10px; border-radius:6px;" onclick="bukaFormStafModal(${idx})">Edit</button><button style="background:#dc2626; color:white; border:none; padding:5px 10px; border-radius:6px;" onclick="padamStaf(${idx})">Buang</button></div>
+        <div style="display:flex; gap:6px;"><button class="clean-menu-item" style="padding:4px 8px; border:1px solid #cbd5e1; border-radius:6px;" onclick="bukaFormStafModal(${idx})">Edit</button><button class="clean-menu-item" style="padding:4px 8px; border:1px solid #cbd5e1; border-radius:6px; color:#dc2626;" onclick="padamStaf(${idx})">Buang</button></div>
       </div>`;
-    }).join('') || '<p>Tiada Staf.</p>';
+    }).join('') || '<p>Tiada Pengguna.</p>';
   }
 
   function bukaPanelPengurusanStaf() {
@@ -616,12 +707,22 @@
 
   function renderStaffStrip() {
     const container = document.getElementById('staffStrip');
-    if (!senaraiStaf || senaraiStaf.length === 0) { container.innerHTML = '<i>Tiada staf. Buka Tetapan untuk tambah.</i>'; return; }
+    if (!senaraiStaf || senaraiStaf.length === 0) { container.innerHTML = '<i>Tiada pengguna. Buka Tetapan untuk tambah.</i>'; return; }
+    
+    const adaMenunggu = rekodPergerakan.some(r => r.status === 'Menunggu');
+
     container.innerHTML = senaraiStaf.map((staf, index) => {
       const bg = generateAutoColor(index, senaraiStaf.length);
       const img = staf.gambar ? `<img src="${staf.gambar}" class="staff-avatar">` : `<span class="avatar-empty"></span>`;
+      const isPenyelia = staf.kumpulan === 'Penyelia' || staf.kumpulan === 'Ketua';
+      const showBadge = isPenyelia && adaMenunggu;
+
       return `<div class="profile-chip" onclick="bukaModulStaf('${staf.nama}')">
-        <span class="profile-photo-wrap" style="background: ${bg};">${img}</span><span>${staf.nama}</span>
+        <span class="profile-photo-wrap ${showBadge ? 'has-notif' : ''}" style="background: ${bg};">
+          ${img}
+          <span class="notification-badge"></span>
+        </span>
+        <span>${staf.nama}</span>
       </div>`;
     }).join('');
   }
@@ -637,7 +738,6 @@
     const isPenyelia = stafObj?.kumpulan === 'Penyelia' || stafObj?.kumpulan === 'Ketua';
     document.getElementById('tajukModalPermohonan').innerText = pemohonAktif;
     
-    // Kira permohonan menunggu dari kakitangan khusus untuk Penyelia
     const senaraiMenunggu = rekodPergerakan.filter(r => r.status === 'Menunggu' && senaraiStaf.find(s => s.nama === r.nama)?.kumpulan === 'Kakitangan');
     const containerLoceng = document.getElementById('containerLocengPenyelia');
     const badge = document.getElementById('badgeBilanganMenunggu');
@@ -649,23 +749,20 @@
       containerLoceng.style.display = 'none';
     }
 
-    // Ubah teks butang mengikut kumpulan
     const btnSubmit = document.getElementById('btnSimpanAtauHantar');
     if (isPenyelia) {
       btnSubmit.innerText = 'Simpan';
-      btnSubmit.style.background = '#16a34a'; // Hijau untuk Simpan
     } else {
       btnSubmit.innerText = 'Hantar';
-      btnSubmit.style.background = '#0f172a'; // Gelap untuk Hantar
     }
 
     document.getElementById('senaraiAktivitiPegawai').innerHTML = rekodPergerakan.filter(r => r.nama === pemohonAktif).map(r => `
       <div class="feedback-item">
         <strong>[${r.jenis}]</strong> ${r.catatan} 
         <span style="font-size:0.75rem; font-weight:bold; color:${r.status==='Lulus'?'green':r.status==='Tidak'?'red':'orange'}">(${r.status})</span> 
-        <button onclick="padamAktiviti(${rekodPergerakan.indexOf(r)})" style="background:red; color:white; border:none; border-radius:4px; padding:2px 5px; float:right; cursor:pointer;">X</button>
+        <button onclick="padamAktiviti(${rekodPergerakan.indexOf(r)})" style="background:none; border:none; color:red; font-weight:bold; float:right; cursor:pointer;">X</button>
       </div>
-    `).join('') || '<p>Tiada aktiviti.</p>';
+    `).join('') || '<p style="color:var(--grey-text); font-style:italic;">Tiada aktiviti.</p>';
     tutupFormAktiviti();
   }
 
@@ -681,9 +778,9 @@
         <div class="feedback-item">
           <strong>${r.nama} - [${r.jenis}]</strong><br>
           ${r.catatan} (${formatTarikhDMY(r.tarikh)})<br>
-          <div style="margin-top:6px; display:flex; gap:8px;">
-            <button onclick="keputusanPenyelia(${originalIdx}, 'Lulus')" style="background:#16a34a; padding:4px 10px; color:white; border-radius:4px; border:none; cursor:pointer;">Luluskan</button> 
-            <button onclick="keputusanPenyelia(${originalIdx}, 'Tidak')" style="background:#dc2626; padding:4px 10px; color:white; border-radius:4px; border:none; cursor:pointer;">Tolak</button>
+          <div style="margin-top:8px; display:flex; gap:10px;">
+            <button class="clean-menu-item" style="padding:6px 12px; border:1px solid #cbd5e1; border-radius:6px; color:#16a34a; font-weight:600;" onclick="keputusanPenyelia(${originalIdx}, 'Lulus')">Luluskan</button> 
+            <button class="clean-menu-item" style="padding:6px 12px; border:1px solid #cbd5e1; border-radius:6px; color:#dc2626; font-weight:600;" onclick="keputusanPenyelia(${originalIdx}, 'Tidak')">Tolak</button>
           </div>
         </div>
       `;
@@ -730,7 +827,6 @@
     const stafObj = senaraiStaf.find(s => s.nama === pemohonAktif);
     const isPenyelia = stafObj?.kumpulan === 'Penyelia' || stafObj?.kumpulan === 'Ketua';
     
-    // Penyelia terus 'Lulus' (Simpan), Kakitangan 'Menunggu' (Hantar)
     const statusPermohonan = isPenyelia ? 'Lulus' : 'Menunggu';
 
     rekodPergerakan.push({
@@ -755,13 +851,13 @@
     document.getElementById('listPergerakanContent').innerHTML = senaraiStaf.map((s,i) => {
       const ak = rekodPergerakan.filter(r => r.nama === s.nama && r.status === 'Lulus');
       return `<div class="staff-group-card" style="border-left:5px solid ${generateAutoColor(i,senaraiStaf.length)};">
-        <div class="staff-group-header">${s.nama} <span style="font-size:0.75rem; color:#64748b; font-weight:normal;">(${s.kumpulan||'Kakitangan'})</span></div>
+        <div class="staff-group-header"><span>${s.nama}</span> <span style="font-size:0.75rem; color:var(--grey-text); font-weight:normal;">(${s.kumpulan||'Kakitangan'})</span></div>
         ${ak.length ? ak.map((a,x)=>`
           <div class="activity-sub-item">
             <div class="activity-left"><strong>${x+1}.</strong> <span>${a.catatan}</span></div>
             <div class="activity-right">${formatTarikhDMY(a.tarikh)}</div>
           </div>
-        `).join('') : '<div class="activity-sub-item">Tiada aktiviti.</div>'}
+        `).join('') : '<div class="activity-sub-item" style="color:var(--grey-text); font-style:italic;">Tiada aktiviti.</div>'}
       </div>`;
     }).join('');
   }
@@ -772,8 +868,8 @@
     senaraiStaf.forEach((s, i) => {
       const bg = generateAutoColor(i, senaraiStaf.length);
       const r = rekodPergerakan.find(x => x.nama===s.nama && x.status==='Lulus' && ((x.jenis==='Cuti' && tStr>=x.tarikh && tStr<=(x.tarikhAkhir||x.tarikh)) || x.tarikh===tStr));
-      const avatarHtml = s.gambar ? `<img src="${s.gambar}" style="width:35px;height:35px;border-radius:50%;object-fit:cover;border:1px solid rgba(0,0,0,0.2);">` : `<span class="avatar-empty" style="width:35px;height:35px;border:1px solid rgba(0,0,0,0.2);"></span>`;
-      const jawatanText = s.jawatan ? `<div style="font-size:0.75rem; color:#475569; font-weight:normal;">${s.jawatan}</div>` : '';
+      const avatarHtml = s.gambar ? `<img src="${s.gambar}" style="width:38px;height:38px;border-radius:50%;object-fit:cover;border:1px solid rgba(0,0,0,0.1);">` : `<span class="avatar-empty" style="width:38px;height:38px;border:1px solid rgba(0,0,0,0.1);"></span>`;
+      const jawatanText = s.jawatan ? `<div style="font-size:0.75rem; color:var(--grey-text); font-weight:normal;">${s.jawatan}</div>` : '';
       const k = `<div class="staff-card" style="background:${bg};">
         <div class="staff-card-left">${avatarHtml} <div><span class="staff-name">${s.nama}</span>${jawatanText}</div></div>
         <div class="staff-right">${r?r.catatan:(s.hbh&&s.hbh.includes(hr)?'HBH':'')}</div>
@@ -794,8 +890,26 @@
       let wd = new Date(thn, bln, i).getDay(); if(wd===0||wd===6)continue;
       let dt = `${thn}-${String(bln+1).padStart(2,'0')}-${String(i).padStart(2,'0')}`;
       let ev = rekodPergerakan.filter(r => r.status==='Lulus' && ((r.jenis==='Cuti'&&dt>=r.tarikh&&dt<=(r.tarikhAkhir||r.tarikh)) || r.tarikh===dt)).map(r => `<div class="event-tag" style="background:${generateAutoColor(senaraiStaf.findIndex(s=>s.nama===r.nama),senaraiStaf.length)};">${r.nama}</div>`).join('');
-      c.innerHTML += `<div class="cal-day"><div class="cal-day-num">${i}</div>${ev}</div>`;
+      c.innerHTML += `<div class="cal-day" onclick="bukaDetailHari('${dt}', ${i})"><div class="cal-day-num">${i}</div>${ev}</div>`;
     }
+  }
+
+  function bukaDetailHari(dt, hariNum) {
+    document.getElementById('tajukModalDetailHari').innerText = `Aktiviti Pada: ${formatTarikhDMY(dt)}`;
+    const senaraiAktivitiHari = rekodPergerakan.filter(r => r.status==='Lulus' && ((r.jenis==='Cuti'&&dt>=r.tarikh&&dt<=(r.tarikhAkhir||r.tarikh)) || r.tarikh===dt));
+    
+    document.getElementById('senaraiAktivitiHariTerpilih').innerHTML = senaraiAktivitiHari.map(r => {
+      const staffIdx = senaraiStaf.findIndex(s => s.nama === r.nama);
+      const userBgColor = generateAutoColor(staffIdx, senaraiStaf.length);
+      return `
+        <div class="feedback-item" style="background: ${userBgColor}; border-left: 4px solid rgba(0,0,0,0.2);">
+          <strong>${r.nama}</strong> [${r.jenis}]<br>
+          <span>${r.catatan}</span>
+        </div>
+      `;
+    }).join('') || '<p style="color:var(--grey-text); font-style:italic;">Tiada pergerakan / aktiviti pada tarikh ini.</p>';
+    
+    openModal('modalDetailHari');
   }
 
   muatTurunDataAwan();
