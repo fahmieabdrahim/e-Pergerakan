@@ -9,7 +9,7 @@
   <style>
     :root {
       --bg-color: #ffffff;
-      --app-bg: #f8fafc;
+      --app-bg: #ffffff;
       --text-color: #1e293b;
       --card-border: #e2e8f0;
       --box-shadow: rgba(0,0,0,0.04);
@@ -23,7 +23,7 @@
     
     html, body {
       min-height: 100vh;
-      background-color: var(--app-bg);
+      background-color: #ffffff;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       color: var(--text-color);
     }
@@ -40,44 +40,53 @@
     #welcomeScreen {
       position: fixed; top: 0; left: 0; right: 0; bottom: 0;
       background-color: #ffffff;
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      z-index: 50; padding: 20px; overflow-y: auto;
+      display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
+      z-index: 50; padding: 16px; overflow-y: auto; text-align: center;
     }
 
     .top-right-nav {
       position: absolute;
-      top: 20px; right: 20px;
+      top: 16px; right: 16px;
+    }
+
+    .welcome-header {
+      width: 100%; max-width: 500px; margin: 40px 0 20px 0; padding: 0 10px;
+    }
+    .welcome-header h1 {
+      font-size: 1.5rem; color: #0f172a; margin-bottom: 4px; word-break: break-word; font-weight: 700;
+    }
+    .welcome-header p {
+      color: #64748b; font-size: 0.9rem; word-break: break-word;
     }
 
     .instruction-box {
-      background: #f8fafc; border: 2px dashed #cbd5e1; border-radius: 12px;
-      padding: 24px; max-width: 650px; width: 100%; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05);
-      color: #334155; text-align: left; margin-top: 20px;
+      background: #ffffff; border: none; border-radius: 0;
+      padding: 0 10px 30px 10px; max-width: 550px; width: 100%; box-shadow: none;
+      color: #334155; text-align: left; margin: 0 auto;
     }
-    .instruction-box h2 { margin-bottom: 15px; color: #0f172a; text-align: center; font-size: 1.3rem; }
+    .instruction-box h2 { margin-bottom: 16px; color: #0f172a; text-align: center; font-size: 1.15rem; }
     .instruction-section { margin-bottom: 16px; }
-    .instruction-section h3 { font-size: 1rem; color: #0f172a; margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
-    .instruction-section p, .instruction-section ol { font-size: 0.92rem; line-height: 1.6; color: #475569; }
-    .instruction-section ol { margin-left: 18px; }
+    .instruction-section h3 { font-size: 0.95rem; color: #0f172a; margin-bottom: 4px; font-weight: 700; }
+    .instruction-section p, .instruction-section ol { font-size: 0.88rem; line-height: 1.5; color: #475569; }
+    .instruction-section ol { margin-left: 16px; }
     .instruction-section li { margin-bottom: 4px; }
 
     /* MAIN DASHBOARD */
     #mainDashboard {
-      display: none; padding: 20px; max-width: 1400px; margin: 0 auto;
-      flex-direction: column; min-height: 100vh; position: relative;
+      display: none; padding: 16px; max-width: 1400px; margin: 0 auto;
+      flex-direction: column; min-height: 100vh; position: relative; background-color: #f8fafc;
     }
 
     header {
       display: flex; justify-content: space-between; align-items: center;
       margin-bottom: 15px; gap: 15px;
-      padding-bottom: 5px; border-bottom: none;
     }
     
-    .header-title-container { flex: 1; min-width: 0; }
-    h1 { font-size: 1.4rem; color: var(--text-color); font-weight: 700; word-break: break-word; line-height: 1.3; }
+    .header-title-container { flex: 1; min-width: 0; text-align: center; }
+    h1 { font-size: 1.3rem; color: var(--text-color); font-weight: 700; word-break: break-word; line-height: 1.3; }
     .header-action-container { flex-shrink: 0; }
 
-    .staff-strip { display: flex; align-items: flex-start; gap: 14px; overflow-x: auto; margin-bottom: 20px; padding: 6px 0; scrollbar-width: thin; }
+    .staff-strip { display: flex; align-items: flex-start; justify-content: center; gap: 14px; overflow-x: auto; margin-bottom: 20px; padding: 6px 0; scrollbar-width: thin; width: 100%; }
     .profile-chip { display: flex; flex-direction: column; align-items: center; gap: 6px; min-width: 65px; color: var(--text-color); font-size: 0.85rem; font-weight: 600; cursor: pointer; flex-shrink: 0; text-align: center;}
     .profile-chip .avatar, .staff-avatar { width: 54px; height: 54px; border-radius: 50%; object-fit: cover; display: block; border: 2px solid white; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
     .avatar-empty { display: block; border-radius: 50%; width: 54px; height: 54px; background: #e2e8f0; }
@@ -92,10 +101,10 @@
 
     .feedback-item { margin-bottom: 10px; padding: 12px; background: var(--header-bg); border-radius: 8px; font-size: 0.9rem; }
     
-    /* MAIN TABS WITH ICONS */
-    .view-tabs { display: flex; justify-content: flex-start; gap: 24px; margin-bottom: 20px; overflow-x: auto; padding-bottom: 4px; }
-    .tab-btn { background: transparent; border: none; padding: 6px 0; font-weight: 500; cursor: pointer; color: var(--grey-text); font-size: 0.95rem; white-space: nowrap; transition: color 0.2s; display: flex; align-items: center; gap: 6px; }
-    .tab-btn span.material-symbols-outlined { font-size: 1.2rem; color: var(--grey-text); transition: color 0.2s; }
+    /* MAIN TABS (CENTERED) */
+    .view-tabs { display: flex; justify-content: center; gap: 20px; margin-bottom: 20px; overflow-x: auto; padding-bottom: 4px; width: 100%; }
+    .tab-btn { background: transparent; border: none; padding: 6px 0; font-weight: 500; cursor: pointer; color: var(--grey-text); font-size: 0.9rem; white-space: nowrap; transition: color 0.2s; display: flex; align-items: center; gap: 6px; }
+    .tab-btn span.material-symbols-outlined { font-size: 1.1rem; color: var(--grey-text); transition: color 0.2s; }
     .tab-btn.active { color: var(--text-color); font-weight: 700; }
     .tab-btn.active span.material-symbols-outlined { color: var(--text-color); }
     .tab-indicator { font-size: 0.7rem; display: none; color: var(--text-color); }
@@ -133,21 +142,22 @@
     .staff-name { font-weight: 600; font-size: 0.95rem; display: block; }
     .staff-right { font-size: 0.85rem; font-weight: 600; text-align: right; max-width: 50%; word-break: break-word; line-height: 1.3; color: var(--grey-text); }
 
-    .calendar-container { background: #ffffff; border: 1px solid var(--card-border); border-radius: 12px; padding: 20px; display: flex; flex-direction: column; min-height: 600px; width: 100%; box-shadow: 0 2px 4px var(--box-shadow); }
-    .calendar-header { text-align: center; font-size: 1.3rem; font-weight: 700; margin-bottom: 16px; color: var(--text-color); }
-    .calendar-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; flex: 1; width: 100%; }
-    .cal-day-head { text-align: center; font-weight: 600; font-size: 0.85rem; padding: 10px 4px; background: var(--header-bg); border-radius: 8px; color: var(--grey-text); }
-    .cal-day { border: 1px solid var(--card-border); border-radius: 10px; padding: 10px; font-size: 0.85rem; display: flex; flex-direction: column; background: #ffffff; min-height: 110px; cursor: pointer; transition: border-color 0.2s, background 0.2s; }
+    /* MOBILE OPTIMIZED CALENDAR */
+    .calendar-container { background: #ffffff; border: 1px solid var(--card-border); border-radius: 12px; padding: 12px; display: flex; flex-direction: column; width: 100%; box-shadow: 0 2px 4px var(--box-shadow); }
+    .calendar-header { text-align: center; font-size: 1.15rem; font-weight: 700; margin-bottom: 12px; color: var(--text-color); }
+    .calendar-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 4px; width: 100%; }
+    .cal-day-head { text-align: center; font-weight: 600; font-size: 0.75rem; padding: 6px 2px; background: var(--header-bg); border-radius: 6px; color: var(--grey-text); }
+    .cal-day { border: 1px solid var(--card-border); border-radius: 8px; padding: 6px; font-size: 0.75rem; display: flex; flex-direction: column; background: #ffffff; min-height: 90px; cursor: pointer; transition: border-color 0.2s, background 0.2s; word-break: break-word; overflow: hidden; }
     .cal-day:hover { border-color: #94a3b8; background: #fafafa; }
     .cal-day.today { border: 2px solid #3b82f6 !important; background-color: #f0f9ff !important; }
     .cal-day.empty { background: transparent; border-color: transparent; cursor: default; }
-    .cal-day-num { font-weight: 700; font-size: 1rem; margin-bottom: 6px; color: var(--text-color); }
-    .event-tag { padding: 4px 8px; border-radius: 6px; margin-bottom: 4px; font-size: 0.75rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 600; color: #1e293b; border: 1px solid rgba(0,0,0,0.08); }
+    .cal-day-num { font-weight: 700; font-size: 0.9rem; margin-bottom: 4px; color: var(--text-color); }
+    .event-tag { padding: 3px 6px; border-radius: 4px; margin-bottom: 3px; font-size: 0.7rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 600; color: #1e293b; border: 1px solid rgba(0,0,0,0.08); }
 
-    .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; padding: 20px; z-index: 100; backdrop-filter: blur(2px); }
-    .modal-content { background: #ffffff; padding: 24px; border-radius: 16px; width: 100%; max-width: 480px; max-height: 85vh; overflow-y: auto; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); color: #0f172a; }
+    .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; padding: 16px; z-index: 100; backdrop-filter: blur(2px); }
+    .modal-content { background: #ffffff; padding: 20px; border-radius: 16px; width: 100%; max-width: 450px; max-height: 85vh; overflow-y: auto; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); color: #0f172a; }
     
-    .form-group { margin-bottom: 16px; }
+    .form-group { margin-bottom: 14px; }
     .form-group label { display: block; font-size: 0.9rem; font-weight: 600; margin-bottom: 6px; color: #334155; }
     .form-group input[type="text"], .form-group input[type="date"], .form-group input[type="time"], .form-group input[type="file"], .form-group select { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; font: inherit; font-size: 0.95rem; }
     
@@ -161,25 +171,25 @@
 <div id="welcomeScreen">
   <div class="top-right-nav">
     <button class="plain-icon-btn" onclick="openModal('modalTetapanUtama')" title="Settings">
-      <span class="material-symbols-outlined">settings</span>
+      <span class="material-symbols-outlined">tune</span>
     </button>
   </div>
 
-  <div style="text-align: center;">
-    <h1 style="font-size: 1.8rem; color: #0f172a; margin-bottom: 6px;">📌 E-Pergerakan</h1>
-    <p style="color: #64748b; font-size: 0.95rem;">Staff Movement & Attendance System</p>
+  <div class="welcome-header">
+    <h1>📌 E-Pergerakan</h1>
+    <p>Staff Movement & Attendance System</p>
   </div>
 
   <div class="instruction-box">
     <h2>System Guide & Workflow</h2>
     
     <div class="instruction-section">
-      <h3><span>📖</span> Overview</h3>
+      <h3>Overview</h3>
       <p>Digital system to monitor daily movements, attendance status, and activity approval workflow in real time.</p>
     </div>
 
     <div class="instruction-section">
-      <h3><span>📱</span> Installation</h3>
+      <h3>Installation</h3>
       <ol>
         <li>Open the link in your mobile browser (Chrome or Safari).</li>
         <li>Tap the browser menu and select <strong>Add to Home Screen</strong> for instant app-like access.</li>
@@ -187,9 +197,9 @@
     </div>
 
     <div class="instruction-section">
-      <h3><span>⚙️</span> Guide & Workflow</h3>
+      <h3>Guide & Workflow</h3>
       <ol>
-        <li><strong>Setup:</strong> Tap <strong>Settings (⚙️)</strong> to create a new board, then add members with their position and role (Staff or Supervisor).</li>
+        <li><strong>Setup:</strong> Tap <strong>Settings</strong> to create a new board, then add members with their position and role (Staff or Supervisor).</li>
         <li><strong>Submit:</strong> Members tap their profile to submit movement requests (Leave, Meeting, Official Outing). Status starts as <strong>Pending</strong>.</li>
         <li><strong>Approve:</strong> Supervisors receive notification badges to review, approve, or reject requests.</li>
         <li><strong>Display:</strong> Approved movements update instantly across the planner, monthly calendar, and daily tabs (In Office, HBH, Others).</li>
@@ -201,13 +211,16 @@
 <!-- ================= MAIN DASHBOARD ================= -->
 <div id="mainDashboard">
   <header>
+    <div class="header-action-container" style="visibility: hidden;">
+      <button class="plain-icon-btn"><span class="material-symbols-outlined">tune</span></button>
+    </div>
     <div class="header-title-container">
       <h1 id="appTitle">📌 E-Pergerakan</h1>
     </div>
     
     <div class="header-action-container">
       <button class="plain-icon-btn" onclick="bukaTetapanDalamBoard()" title="Settings">
-        <span class="material-symbols-outlined">settings</span>
+        <span class="material-symbols-outlined">tune</span>
       </button>
     </div>
   </header>
@@ -238,11 +251,11 @@
     <div class="calendar-container">
       <div id="calendarHeader" class="calendar-header"></div>
       <div class="calendar-grid">
-        <div class="cal-day-head">Monday</div>
-        <div class="cal-day-head">Tuesday</div>
-        <div class="cal-day-head">Wednesday</div>
-        <div class="cal-day-head">Thursday</div>
-        <div class="cal-day-head">Friday</div>
+        <div class="cal-day-head">Mon</div>
+        <div class="cal-day-head">Tue</div>
+        <div class="cal-day-head">Wed</div>
+        <div class="cal-day-head">Thu</div>
+        <div class="cal-day-head">Fri</div>
         <div id="calendarDays" style="display: contents;"></div>
       </div>
     </div>
@@ -267,7 +280,7 @@
 <!-- ================= BOARDS LIST MODAL ================= -->
 <div id="modalTetapanUtama" class="modal">
   <div class="modal-content" style="background: var(--light-gray-bg); border: 1px solid var(--card-border);">
-    <div style="font-weight: 700; color: var(--text-color); font-size: 1.1rem; margin-bottom: 12px;">Boards List:</div>
+    <div style="font-weight: 700; color: var(--text-color); font-size: 1.1rem; margin-bottom: 12px; text-align: center;">Boards List:</div>
     
     <div id="senaraiBoardContainer" style="max-height: 280px; overflow-y: auto; margin-bottom: 14px;"></div>
 
@@ -325,7 +338,7 @@
 <!-- ================= USER MANAGEMENT MODAL ================= -->
 <div id="modalPengurusanStaf" class="modal">
   <div class="modal-content" style="max-width: 480px; background: var(--light-gray-bg);">
-    <div style="margin-bottom: 16px;">
+    <div style="margin-bottom: 16px; text-align: center;">
       <h3 style="margin:0 0 10px 0; font-size: 1.1rem;">Users</h3>
     </div>
     
@@ -353,15 +366,15 @@
 <!-- ================= ADD/EDIT USER FORM MODAL ================= -->
 <div id="modalFormStaf" class="modal" style="z-index: 110;">
   <div class="modal-content" style="max-width: 400px; background: var(--light-gray-bg);">
-    <h3 id="tajukFormStafModal" style="margin-bottom: 16px;">User Details</h3>
+    <h3 id="tajukFormStafModal" style="margin-bottom: 16px; text-align: center;">User Details</h3>
     <input type="hidden" id="editIndexStaf" value="-1">
     
     <div class="form-group"><label>Name *</label><input type="text" id="stafNamaInput" required></div>
     
-    <div class="form-group">
-      <label>Profile Photo</label>
+    <div class="form-group" style="text-align: center;">
+      <label style="text-align: left;">Profile Photo</label>
       <input type="file" id="stafGambarInput" accept="image/*" onchange="previewGambarStaf(event)">
-      <img id="stafGambarPreview" src="" style="display:none; width:70px; height:70px; border-radius:50%; object-fit:cover; margin-top:10px; border:2px solid #cbd5e1;">
+      <img id="stafGambarPreview" src="" style="display:none; width:70px; height:70px; border-radius:50%; object-fit:cover; margin:10px auto 0 auto; border:2px solid #cbd5e1;">
     </div>
     
     <div class="form-group"><label>Position</label><input type="text" id="stafJawatanInput" placeholder="e.g. Officer"></div>
@@ -397,7 +410,7 @@
 <div id="modalPermohonan" class="modal">
   <div class="modal-content" style="background: var(--light-gray-bg);">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-      <h3 id="tajukModalPermohonan" style="margin:0;">Name</h3>
+      <h3 id="tajukModalPermohonan" style="margin:0; text-align: center; flex: 1;">Name</h3>
       <div id="containerLocengPenyelia" style="display:none; align-items: center; gap: 6px; cursor: pointer; background: #fee2e2; padding: 6px 12px; border-radius: 20px;" onclick="bukaModulSemakan()" title="Pending Approvals">
         <span class="material-symbols-outlined" style="font-size:1.3rem; color:#dc2626;">notifications</span>
         <span id="badgeBilanganMenunggu" style="background: #dc2626; color: white; border-radius: 50%; padding: 1px 6px; font-size: 0.75rem; font-weight: bold;">0</span>
@@ -452,7 +465,7 @@
 <!-- ================= SUPERVISOR APPROVALS MODAL ================= -->
 <div id="modalPengesahan" class="modal" style="z-index: 110;">
   <div class="modal-content" style="background: var(--light-gray-bg);">
-    <h3 style="margin-bottom: 12px;">🔔 Pending Approvals</h3>
+    <h3 style="margin-bottom: 12px; text-align: center;">🔔 Pending Approvals</h3>
     <div id="senaraiPermohonanMenunggu" style="margin: 10px 0; max-height: 250px; overflow-y: auto;"></div>
     <div class="clean-menu-list" style="margin-top: 15px;">
       <button class="clean-menu-item" style="justify-content: center; font-weight: 600;" onclick="closeModal('modalPengesahan'); openModal('modalPermohonan');">Back</button>
@@ -464,7 +477,7 @@
 <div id="modalDetailHari" class="modal" style="z-index: 120;">
   <div class="modal-content" style="max-width: 420px; background: var(--light-gray-bg);">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
-      <h3 id="tajukModalDetailHari" style="margin:0; font-size: 1.1rem;">Date</h3>
+      <h3 id="tajukModalDetailHari" style="margin:0; font-size: 1.1rem; text-align: center; flex: 1;">Date</h3>
       <button class="plain-icon-btn" onclick="closeModal('modalDetailHari')"><span class="material-symbols-outlined">close</span></button>
     </div>
     <div id="senaraiAktivitiHariTerpilih" style="max-height: 300px; overflow-y: auto;"></div>
@@ -569,10 +582,10 @@
 
   function renderSenaraiBoard() {
     const container = document.getElementById('senaraiBoardContainer');
-    if(boards.length === 0) { container.innerHTML = '<p style="color:#64748b; font-style:italic;">No boards found. Create a new board.</p>'; return; }
+    if(boards.length === 0) { container.innerHTML = '<p style="color:#64748b; font-style:italic; text-align:center;">No boards found. Create a new board.</p>'; return; }
     container.innerHTML = boards.map(b => `
       <div class="board-list-item" onclick="masukKeBoard('${b.id}')">
-        <strong style="font-size:1.05rem; word-break: break-word; color: #0f172a;">${b.name}</strong>
+        <strong style="font-size:1.05rem; word-break: break-word; color: #0f172a; text-align: center;">${b.name}</strong>
       </div>
     `).join('');
   }
@@ -724,7 +737,7 @@
         </div>
         <div style="display:flex; gap:6px;"><button class="clean-menu-item" style="padding:4px 8px; border:1px solid #cbd5e1; border-radius:6px;" onclick="bukaFormStafModal(${idx})">Edit</button><button class="clean-menu-item" style="padding:4px 8px; border:1px solid #cbd5e1; border-radius:6px; color:#dc2626;" onclick="padamStaf(${idx})">Delete</button></div>
       </div>`;
-    }).join('') || '<p>No users found.</p>';
+    }).join('') || '<p style="text-align:center;">No users found.</p>';
   }
 
   function bukaPanelPengurusanStaf() {
@@ -863,7 +876,7 @@
           </div>
         </div>
       `;
-    }).join('') || '<p style="color:#64748b; font-style:italic;">No pending requests.</p>'; 
+    }).join('') || '<p style="color:#64748b; font-style:italic; text-align:center;">No pending requests.</p>'; 
   }
 
   async function tolakPenyeliaPrompt(idx) {
@@ -1083,7 +1096,7 @@
           <span>${r.catatan}</span>
         </div>
       `;
-    }).join('') || '<p style="color:var(--grey-text); font-style:italic;">No movements or activities on this date.</p>';
+    }).join('') || '<p style="color:var(--grey-text); font-style:italic; text-align:center;">No movements or activities on this date.</p>';
     
     openModal('modalDetailHari');
   }
