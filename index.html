@@ -776,7 +776,7 @@
     const boxNotifDitolak = document.getElementById('containerNotifikasiDitolak');
     if (permohonanDitolak.length > 0) {
       boxNotifDitolak.style.display = 'block';
-      document.getElementById('teksSebabDitolak').innerHTML = permohonanDitolak.map(d => `• <b>[${d.jenis}]</b> ${d.catatan}<br><span style="color:#991b1b; font-style:italic;">Sebab ditolak: ${d.sebabTolak || 'Tiada sebab'}</span>`).join('<br>');
+      document.getElementById('teksSebabDitolak').innerHTML = permohonanDitolak.map(d => `• ${d.catatan}<br><span style="color:#991b1b; font-style:italic;">Sebab ditolak: ${d.sebabTolak || 'Tiada sebab'}</span>`).join('<br>');
     } else {
       boxNotifDitolak.style.display = 'none';
     }
@@ -802,7 +802,7 @@
 
       return `
         <div class="feedback-item">
-          <strong>[${r.jenis}]</strong> ${r.catatan} 
+          <strong>${r.catatan}</strong> 
           <span style="font-size:0.75rem; font-weight:bold; color:${statusWarna}">(${r.status})</span>
           ${r.sebabTolak ? `<br><small style="color:#b91c1c;">Ditolak kerana: ${r.sebabTolak}</small>` : ''}
           ${aksiEditHapus}
@@ -822,7 +822,7 @@
       const originalIdx = rekodPergerakan.indexOf(r);
       return `
         <div class="feedback-item">
-          <strong>${r.nama} - [${r.jenis}]</strong><br>
+          <strong>${r.nama}</strong><br>
           ${r.catatan} (${formatTarikhDMY(r.tarikh)})<br>
           <div style="margin-top:8px; display:flex; gap:10px;">
             <button class="clean-menu-item" style="padding:6px 12px; border:1px solid #cbd5e1; border-radius:6px; color:#16a34a; font-weight:600;" onclick="keputusanPenyelia(${originalIdx}, 'Lulus')">Luluskan</button> 
@@ -950,7 +950,7 @@
           }
           return `
             <div class="activity-sub-item">
-              <div><strong>${x+1}.</strong> [${a.jenis}] ${a.catatan}</div>
+              <div><strong>${x+1}.</strong> ${a.catatan}</div>
               <div style="font-size:0.85rem; color:var(--grey-text);">${tFormat}</div>
             </div>
           `;
@@ -1045,7 +1045,7 @@
       const userBgColor = generateAutoColor(staffIdx, senaraiStaf.length);
       return `
         <div class="feedback-item" style="background: ${userBgColor}; border-left: 4px solid rgba(0,0,0,0.2);">
-          <strong>${r.nama}</strong> [${r.jenis}]<br>
+          <strong>${r.nama}</strong><br>
           <span>${r.catatan}</span>
         </div>
       `;
