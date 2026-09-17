@@ -119,11 +119,9 @@
 
     .list-pergerakan-container { display: flex; flex-direction: column; gap: 12px; }
     .staff-group-card { background: #ffffff; border: 1px solid var(--card-border); border-radius: 12px; padding: 15px; box-shadow: 0 2px 4px var(--box-shadow); }
-    .staff-group-header { font-size: 1.05rem; font-weight: 700; color: var(--text-color); margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--card-border); padding-bottom: 8px; }
+    .staff-group-header { font-size: 1.05rem; font-weight: 700; color: var(--text-color); margin-bottom: 10px; display: flex; flex-direction: column; align-items: flex-start; gap: 2px; border-bottom: 1px solid var(--card-border); padding-bottom: 8px; text-align: left; }
     
-    .activity-sub-item { font-size: 0.9rem; padding: 10px 12px; background: #f8fafc; border-radius: 8px; margin-bottom: 8px; border-left: 4px solid var(--primary); display: flex; justify-content: space-between; align-items: center; gap: 10px; }
-    .activity-left { display: flex; align-items: center; gap: 10px; flex: 1; word-break: break-word; }
-    .activity-right { font-weight: 600; text-align: right; white-space: nowrap; font-size: 0.85rem; color: var(--grey-text); }
+    .activity-sub-item { font-size: 0.9rem; padding: 10px 12px; background: #f8fafc; border-radius: 8px; margin-bottom: 8px; border-left: 4px solid var(--primary); display: flex; flex-direction: column; align-items: flex-start; gap: 2px; text-align: left; }
 
     .staff-card { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 12px 14px; border-radius: 10px; margin-bottom: 10px; border: 1px solid rgba(0,0,0,0.06); box-shadow: 0 1px 3px var(--box-shadow); color: #1e293b; }
     .staff-card-left { display: flex; align-items: center; gap: 12px; }
@@ -335,13 +333,13 @@
       <img id="stafGambarPreview" src="" style="display:none; width:70px; height:70px; border-radius:50%; object-fit:cover; margin-top:10px; border:2px solid #cbd5e1;">
     </div>
     
-    <div class="form-group"><label>Jawatan</label><input type="text" id="stafJawatanInput"></div>
+    <div class="form-group"><label>Jawatan (Kosongkan jika tiada)</label><input type="text" id="stafJawatanInput"></div>
     
     <div class="form-group">
-      <label>Kumpulan</label>
+      <label>Peranan Sistem (Akses Kelulusan)</label>
       <select id="stafKumpulanInput">
-        <option value="Kakitangan">Kakitangan</option>
-        <option value="Penyelia">Penyelia</option>
+        <option value="Kakitangan">Kakitangan (Biasa)</option>
+        <option value="Penyelia">Penyelia (Boleh Luluskan Permohonan)</option>
       </select>
     </div>
 
@@ -638,7 +636,7 @@
     } else { 
       const s = senaraiStaf[idx]; 
       document.getElementById('stafNamaInput').value = s.nama; 
-      document.getElementById('stafJawatanInput').value = s.jawatan||''; 
+      document.getElementById('stafJawatanInput').value = s.jawatan || ''; 
       document.getElementById('stafKumpulanInput').value = s.kumpulan || 'Kakitangan'; 
       if(s.hbh) document.querySelectorAll('input[name="hbhHari"]').forEach(cb => { if(s.hbh.includes(cb.value)) cb.checked = true; }); 
       
@@ -662,7 +660,7 @@
     
     const objBaru = { 
       nama, 
-      jawatan: document.getElementById('stafJawatanInput').value, 
+      jawatan: document.getElementById('stafJawatanInput').value.trim(), 
       kumpulan: document.getElementById('stafKumpulanInput').value, 
       hbh, 
       gambar: tempGambarB64 
@@ -691,7 +689,7 @@
       return `<div style="display:flex; justify-content:space-between; align-items:center; padding:10px; background:#f8fafc; border:1px solid #cbd5e1; border-radius:8px; margin-bottom:8px;">
         <div style="display:flex; align-items:center; gap:10px;">
           ${avatarHTML}
-          <div><strong>${s.nama}</strong> <span style="font-size:0.75rem; background:#e2e8f0; padding:2px 6px; border-radius:4px;">${s.kumpulan || 'Kakitangan'}</span></div>
+          <div><strong>${s.nama}</strong> <span style="font-size:0.75rem; background:#e2e8f0; padding:2px 6px; border-radius:4px;">${s.jawatan || 'Tiada Jawatan'}</span></div>
         </div>
         <div style="display:flex; gap:6px;"><button class="clean-menu-item" style="padding:4px 8px; border:1px solid #cbd5e1; border-radius:6px;" onclick="bukaFormStafModal(${idx})">Edit</button><button class="clean-menu-item" style="padding:4px 8px; border:1px solid #cbd5e1; border-radius:6px; color:#dc2626;" onclick="padamStaf(${idx})">Buang</button></div>
       </div>`;
@@ -705,7 +703,12 @@
     closeModal('modalEditBoard'); openModal('modalPengurusanStaf'); r9yMnTm4NSzvG9rrwjM2ec8xZgh1cafXH8();
   }
 
-  function formatTarikhDMY(t) { if(!t)return''; const p=t.split('-'); return p.length===3?`${p[2]}-${p[1]}-${p[0]}`:t; }
+  function formatTarikhDMY(t) { 
+    if(!t) return ''; 
+    const p = t.split('-'); 
+    return p.length === 3 ? `${p[2]}/${p[1]}/${p[0]}` : t; 
+  }
+
   function openModal(id) { if(id === 'modalTetapanUtama') renderSenaraiBoard(); document.getElementById(id).style.display = 'flex'; }
   function closeModal(id) { document.getElementById(id).style.display = 'none'; }
   
@@ -929,14 +932,29 @@
   function renderListPergerakan() {
     document.getElementById('listPergerakanContent').innerHTML = senaraiStaf.map((s,i) => {
       const ak = rekodPergerakan.filter(r => r.nama === s.nama && r.status === 'Lulus');
+      
+      let headerHtml = `<strong style="font-size:1.05rem; color:var(--text-color);">${s.nama}</strong>`;
+      if (s.jawatan && s.jawatan.trim() !== '') {
+        headerHtml += `<span style="font-size:0.8rem; font-weight:300; color:var(--grey-text); margin-top:2px;">${s.jawatan}</span>`;
+      }
+      
       return `<div class="staff-group-card" style="border-left:5px solid ${generateAutoColor(i,senaraiStaf.length)};">
-        <div class="staff-group-header"><span>${s.nama}</span> <span style="font-size:0.75rem; color:var(--grey-text); font-weight:normal;">(${s.kumpulan||'Kakitangan'})</span></div>
-        ${ak.length ? ak.map((a,x)=>`
-          <div class="activity-sub-item">
-            <div class="activity-left"><strong>${x+1}.</strong> <span>${a.catatan}</span></div>
-            <div class="activity-right">${formatTarikhDMY(a.tarikh)}</div>
-          </div>
-        `).join('') : '<div class="activity-sub-item" style="color:var(--grey-text); font-style:italic;">Tiada aktiviti.</div>'}
+        <div class="staff-group-header">${headerHtml}</div>
+        ${ak.length ? ak.map((a,x)=>{
+          let tFormat = formatTarikhDMY(a.tarikh);
+          if(!a.jenis.includes('Keluar') && a.tarikhAkhir && a.tarikhAkhir !== a.tarikh) {
+            tFormat += ` hingga ${formatTarikhDMY(a.tarikhAkhir)}`;
+          }
+          if(a.jenis.includes('Keluar') && a.masaMula && a.masaTamat) {
+            tFormat += ` (${a.masaMula} - ${a.masaTamat})`;
+          }
+          return `
+            <div class="activity-sub-item">
+              <div><strong>${x+1}.</strong> [${a.jenis}] ${a.catatan}</div>
+              <div style="font-size:0.85rem; color:var(--grey-text);">${tFormat}</div>
+            </div>
+          `;
+        }).join('') : '<div class="activity-sub-item" style="color:var(--grey-text); font-style:italic;">Tiada aktiviti.</div>'}
       </div>`;
     }).join('');
   }
@@ -961,23 +979,25 @@
 
       if (r) {
         if (r.jenis.includes('Keluar')) {
-          // Semak masa semasa adakah dalam lingkungan masa keluar 4 jam
           if (currentTimeStr >= r.masaMula && currentTimeStr <= r.masaTamat) {
             isCurrentlyOut = true;
             displayCatatan = `${r.masaMula}-${r.masaTamat}: ${r.catatan}`;
           }
         } else {
-          // Cuti / Mesyuarat / Kursus sepanjang hari
           isCurrentlyOut = true;
           displayCatatan = r.catatan;
         }
       }
 
       const avatarHtml = s.gambar ? `<img src="${s.gambar}" style="width:38px;height:38px;border-radius:50%;object-fit:cover;border:1px solid rgba(0,0,0,0.1);">` : `<span class="avatar-empty" style="width:38px;height:38px;border:1px solid rgba(0,0,0,0.1);"></span>`;
-      const jawatanText = s.jawatan ? `<div style="font-size:0.75rem; color:var(--grey-text); font-weight:normal;">${s.jawatan}</div>` : '';
+      
+      let jawatanHtml = '';
+      if (s.jawatan && s.jawatan.trim() !== '') {
+        jawatanHtml = `<div style="font-size:0.75rem; font-weight:300; color:var(--grey-text);">${s.jawatan}</div>`;
+      }
       
       const k = `<div class="staff-card" style="background:${bg};">
-        <div class="staff-card-left">${avatarHtml} <div><span class="staff-name">${s.nama}</span>${jawatanText}</div></div>
+        <div class="staff-card-left">${avatarHtml} <div><span class="staff-name">${s.nama}</span>${jawatanHtml}</div></div>
         <div class="staff-right">${isCurrentlyOut ? displayCatatan : (s.hbh && s.hbh.includes(hr) ? 'HBH' : '')}</div>
       </div>`;
 
