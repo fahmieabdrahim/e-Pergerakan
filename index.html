@@ -3,236 +3,172 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>E-Pergerakan</title>
+  <title>Sistem E-Pergerakan</title>
   <style>
     :root {
+      /* CSS Variables - Dikawal oleh Slider Tema (JavaScript) */
+      --bg-color: hsl(210, 15%, 98%);
+      --app-bg: hsl(210, 15%, 95%);
+      --text-color: hsl(210, 15%, 15%);
+      --card-border: hsl(210, 15%, 85%);
+      --box-shadow: rgba(0,0,0,0.08);
+      --header-bg: hsl(210, 15%, 92%);
       --primary: #475569;
-      --bg: #ffffff;
-      --text: #1e293b;
-      --card-bg: #f8fafc;
-      --border-color: #e2e8f0;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
     
     html, body {
       min-height: 100vh;
-      background-color: var(--bg);
-    }
-
-    body {
+      background-color: var(--app-bg);
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      color: var(--text);
-      padding: 10px 20px; 
-      display: flex;
-      flex-direction: column;
+      color: var(--text-color);
+      transition: background-color 0.3s ease, color 0.3s ease;
     }
 
-    .container { 
-      max-width: 1400px; 
-      width: 100%; 
-      margin: 0 auto; 
-      display: flex; 
-      flex-direction: column; 
+    /* KELAS BUTANG HEADER */
+    .btn-header { 
+      background: #475569; color: white; border: none; padding: 10px 18px; 
+      border-radius: 8px; font-weight: bold; font-size: 1rem; cursor: pointer; 
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1); transition: transform 0.2s; 
+    }
+    .btn-header:hover { transform: translateY(-2px); }
+
+    /* SKRIN MUKA DEPAN (WELCOME SCREEN) */
+    #welcomeScreen {
+      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      background-color: #ffffff;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      z-index: 50; padding: 20px;
+    }
+
+    /* KEDUDUKAN TETAPAN ATAS KANAN (DI LUAR & DI DALAM) */
+    .top-right-nav {
+      position: absolute;
+      top: 20px; right: 20px;
+    }
+
+    /* KOTAK ARAHAN MUKA DEPAN */
+    .instruction-box {
+      background: #f8fafc; border: 2px dashed #cbd5e1; border-radius: 12px;
+      padding: 30px; max-width: 600px; width: 100%; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+      color: #334155; text-align: left;
+    }
+    .instruction-box h2 { margin-bottom: 15px; color: #0f172a; text-align: center; }
+    .instruction-box ol { margin-left: 20px; line-height: 1.8; font-size: 1.05rem; }
+    .instruction-box li { margin-bottom: 10px; }
+
+    /* SISTEM UTAMA (DASHBOARD) */
+    #mainDashboard {
+      display: none; padding: 20px; max-width: 1400px; margin: 0 auto;
+      flex-direction: column; min-height: 100vh; position: relative;
     }
 
     header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 8px;
-      flex-wrap: wrap;
-      gap: 10px;
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 15px; flex-wrap: wrap; gap: 10px;
+      padding-bottom: 15px; border-bottom: 2px solid var(--card-border);
     }
-    .title-controls { display: flex; align-items: center; gap: 10px; }
     
-    h1 { font-size: 1.4rem; color: #0f172a; font-weight: 800; }
-    
-    .staff-strip {
-      display: flex;
-      align-items: flex-start;
-      gap: 12px;
-      overflow-x: auto;
-      margin-bottom: 8px;
-      padding: 4px 0;
-      scrollbar-width: thin;
-    }
-    .profile-chip {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 3px;
-      min-width: 55px;
-      color: var(--text);
-      font-size: 0.85rem;
-      font-weight: bold;
-      cursor: pointer;
-      flex-shrink: 0;
-    }
-    .profile-chip .avatar, .staff-avatar { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; }
-    .avatar-empty { display: block; background: #cbd5e1; border: 2px solid #94a3b8; border-radius: 50%; width: 45px; height: 45px; }
-    .profile-chip.supervisor { margin-right: 6px; }
-    .profile-photo-wrap { position: relative; display: inline-block; }
-    .profile-alert { position: absolute; right: -4px; top: -4px; min-width: 18px; height: 18px; padding: 0 3px; border-radius: 50%; background: #ef4444; color: white; font-size: 0.65rem; display: inline-flex; align-items: center; justify-content: center; }
-    
-    .feedback-item { margin-bottom: 6px; padding: 6px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.8rem; }
-    .feedback-actions { display: flex; gap: 6px; margin-top: 4px; flex-wrap: wrap; }
-    .feedback-actions button { border: none; border-radius: 4px; padding: 4px 8px; color: white; cursor: pointer; font-size: 0.75rem; font-weight: bold; }
-    
-    .chat-box { background: #f1f5f9; border-radius: 6px; padding: 6px; margin-top: 4px; font-size: 0.75rem; border-left: 3px solid #ef4444; }
-    
-    .view-tabs { display: flex; gap: 6px; margin-bottom: 10px; overflow-x: auto; }
-    .tab-btn {
-      flex: 1;
-      padding: 8px 12px;
-      border: none;
-      background: #f1f5f9;
-      border-radius: 6px;
-      font-weight: bold;
-      cursor: pointer;
-      color: #64748b;
-      text-align: center;
-      font-size: 0.95rem;
-      border: 1px solid #e2e8f0;
-      white-space: nowrap;
-    }
-    .tab-btn.active {
-      background: #0f172a;
-      color: white;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-      border-color: #0f172a;
-    }
+    h1 { font-size: 1.6rem; color: var(--text-color); font-weight: 800; }
 
-    .columns-container { display: grid; grid-template-columns: 1fr; gap: 10px; }
+    /* STAFF STRIP */
+    .staff-strip { display: flex; align-items: flex-start; gap: 12px; overflow-x: auto; margin-bottom: 12px; padding: 4px 0; scrollbar-width: thin; }
+    .profile-chip { display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 60px; color: var(--text-color); font-size: 0.85rem; font-weight: bold; cursor: pointer; flex-shrink: 0; text-align: center;}
+    .profile-chip .avatar, .staff-avatar { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; display: block; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    .avatar-empty { display: block; border-radius: 50%; width: 50px; height: 50px; }
+    .profile-photo-wrap { position: relative; display: flex; align-items: center; justify-content: center; border-radius: 50%; width: 54px; height: 54px; }
+    
+    .feedback-item { margin-bottom: 8px; padding: 8px; background: var(--header-bg); border: 1px solid var(--card-border); border-radius: 6px; font-size: 0.85rem; }
+    
+    .view-tabs { display: flex; gap: 8px; margin-bottom: 15px; overflow-x: auto; }
+    .tab-btn { flex: 1; padding: 10px 15px; border: none; background: var(--header-bg); border-radius: 8px; font-weight: bold; cursor: pointer; color: var(--text-color); text-align: center; font-size: 0.95rem; border: 1px solid var(--card-border); white-space: nowrap; transition: background 0.3s; }
+    .tab-btn.active { background: #3b82f6; color: white; border-color: #2563eb; }
+
+    .columns-container { display: grid; grid-template-columns: 1fr; gap: 15px; }
     @media (min-width: 768px) { .columns-container { grid-template-columns: repeat(3, 1fr); } }
 
-    .column { background: #ffffff; border: 1px solid var(--border-color); border-radius: 8px; padding: 10px; display: flex; flex-direction: column; max-height: 70vh; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+    .column { background: var(--bg-color); border: 1px solid var(--card-border); border-radius: 10px; padding: 12px; display: flex; flex-direction: column; max-height: 70vh; box-shadow: 0 2px 5px var(--box-shadow); }
     .column-scroll { overflow-y: auto; flex: 1; padding-right: 4px; }
-    .column-title {
-      font-size: 1.05rem;
-      font-weight: bold;
-      padding-bottom: 6px;
-      margin-bottom: 8px;
-      border-bottom: 2px solid #e2e8f0;
-      display: flex;
-      justify-content: space-between;
-      color: #1e293b;
-    }
+    .column-title { font-size: 1.1rem; font-weight: bold; padding-bottom: 8px; margin-bottom: 10px; border-bottom: 2px solid var(--card-border); display: flex; justify-content: space-between; color: var(--text-color); }
 
-    .list-pergerakan-container {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-    .staff-group-card {
-      background: #ffffff;
-      border: 1px solid var(--border-color);
-      border-radius: 8px;
-      padding: 12px;
-      box-shadow: 0 1px 2px rgba(0,0,0,0.02);
-    }
-    .staff-group-header {
-      font-size: 1rem;
-      font-weight: bold;
-      color: #0f172a;
-      margin-bottom: 6px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      border-bottom: 1px solid #f1f5f9;
-      padding-bottom: 4px;
-    }
-    .activity-sub-item {
-      font-size: 0.85rem;
-      padding: 6px 8px;
-      background: #f8fafc;
-      border-radius: 6px;
-      margin-bottom: 4px;
-      border-left: 3px solid #475569;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 6px;
-    }
+    .list-pergerakan-container { display: flex; flex-direction: column; gap: 12px; }
+    .staff-group-card { background: var(--bg-color); border: 1px solid var(--card-border); border-radius: 10px; padding: 12px; box-shadow: 0 2px 4px var(--box-shadow); }
+    .staff-group-header { font-size: 1.05rem; font-weight: bold; color: var(--text-color); margin-bottom: 8px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid var(--card-border); padding-bottom: 6px; }
+    .activity-sub-item { font-size: 0.9rem; padding: 8px 10px; background: var(--header-bg); border-radius: 6px; margin-bottom: 6px; border-left: 4px solid #475569; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px; }
 
-    .staff-card {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      padding: 10px 12px;
-      border-radius: 8px;
-      margin-bottom: 8px;
-      border: 1px solid rgba(0,0,0,0.08);
-      box-shadow: 0 1px 2px rgba(0,0,0,0.02);
-    }
-    .staff-card-left {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .staff-info {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-    }
-    .staff-name { font-weight: bold; font-size: 0.95rem; color: #0f172a; }
-    .staff-detail { font-size: 0.8rem; color: #475569; }
-    .staff-right {
-      font-size: 0.85rem;
-      font-weight: 600;
-      text-align: right;
-      max-width: 50%;
-      word-break: break-word;
-      line-height: 1.3;
-      color: #1e293b;
-    }
-    .staff-time-sub {
-      display: block;
-      font-size: 0.75rem;
-      font-weight: normal;
-      color: #475569;
-      margin-top: 2px;
-    }
+    .staff-card { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 12px; border-radius: 8px; margin-bottom: 10px; border: 1px solid rgba(0,0,0,0.1); box-shadow: 0 2px 4px var(--box-shadow); color: #1e293b; }
+    .staff-card-left { display: flex; align-items: center; gap: 12px; }
+    .staff-name { font-weight: bold; font-size: 0.95rem; }
+    .staff-right { font-size: 0.85rem; font-weight: 700; text-align: right; max-width: 50%; word-break: break-word; line-height: 1.3; }
 
-    .calendar-wrapper { display: flex; justify-content: center; width: 100%; }
-    .calendar-container { 
-      background: #ffffff; border: 1px solid var(--border-color); border-radius: 8px;
-      padding: 12px; display: flex; flex-direction: column; min-height: 550px; width: 100%; box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-    }
-    .calendar-header { text-align: center; font-size: 1.3rem; font-weight: bold; margin-bottom: 8px; color: #1e293b; }
+    .calendar-container { background: var(--bg-color); border: 1px solid var(--card-border); border-radius: 10px; padding: 15px; display: flex; flex-direction: column; min-height: 600px; width: 100%; box-shadow: 0 2px 5px var(--box-shadow); }
+    .calendar-header { text-align: center; font-size: 1.4rem; font-weight: bold; margin-bottom: 12px; color: var(--text-color); }
+    .calendar-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; flex: 1; width: 100%; }
+    .cal-day-head { text-align: center; font-weight: bold; font-size: 0.9rem; padding: 8px 2px; background: var(--header-bg); border-radius: 6px; color: var(--text-color); border: 1px solid var(--card-border); }
+    .cal-day { border: 1px solid var(--card-border); border-radius: 8px; padding: 8px; font-size: 0.85rem; display: flex; flex-direction: column; background: var(--bg-color); min-height: 100px; }
+    .cal-day.empty { background: transparent; border-color: transparent; }
+    .cal-day-num { font-weight: bold; font-size: 1rem; margin-bottom: 6px; color: var(--text-color); }
+    .event-tag { padding: 4px 6px; border-radius: 4px; margin-bottom: 4px; font-size: 0.75rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 700; color: #1e293b; border: 1px solid rgba(0,0,0,0.1); }
+
+    /* MODAL STYLES */
+    .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); align-items: center; justify-content: center; padding: 15px; z-index: 100; backdrop-filter: blur(3px); }
+    .modal-content { background: white; padding: 20px; border-radius: 12px; width: 100%; max-width: 500px; max-height: 85vh; overflow-y: auto; box-shadow: 0 10px 25px rgba(0,0,0,0.2); color: #0f172a; }
     
-    .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; flex: 1; width: 100%; }
-    .cal-day-head { text-align: center; font-weight: bold; font-size: 0.85rem; padding: 6px 2px; background: #f1f5f9; border-radius: 6px; color: #475569; border: 1px solid #e2e8f0; }
-    .cal-day { border: 1px solid #e2e8f0; border-radius: 6px; padding: 6px; font-size: 0.85rem; display: flex; flex-direction: column; background: #ffffff; cursor: pointer; min-height: 95px; }
-    .cal-day.empty { background: #fafafa; border-color: #f1f5f9; cursor: default; }
-    .cal-day-num { font-weight: bold; font-size: 0.9rem; margin-bottom: 4px; color: #475569; }
-    .event-tag { padding: 3px 6px; border-radius: 4px; margin-bottom: 2px; font-size: 0.7rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 700; border: 1px solid rgba(0,0,0,0.08); }
-
-    .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.4); align-items: center; justify-content: center; padding: 15px; z-index: 100; }
-    .modal-content { background: white; padding: 16px 20px; border-radius: 10px; width: 100%; max-width: 450px; max-height: 85vh; overflow-y: auto; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
-    .settings-section { border-top: 1px solid #e2e8f0; padding-top: 10px; margin-top: 10px; }
-    .form-group { margin-bottom: 10px; }
-    .form-group label { display: block; font-size: 0.85rem; font-weight: bold; margin-bottom: 3px; }
-    .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 7px 10px; border: 1px solid #cbd5e1; border-radius: 6px; font: inherit; font-size: 0.9rem; }
-    .file-note { display: block; color: #64748b; font-size: 0.75rem; margin-top: 3px; }
-    .modal-btns { display: flex; gap: 8px; margin-top: 12px; }
-    .btn-submit { background: #0f172a; color: white; border: none; padding: 9px; border-radius: 6px; flex: 1; cursor: pointer; font-weight: bold; font-size: 0.9rem; }
-    .btn-cancel { background: #94a3b8; color: white; border: none; padding: 9px; border-radius: 6px; flex: 1; cursor: pointer; font-weight: bold; font-size: 0.9rem; }
-    .btn-header { background: #475569; color: white; border: none; padding: 7px 14px; border-radius: 6px; font-weight: bold; font-size: 0.9rem; cursor: pointer; }
-    .btn-approval { background: #0284c7; color: white; border: none; padding: 7px 14px; border-radius: 6px; font-weight: bold; font-size: 0.9rem; cursor: pointer; width: 100%; text-align: center; }
+    .form-group { margin-bottom: 12px; }
+    .form-group label { display: block; font-size: 0.9rem; font-weight: bold; margin-bottom: 5px; color: #334155; }
+    .form-group input[type="text"], .form-group input[type="date"], .form-group input[type="time"], .form-group input[type="file"], .form-group select { width: 100%; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font: inherit; font-size: 0.95rem; }
+    
+    /* SLIDER TEMA STYLE */
+    .slider-container { display: flex; align-items: center; gap: 10px; margin-top: 5px; }
+    input[type="range"] { -webkit-appearance: none; width: 100%; height: 8px; background: #cbd5e1; border-radius: 5px; outline: none; }
+    input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 20px; height: 20px; border-radius: 50%; background: #3b82f6; cursor: pointer; }
+    
+    .modal-btns { display: flex; gap: 10px; margin-top: 15px; }
+    .btn-submit { background: #0f172a; color: white; border: none; padding: 10px; border-radius: 8px; flex: 1; cursor: pointer; font-weight: bold; font-size: 0.95rem; }
+    .btn-cancel { background: #94a3b8; color: white; border: none; padding: 10px; border-radius: 8px; flex: 1; cursor: pointer; font-weight: bold; font-size: 0.95rem; }
+    .btn-danger { background: #dc2626; color: white; border: none; padding: 10px; border-radius: 8px; flex: 1; cursor: pointer; font-weight: bold; font-size: 0.95rem; }
+    
+    .board-list-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; margin-bottom: 8px; }
+    
+    /* Responsive Header Buttons */
+    .header-buttons-container { display: flex; gap: 10px; position: absolute; right: 20px; top: 20px; }
+    @media (max-width: 650px) {
+      .header-buttons-container { position: static; margin-top: 15px; width: 100%; justify-content: flex-end; flex-wrap: wrap; }
+    }
   </style>
 </head>
 <body>
 
-<div class="container">
-  <header>
-    <div class="title-controls">
-      <h1 id="appTitle">📌 E-Pergerakan</h1>
+<!-- ================= SKRIN PERMULAAN ================= -->
+<div id="welcomeScreen">
+  <div class="top-right-nav">
+    <button class="btn-header" style="background: #0f172a;" onclick="openModal('modalTetapanUtama')">⚙️ Tetapan Sistem</button>
+  </div>
+
+  <div class="instruction-box">
+    <h2>👋 Selamat Datang!</h2>
+    <p style="margin-bottom: 15px; text-align: center; color: #64748b;">Sistem E-Pergerakan berasaskan "Multi-Board".</p>
+    <ol>
+      <li>Klik butang <strong>⚙️ Tetapan Sistem</strong> di penjuru atas kanan.</li>
+      <li>Pilih <strong>+ Cipta Board Baru</strong>.</li>
+      <li>Buka Board tersebut dan mula masukkan senarai nama <strong>Staf</strong> anda beserta gambar.</li>
+      <li>Gunakan <strong>Butang Share</strong> di dalam board untuk kongsi link terus ke kumpulan kerja anda.</li>
+    </ol>
+  </div>
+</div>
+
+<!-- ================= SISTEM UTAMA (DASHBOARD) ================= -->
+<div id="mainDashboard">
+  <header style="position: relative;">
+    <div style="display: flex; flex-direction: column;">
+      <h1 id="appTitle">📌 E-Pergerakan bulan ini</h1>
     </div>
-    <div style="display: flex; gap: 8px;">
-      <button class="btn-header" onclick="openModal('modalStaf')">⚙️ Tetapan</button>
+    
+    <div class="header-buttons-container">
+      <button class="btn-header" onclick="salinLinkBoard()" style="background: #10b981;">Share</button>
+      <button class="btn-header" onclick="kembaliKeSkrinPutih()" style="background: #ef4444;">Tutup Board</button>
+      <button class="btn-header" onclick="bukaTetapanDalamBoard()" style="background: #0f172a;">⚙️ Tetapan Sistem</button>
     </div>
   </header>
 
@@ -248,17 +184,15 @@
     <div id="listPergerakanContent"></div>
   </div>
 
-  <div id="viewBulan" class="calendar-wrapper" style="display: none;">
+  <div id="viewBulan" style="display: none; justify-content: center; width: 100%;">
     <div class="calendar-container">
       <div id="calendarHeader" class="calendar-header"></div>
       <div class="calendar-grid">
-        <div class="cal-day-head">Ah</div>
-        <div class="cal-day-head">Is</div>
-        <div class="cal-day-head">Se</div>
-        <div class="cal-day-head">Ra</div>
-        <div class="cal-day-head">Kh</div>
-        <div class="cal-day-head">Ju</div>
-        <div class="cal-day-head">Sa</div>
+        <div class="cal-day-head">Isnin</div>
+        <div class="cal-day-head">Selasa</div>
+        <div class="cal-day-head">Rabu</div>
+        <div class="cal-day-head">Khamis</div>
+        <div class="cal-day-head">Jumaat</div>
         <div id="calendarDays" style="display: contents;"></div>
       </div>
     </div>
@@ -270,80 +204,109 @@
       <div class="column-scroll" id="listPejabat"></div>
     </div>
     <div class="column col-hbh">
-      <div class="column-title"><span>Hari Bekerja Hibrid (HBH)</span><span id="countRumah">0</span></div>
+      <div class="column-title"><span>HBH</span><span id="countRumah">0</span></div>
       <div class="column-scroll" id="listRumah"></div>
     </div>
     <div class="column col-urusan">
-      <div class="column-title"><span>Cuti / Urusan Lain</span><span id="countLain">0</span></div>
+      <div class="column-title"><span>Lain-lain</span><span id="countLain">0</span></div>
       <div class="column-scroll" id="listLain"></div>
     </div>
   </div>
 </div>
 
-<!-- MODALS -->
-<div id="modalStaf" class="modal">
+<!-- ================= MODAL TETAPAN UTAMA (BOARDS) ================= -->
+<div id="modalTetapanUtama" class="modal">
   <div class="modal-content">
-    <h3 style="font-size: 1.05rem;">⚙️ Tetapan Sistem</h3>
-    <div class="settings-section">
-      <div class="form-group">
-        <label>Nama Sistem / Aplikasi</label>
-        <input type="text" id="tajukAplikasi" value="E-Pergerakan">
-      </div>
-      <button type="button" class="btn-submit" style="width:100%; margin-top:4px;" onclick="bukaPanelPengurusanStaf()">Pengurusan Staf</button>
+    <h3 style="font-size: 1.3rem; margin-bottom: 15px; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px;">⚙️ Tetapan Sistem</h3>
+    
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+      <span style="font-weight: bold; color: #475569;">Senarai Board:</span>
+      <button class="btn-submit" style="padding: 6px 12px; font-size: 0.85rem; flex: none; background: #16a34a;" onclick="ciptaBoardBaru()">+ Cipta Board Baru</button>
     </div>
+    
+    <div id="senaraiBoardContainer" style="max-height: 350px; overflow-y: auto; margin-bottom: 15px;"></div>
+
     <div class="modal-btns">
-      <button class="btn-submit" onclick="simpanTetapan()">Simpan</button>
-      <button class="btn-cancel" onclick="closeModal('modalStaf')">Tutup</button>
+      <button class="btn-cancel" onclick="closeModal('modalTetapanUtama')">Tutup</button>
     </div>
   </div>
 </div>
 
-<div id="modalPengurusanStaf" class="modal">
-  <div class="modal-content" style="max-width: 480px;">
-    <div style="margin-bottom: 8px;">
-      <h3 style="margin:0 0 6px 0; font-size: 1.05rem;">👥 Pengurusan Staf</h3>
-      <button type="button" class="btn-submit" style="padding: 6px 12px; font-size: 0.85rem; width: 100%;" onclick="bukaFormStafModal(-1)">+ Staf Baharu</button>
-    </div>
-    <div id="senaraiStafContainer" style="max-height: 200px; overflow-y: auto; margin-bottom: 8px;"></div>
-    <div class="modal-btns">
-      <button class="btn-cancel" onclick="closeModal('modalPengurusanStaf')" style="width:100%;">Tutup</button>
-    </div>
-  </div>
-</div>
-
-<div id="modalFormStaf" class="modal" style="z-index: 110;">
-  <div class="modal-content" style="max-width: 380px;">
-    <h3 id="tajukFormStafModal" style="margin-bottom: 8px; font-size: 1rem;">Tambah Staf Baharu</h3>
-    <input type="hidden" id="editIndexStaf" value="-1">
+<!-- ================= MODAL EDIT BOARD ================= -->
+<div id="modalEditBoard" class="modal">
+  <div class="modal-content">
+    <h3 style="font-size: 1.2rem; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; margin-bottom: 15px;">Edit Board</h3>
+    <input type="hidden" id="editBoardId">
     
     <div class="form-group">
-      <label>Nama Penuh <span style="color:#ef4444;">*</span></label>
-      <input type="text" id="stafNamaInput" placeholder="Contoh: Siti Aminah" required>
+      <label>Tajuk Pautan (Teks Tajuk Utama)</label>
+      <input type="text" id="boardTitleInput" placeholder="Cth: E-Pergerakan bulan ini">
     </div>
+    
     <div class="form-group">
-      <label>Jawatan</label>
-      <input type="text" id="stafJawatanInput" placeholder="Contoh: Penolong Pegawai">
+      <label>Tema Background Kelabu (Terang ↔ Gelap)</label>
+      <div class="slider-container">
+        <span style="font-size:0.8rem; color:#64748b;">Terang</span>
+        <input type="range" id="boardThemeSlider" min="0" max="100" value="0" oninput="previewTheme(this.value)">
+        <span style="font-size:0.8rem; color:#64748b;">Gelap</span>
+      </div>
     </div>
-    <div class="form-group">
-      <label>Kumpulan</label>
-      <select id="stafKumpulanInput">
-        <option value="Kakitangan">Kakitangan</option>
-        <option value="Ketua">Ketua</option>
-      </select>
+    
+    <div style="margin-top: 15px;">
+      <button class="btn-submit" style="width: 100%; background: #0284c7; padding: 12px;" onclick="bukaPanelPengurusanStaf()">👥 Urus Senarai Staf Board Ini</button>
     </div>
+
+    <!-- SUSUNAN BUTANG EDIT BOARD: [ Simpan ] [ Keluar ] [ Padam ] -->
+    <div class="modal-btns" style="margin-top: 20px;">
+      <button class="btn-submit" style="background: #0284c7;" onclick="simpanEditBoard()">Simpan</button>
+      <button class="btn-cancel" onclick="keluarEditBoard()">Keluar</button>
+      <button class="btn-danger" id="btnDeleteBoard" onclick="padamBoard()">Padam</button>
+    </div>
+  </div>
+</div>
+
+<!-- ================= MODAL PENGURUSAN STAF ================= -->
+<div id="modalPengurusanStaf" class="modal">
+  <div class="modal-content" style="max-width: 480px;">
+    <div style="margin-bottom: 15px;">
+      <h3 style="margin:0 0 10px 0; font-size: 1.1rem;">👥 Staf</h3>
+      <button type="button" class="btn-submit" style="padding: 10px; width: 100%; background: #16a34a;" onclick="bukaFormStafModal(-1)">+ Tambah Staf Baru</button>
+    </div>
+    <div id="senaraiStafContainer" style="max-height: 300px; overflow-y: auto; margin-bottom: 15px;"></div>
+    
+    <!-- SUSUNAN BUTANG MENU STAF: [ Edit Board ] [ Keluar ] -->
+    <div class="modal-btns">
+      <button class="btn-submit" style="background: #0284c7;" onclick="closeModal('modalPengurusanStaf'); openModal('modalEditBoard');">Edit Board</button>
+      <button class="btn-cancel" onclick="closeModal('modalPengurusanStaf')">Keluar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ================= MODAL TAMBAH/EDIT STAF ================= -->
+<div id="modalFormStaf" class="modal" style="z-index: 110;">
+  <div class="modal-content" style="max-width: 400px;">
+    <h3 id="tajukFormStafModal" style="margin-bottom: 15px;">Maklumat Staf</h3>
+    <input type="hidden" id="editIndexStaf" value="-1">
+    
+    <div class="form-group"><label>Nama *</label><input type="text" id="stafNamaInput" required></div>
+    
     <div class="form-group">
-      <label>Hari Bekerja Hibrid (HBH)</label>
-      <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 4px; font-size: 0.85rem;">
+      <label>Gambar Profil (Pilihan)</label>
+      <input type="file" id="stafGambarInput" accept="image/*" onchange="previewGambarStaf(event)">
+      <img id="stafGambarPreview" src="" style="display:none; width:70px; height:70px; border-radius:50%; object-fit:cover; margin-top:10px; border:2px solid #cbd5e1;">
+    </div>
+    
+    <div class="form-group"><label>Jawatan</label><input type="text" id="stafJawatanInput"></div>
+    <div class="form-group"><label>Kumpulan</label>
+      <select id="stafKumpulanInput"><option value="Kakitangan">Kakitangan</option><option value="Ketua">Ketua / Penyelia</option></select>
+    </div>
+    <div class="form-group"><label>Hari Bekerja Hibrid (HBH)</label>
+      <div style="display: flex; gap: 15px; margin-top: 5px;">
         <label><input type="checkbox" name="hbhHari" value="Selasa"> Selasa</label>
         <label><input type="checkbox" name="hbhHari" value="Rabu"> Rabu</label>
         <label><input type="checkbox" name="hbhHari" value="Khamis"> Khamis</label>
       </div>
     </div>
-    <div class="form-group">
-      <label>Muat Naik Foto Staf</label>
-      <input type="file" id="stafFotoFile" accept="image/*">
-    </div>
-
     <div class="modal-btns">
       <button type="button" class="btn-submit" onclick="simpanStafData()">Simpan</button>
       <button type="button" class="btn-cancel" onclick="closeModal('modalFormStaf')">Batal</button>
@@ -351,65 +314,33 @@
   </div>
 </div>
 
+<!-- ================= MODAL AKTIVITI & SEMAKAN ================= -->
 <div id="modalPermohonan" class="modal">
   <div class="modal-content">
-    <h3 id="tajukModalPermohonan" style="font-size: 1.05rem; margin-bottom: 12px;">Nama</h3>
-    <div id="menuPenyeliaKhusus" style="display: none; margin-bottom: 8px;">
-      <button class="btn-approval" onclick="bukaModulSemakan()">🔔 Semakan & Kelulusan</button>
+    <h3 id="tajukModalPermohonan" style="margin-bottom: 10px;">Nama</h3>
+    <div id="menuPenyeliaKhusus" style="display: none; margin-bottom: 10px;">
+      <button class="btn-submit" style="background:#0284c7; width:100%;" onclick="bukaModulSemakan()">🔔 Kelulusan Aktiviti Subordinat</button>
     </div>
-    <div id="senaraiAktivitiPegawai" style="margin: 8px 0; max-height: 140px; overflow-y: auto;"></div>
-    <button id="btnBukaBorangAktiviti" type="button" class="btn-submit" onclick="bukaFormTambahAktiviti()" style="width:100%;">Tambah Aktiviti</button>
+    <div id="senaraiAktivitiPegawai" style="margin: 10px 0; max-height: 150px; overflow-y: auto;"></div>
+    <button id="btnBukaBorangAktiviti" class="btn-submit" onclick="bukaFormTambahAktiviti()" style="width:100%;">+ Rekod Aktiviti / Pergerakan</button>
     
-    <div id="formAktiviti" style="display:none; margin-top: 10px; border-top: 1px solid #e2e8f0; padding-top: 8px;">
-      <div class="form-group">
-        <label>Jenis Aktiviti</label>
-        <select id="permJenis" onchange="tukarJenisPermohonanForm()">
-          <option value="Cuti">Cuti</option>
-          <option value="Kebenaran Keluar Pejabat (4 jam)">Kebenaran Keluar Pejabat (4 jam)</option>
-          <option value="Mesyuarat / Kursus">Mesyuarat / Kursus</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label id="labelTarikhMula">Tarikh</label>
-        <input type="date" id="permTarikh">
-      </div>
-      <div class="form-group" id="groupTarikhAkhir" style="display:none;">
-        <label>Tarikh Akhir</label>
-        <input type="date" id="permTarikhAkhir">
-      </div>
-      <div id="groupMasa" style="display: flex; gap: 8px;">
-        <div class="form-group" style="flex:1;">
-          <label>Masa Mula</label>
-          <input type="time" id="permMasaMula" value="09:00">
-        </div>
-        <div class="form-group" style="flex:1;">
-          <label>Masa Tamat</label>
-          <input type="time" id="permMasaTamat" value="13:00">
-        </div>
-      </div>
-      <div class="form-group">
-        <label id="labelCatatan">Tujuan / Butiran</label>
-        <input type="text" id="permTujuan" placeholder="Contoh: Cuti rehat / Mesyuarat projek">
-      </div>
-      <div class="modal-btns">
-        <button id="btnSubmitAktiviti" class="btn-submit" onclick="hantarPergerakan()">Hantar</button>
-        <button class="btn-cancel" onclick="tutupFormAktiviti()">Batal</button>
-      </div>
+    <div id="formAktiviti" style="display:none; margin-top: 15px; border-top: 1px solid #e2e8f0; padding-top: 15px;">
+      <div class="form-group"><label>Jenis</label><select id="permJenis" onchange="tukarJenisPermohonanForm()"><option value="Cuti">Cuti</option><option value="Keluar">Keluar Pejabat</option><option value="Mesyuarat / Kursus">Mesyuarat / Kursus</option></select></div>
+      <div class="form-group"><label>Tarikh Mula</label><input type="date" id="permTarikh"></div>
+      <div class="form-group" id="groupTarikhAkhir" style="display:none;"><label>Tarikh Akhir</label><input type="date" id="permTarikhAkhir"></div>
+      <div id="groupMasa" style="display: flex; gap: 10px;"><div class="form-group" style="flex:1;"><label>Masa Mula</label><input type="time" id="permMasaMula" value="09:00"></div><div class="form-group" style="flex:1;"><label>Masa Tamat</label><input type="time" id="permMasaTamat" value="13:00"></div></div>
+      <div class="form-group"><label>Tujuan / Butiran</label><input type="text" id="permTujuan" placeholder="Cth: Cuti rehat"></div>
+      <div class="modal-btns"><button class="btn-submit" onclick="hantarPergerakan()">Simpan</button><button class="btn-cancel" onclick="tutupFormAktiviti()">Batal</button></div>
     </div>
-    
-    <div class="modal-btns" style="margin-top:10px;">
-      <button class="btn-cancel" onclick="closeModal('modalPermohonan')" style="width:100%;">Keluar</button>
-    </div>
+    <div class="modal-btns" style="margin-top:15px;"><button class="btn-cancel" onclick="closeModal('modalPermohonan')" style="width:100%;">Tutup</button></div>
   </div>
 </div>
 
 <div id="modalPengesahan" class="modal" style="z-index: 110;">
   <div class="modal-content">
-    <h3 style="font-size: 1.05rem;">🔔 Semakan & Kelulusan Aktiviti Pegawai</h3>
-    <div id="senaraiPermohonanMenunggu" style="margin: 8px 0; max-height: 220px; overflow-y: auto;"></div>
-    <div class="modal-btns">
-      <button class="btn-cancel" onclick="closeModal('modalPengesahan')" style="width:100%;">Tutup</button>
-    </div>
+    <h3 style="margin-bottom: 10px;">🔔 Semakan Kelulusan</h3>
+    <div id="senaraiPermohonanMenunggu" style="margin: 10px 0; max-height: 250px; overflow-y: auto;"></div>
+    <div class="modal-btns"><button class="btn-cancel" onclick="closeModal('modalPengesahan'); openModal('modalPermohonan');" style="width:100%;">Kembali</button></div>
   </div>
 </div>
 
@@ -418,702 +349,385 @@
   const JSONBIN_MASTER_KEY = '$2a$10$KhOhb3FWCQpWIUWcZLY4xeUvXDMY/gxG8j/vcvJZtHdvaZoaseqFu';
   const JSONBIN_ACCESS_KEY = '$2a$10$N5/xe7Qv534Zsk4GRWvdhOYA.4dCiG8uyBXRJjSGy3t3ECcfXo/rG';
 
-  // Array Kosong Sepenuhnya
+  let boards = [];
+  let activeBoardId = null;
   let senaraiStaf = [];
-  let rekodPergerakan = [];
-  let appTitleText = "E-Pergerakan";
-  let sedangMenyimpan = false;
-
+  let rekodPergerakan = []; 
   let pemohonAktif = '';
-  let editIndexAktiviti = null;
+  let tempThemeValue = 0;
+  let tempGambarB64 = '';
 
   async function muatTurunDataAwan() {
-    if (!JSONBIN_ID || sedangMenyimpan) return;
     try {
-      const response = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_ID}/latest`, {
-        headers: {
-          'X-Master-Key': JSONBIN_MASTER_KEY,
-          'X-Access-Key': JSONBIN_ACCESS_KEY
-        }
-      });
+      const response = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_ID}/latest`, { headers: { 'X-Master-Key': JSONBIN_MASTER_KEY, 'X-Access-Key': JSONBIN_ACCESS_KEY } });
       if(response.ok) {
         const result = await response.json();
-        if (result && result.record && Array.isArray(result.record.senaraiStaf)) {
-          senaraiStaf = result.record.senaraiStaf;
-          rekodPergerakan = result.record.rekodPergerakan || [];
-          appTitleText = result.record.appTitleText || "E-Pergerakan";
-          
-          localStorage.setItem('senaraiStaf', JSON.stringify(senaraiStaf));
-          localStorage.setItem('rekodPergerakan', JSON.stringify(rekodPergerakan));
-          localStorage.setItem('appTitleText', appTitleText);
-          
-          kemaskiniPaparan();
-        }
+        boards = result.record.boards || [];
+        localStorage.setItem('boards', JSON.stringify(boards));
       }
     } catch (error) {
-      console.error('Gagal muat turun dari awan. Menggunakan data tempahan:', error);
-      senaraiStaf = JSON.parse(localStorage.getItem('senaraiStaf')) || [];
-      rekodPergerakan = JSON.parse(localStorage.getItem('rekodPergerakan')) || [];
-      appTitleText = localStorage.getItem('appTitleText') || "E-Pergerakan";
-      kemaskiniPaparan();
+      boards = JSON.parse(localStorage.getItem('boards')) || [];
+    }
+    
+    const urlParams = new URLSearchParams(window.location.search);
+    const boardIdDariUrl = urlParams.get('board');
+    if (boardIdDariUrl && boards.find(b => b.id === boardIdDariUrl)) {
+      masukKeBoard(boardIdDariUrl, true);
     }
   }
 
   async function simpanKeLocalStorage() {
-    localStorage.setItem('senaraiStaf', JSON.stringify(senaraiStaf));
-    localStorage.setItem('rekodPergerakan', JSON.stringify(rekodPergerakan));
-    localStorage.setItem('appTitleText', appTitleText);
-
-    sedangMenyimpan = true;
+    if(activeBoardId) {
+      const bIndex = boards.findIndex(b => b.id === activeBoardId);
+      if(bIndex > -1) { boards[bIndex].senaraiStaf = senaraiStaf; boards[bIndex].rekodPergerakan = rekodPergerakan; }
+    }
+    localStorage.setItem('boards', JSON.stringify(boards));
     try {
-      console.log("Menghantar data ke JSONBin...");
       await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_ID}`, {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Master-Key': JSONBIN_MASTER_KEY,
-          'X-Access-Key': JSONBIN_ACCESS_KEY
-        },
-        body: JSON.stringify({
-          senaraiStaf: senaraiStaf,
-          rekodPergerakan: rekodPergerakan,
-          appTitleText: appTitleText
-        })
+        headers: { 'Content-Type': 'application/json', 'X-Master-Key': JSONBIN_MASTER_KEY, 'X-Access-Key': JSONBIN_ACCESS_KEY },
+        body: JSON.stringify({ boards: boards })
       });
-      console.log("Data berjaya disimpan ke awan JSONBin!");
-    } catch (error) {
-      console.error('Gagal kemaskini ke awan (tetapi tersimpan di komputer):', error);
-    } finally {
-      setTimeout(() => { sedangMenyimpan = false; }, 2000);
+    } catch (e) {}
+  }
+
+  function applyThemeVariables(sliderValue) {
+    const val = parseInt(sliderValue);
+    const bgLightness = 98 - (val * 0.8); 
+    const isDark = val > 50;
+    const cardLightness = isDark ? bgLightness + 4 : bgLightness - 2;
+    const headerLightness = isDark ? bgLightness + 2 : bgLightness - 4;
+    const textLightness = isDark ? 95 : 15;
+    const borderLightness = isDark ? bgLightness + 15 : bgLightness - 10;
+
+    const root = document.documentElement;
+    root.style.setProperty('--app-bg', `hsl(210, 10%, ${bgLightness}%)`);
+    root.style.setProperty('--bg-color', `hsl(210, 10%, ${cardLightness}%)`);
+    root.style.setProperty('--header-bg', `hsl(210, 10%, ${headerLightness}%)`);
+    root.style.setProperty('--text-color', `hsl(210, 10%, ${textLightness}%)`);
+    root.style.setProperty('--card-border', `hsl(210, 10%, ${borderLightness}%)`);
+  }
+  function previewTheme(val) { tempThemeValue = val; applyThemeVariables(val); }
+
+  function salinLinkBoard() {
+    if(!activeBoardId) return;
+    const baseUrl = window.location.href.split('?')[0];
+    const shareUrl = `${baseUrl}?board=${activeBoardId}`;
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(shareUrl).then(() => alert("✅ Link Berjaya Disalin!\n\nSila 'Paste' di WhatsApp/Telegram kumpulan anda.")).catch(err => prompt("Sila Copy link ini secara manual:", shareUrl));
+    } else {
+      prompt("Sila Copy link ini secara manual:", shareUrl);
     }
   }
 
-  function kemaskiniPaparan() {
-    document.getElementById('appTitle').innerText = `📌 ${appTitleText}`;
-    document.getElementById('tajukAplikasi').value = appTitleText;
-    renderStaffStrip();
-    renderHariIni();
-    renderListPergerakan();
-    if (document.getElementById('viewBulan').style.display === 'flex') {
-      renderCalendar();
+  function masukKeBoard(id, dariUrl = false) {
+    const b = boards.find(x => x.id === id);
+    if(b) {
+      activeBoardId = id;
+      senaraiStaf = b.senaraiStaf || [];
+      rekodPergerakan = b.rekodPergerakan || [];
+      
+      document.getElementById('welcomeScreen').style.display = 'none';
+      document.getElementById('mainDashboard').style.display = 'flex';
+      
+      document.getElementById('appTitle').innerText = `📌 ${b.tajukSistem || 'E-Pergerakan bulan ini'}`;
+      
+      applyThemeVariables(b.themeValue || 0);
+      kemaskiniPaparan();
+      closeModal('modalTetapanUtama');
+
+      if (!dariUrl) {
+        try { const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?board=' + id; window.history.pushState({path:newUrl}, '', newUrl); } catch(e) {}
+      }
     }
   }
 
-  // Polling data dari awan setiap 15 saat
-  muatTurunDataAwan();
-  setInterval(muatTurunDataAwan, 15000);
+  function kembaliKeSkrinPutih() {
+    document.getElementById('mainDashboard').style.display = 'none';
+    document.getElementById('welcomeScreen').style.display = 'flex';
+    activeBoardId = null;
+    applyThemeVariables(0); 
+    try { const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname; window.history.pushState({path:newUrl}, '', newUrl); } catch(e) {}
+  }
+
+  function renderSenaraiBoard() {
+    const container = document.getElementById('senaraiBoardContainer');
+    if(boards.length === 0) { container.innerHTML = '<p style="color:#64748b; font-style:italic;">Tiada Board. Sila cipta board baru.</p>'; return; }
+    container.innerHTML = boards.map(b => `
+      <div class="board-list-item">
+        <div>
+          <strong style="font-size:1.05rem;">${b.name}</strong><br>
+          <span style="font-size:0.85rem; color:#64748b;">📌 ${b.tajukSistem || 'E-Pergerakan bulan ini'}</span>
+        </div>
+        <div style="display:flex; gap:8px;">
+          <button class="btn-header" style="background:#475569; font-size:0.85rem; padding:6px 12px;" onclick="bukaEditBoard('${b.id}')">Edit</button>
+          <button class="btn-header" style="background:#2563eb; font-size:0.85rem; padding:6px 12px;" onclick="masukKeBoard('${b.id}')">Masuk ➔</button>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function ciptaBoardBaru() {
+    const namabaru = prompt("Masukkan Tajuk/Nama Board (Contoh: Bahagian IT):");
+    if(namabaru) {
+      boards.push({ id: 'board_' + Date.now(), name: namabaru, tajukSistem: 'E-Pergerakan bulan ini', themeValue: 0, senaraiStaf: [], rekodPergerakan: [] });
+      simpanKeLocalStorage(); renderSenaraiBoard();
+    }
+  }
+
+  function bukaTetapanDalamBoard() {
+    if (activeBoardId) {
+      bukaEditBoard(activeBoardId);
+    } else {
+      openModal('modalTetapanUtama');
+    }
+  }
+
+  function bukaEditBoard(id) {
+    const b = boards.find(x => x.id === id);
+    if(!b) return;
+    document.getElementById('editBoardId').value = b.id;
+    document.getElementById('boardTitleInput').value = b.tajukSistem || 'E-Pergerakan bulan ini';
+    let tVal = b.themeValue || 0;
+    document.getElementById('boardThemeSlider').value = tVal;
+    tempThemeValue = tVal;
+    previewTheme(tVal); 
+    closeModal('modalTetapanUtama'); 
+    closeModal('modalPengurusanStaf');
+    openModal('modalEditBoard');
+  }
+
+  function keluarEditBoard() {
+    if(activeBoardId) {
+      const activeB = boards.find(x => x.id === activeBoardId);
+      applyThemeVariables(activeB.themeValue || 0);
+    } else { 
+      applyThemeVariables(0); 
+    }
+    closeModal('modalEditBoard');
+  }
+
+  async function simpanEditBoard() {
+    const id = document.getElementById('editBoardId').value;
+    const title = document.getElementById('boardTitleInput').value.trim() || 'E-Pergerakan bulan ini';
+    const bIndex = boards.findIndex(x => x.id === id);
+    if(bIndex > -1) {
+      boards[bIndex].tajukSistem = title; 
+      boards[bIndex].themeValue = tempThemeValue;
+      if(activeBoardId === id) document.getElementById('appTitle').innerText = `📌 ${title}`;
+      await simpanKeLocalStorage(); 
+      closeModal('modalEditBoard'); 
+      renderSenaraiBoard();
+    }
+  }
+
+  async function padamBoard() {
+    const id = document.getElementById('editBoardId').value;
+    const bIndex = boards.findIndex(x => x.id === id);
+    if(bIndex > -1) {
+      if(confirm(`Padam Board "${boards[bIndex].name}" secara kekal?`)) {
+        boards.splice(bIndex, 1);
+        if(activeBoardId === id) kembaliKeSkrinPutih();
+        await simpanKeLocalStorage(); 
+        closeModal('modalEditBoard'); 
+        renderSenaraiBoard();
+      }
+    }
+  }
 
   function generateAutoColor(index, total) {
     if (total <= 0) total = 1;
-    const hue = Math.floor((index * (360 / Math.max(total, 5))) % 360);
-    return `hsl(${hue}, 75%, 90%)`;
+    return `hsl(${Math.floor((index * (360 / Math.max(total, 5))) % 360)}, 85%, 88%)`;
   }
 
-  function formatTarikhDMY(tkhStr) {
-    if (!tkhStr) return '';
-    const parts = tkhStr.split('-');
-    if (parts.length === 3) {
-      return `${parseInt(parts[2], 10)}-${parseInt(parts[1], 10)}-${parts[0]}`;
-    }
-    return tkhStr;
-  }
-
-  function format12H(timeStr) {
-    if (!timeStr) return '';
-    let [hours, minutes] = timeStr.split(':');
-    let h = parseInt(hours, 10);
-    let ampm = h >= 12 ? 'PM' : 'AM';
-    h = h % 12;
-    h = h ? h : 12;
-    return `${String(h).padStart(2, '0')}:${minutes}${ampm}`;
-  }
-
-  function resizeImage(file, maxWidth = 150, maxHeight = 150, quality = 0.7) {
-    return new Promise((resolve, reject) => {
+  function previewGambarStaf(event) {
+    const file = event.target.files[0];
+    if(file) {
       const reader = new FileReader();
       reader.onload = function(e) {
         const img = new Image();
         img.onload = function() {
           const canvas = document.createElement('canvas');
-          let width = img.width;
-          let height = img.height;
-          if (width > height) {
-            if (width > maxWidth) { height *= maxWidth / width; width = maxWidth; }
-          } else {
-            if (height > maxHeight) { width *= maxHeight / height; height = maxHeight; }
-          }
+          let width = img.width, height = img.height;
+          const max_size = 200;
+          if (width > height && width > max_size) { height *= max_size / width; width = max_size; }
+          else if (height > max_size) { width *= max_size / height; height = max_size; }
+          
           canvas.width = width; canvas.height = height;
           const ctx = canvas.getContext('2d');
           ctx.drawImage(img, 0, 0, width, height);
-          resolve(canvas.toDataURL('image/jpeg', quality));
-        };
-        img.onerror = reject;
+          
+          tempGambarB64 = canvas.toDataURL('image/jpeg', 0.85);
+          document.getElementById('stafGambarPreview').src = tempGambarB64;
+          document.getElementById('stafGambarPreview').style.display = 'block';
+        }
         img.src = e.target.result;
       };
-      reader.onerror = reject;
       reader.readAsDataURL(file);
-    });
-  }
-
-  function switchView(view) {
-    document.getElementById('btnTabList').classList.toggle('active', view === 'list');
-    document.getElementById('btnTabBulan').classList.toggle('active', view === 'bulan');
-    document.getElementById('btnTabHariIni').classList.toggle('active', view === 'hari-ini');
-    
-    document.getElementById('viewList').style.display = view === 'list' ? 'flex' : 'none';
-    document.getElementById('viewBulan').style.display = view === 'bulan' ? 'flex' : 'none';
-    document.getElementById('viewHariIni').style.display = view === 'hari-ini' ? 'grid' : 'none';
-    
-    if(view === 'list') renderListPergerakan();
-    if(view === 'bulan') renderCalendar();
-    if(view === 'hari-ini') renderHariIni();
-  }
-
-  function openModal(id) {
-    if(id === 'modalPermohonan') renderSenaraiAktivitiPegawai();
-    if(id === 'modalPengesahan') renderPermohonanPenyelia();
-    document.getElementById(id).style.display = 'flex';
-  }
-
-  function closeModal(id) { document.getElementById(id).style.display = 'none'; }
-
-  function renderStaffStrip() {
-    const container = document.getElementById('staffStrip');
-    if (senaraiStaf.length === 0) {
-      container.innerHTML = `<span style="font-size:0.85rem; color:#64748b; font-style:italic; padding: 10px 0;">Tiada staf. Sila tambah staf di bahagian Tetapan.</span>`;
-      return;
     }
-    
-    const jumlahMenunggu = rekodPergerakan.filter(r => {
-      const stafObj = senaraiStaf.find(s => s.nama === r.nama);
-      return r.status === 'Menunggu' && stafObj?.kumpulan !== 'Ketua';
-    }).length;
-    const totalStaf = senaraiStaf.length;
-    
-    container.innerHTML = senaraiStaf.map((staf, index) => {
-      const isKetua = staf.kumpulan === 'Ketua';
-      const adaTolak = rekodPergerakan.some(r => r.nama === staf.nama && r.status === 'Tidak');
-      const autoColor = generateAutoColor(index, totalStaf);
-      return `
-        <div class="profile-chip ${isKetua ? 'supervisor' : ''}" onclick="bukaModulStaf('${staf.nama}')">
-          <span class="profile-photo-wrap" style="border: 3px solid ${autoColor}; border-radius: 50%; padding: 1px; display: inline-flex;">
-            ${staf.foto ? `<img src="${staf.foto}" class="avatar" alt="${staf.nama}">` : '<span class="avatar-empty"></span>'}
-            ${isKetua && jumlahMenunggu ? `<span class="profile-alert">${jumlahMenunggu}</span>` : ''}
-            ${!isKetua && adaTolak ? `<span class="profile-alert" style="background:#e0ae86;">!</span>` : ''}
-          </span>
-          <span>${staf.nama}</span>
-        </div>
-      `;
-    }).join('');
-  }
-
-  function bukaModulStaf(nama) {
-    pemohonAktif = nama;
-    openModal('modalPermohonan');
-  }
-
-  function bukaModulSemakan() {
-    closeModal('modalPermohonan');
-    openModal('modalPengesahan');
-  }
-
-  function bukaPanelPengurusanStaf() {
-    closeModal('modalStaf');
-    openModal('modalPengurusanStaf');
-    r9yMnTm4NSzvG9rrwjM2ec8xZgh1cafXH8();
-  }
-
-  function r9yMnTm4NSzvG9rrwjM2ec8xZgh1cafXH8() {
-    const container = document.getElementById('senaraiStafContainer');
-    if(senaraiStaf.length === 0) {
-      container.innerHTML = '<p class="file-note">Tiada staf direkodkan.</p>';
-      return;
-    }
-    const totalStaf = senaraiStaf.length;
-    container.innerHTML = senaraiStaf.map((s, idx) => {
-      const hbhStr = s.hbh && s.hbh.length > 0 ? s.hbh.join(', ') : 'Tiada';
-      const autoColor = generateAutoColor(idx, totalStaf);
-      return `
-        <div style="display:flex; justify-content:space-between; align-items:center; padding:8px; background:#fff; border:1px solid #e2e8f0; border-radius:6px; margin-bottom:6px;">
-          <div style="display:flex; align-items:center; gap:8px;">
-            <span style="width:20px; height:20px; border-radius:50%; background:${autoColor}; display:inline-block; border:1px solid #cbd5e1;"></span>
-            <div>
-              <strong style="font-size:0.9rem;">${s.nama}</strong> <span style="font-size:0.75rem; color:#64748b; font-weight:bold;">(${s.kumpulan})</span><br>
-              <span style="font-size:0.8rem; color:#64748b;">${s.jawatan || '-'} | HBH: ${hbhStr}</span>
-            </div>
-          </div>
-          <div style="display:flex; gap:6px;">
-            <button type="button" style="background:#475569; color:white; border:none; padding:4px 8px; border-radius:4px; font-size:0.75rem; cursor:pointer; font-weight:bold;" onclick="bukaFormStafModal(${idx})">Edit</button>
-            <button type="button" style="background:#dc2626; color:white; border:none; padding:4px 8px; border-radius:4px; font-size:0.75rem; cursor:pointer; font-weight:bold;" onclick="padamStaf(${idx})">Padam</button>
-          </div>
-        </div>
-      `;
-    }).join('');
   }
 
   function bukaFormStafModal(idx) {
     document.getElementById('editIndexStaf').value = idx;
-    const checkboxes = document.querySelectorAll('input[name="hbhHari"]');
-    checkboxes.forEach(cb => cb.checked = false);
-    document.getElementById('stafFotoFile').value = '';
-
-    if(idx === -1) {
-      document.getElementById('tajukFormStafModal').innerText = 'Tambah Staf Baharu';
-      document.getElementById('stafNamaInput').value = '';
-      document.getElementById('stafJawatanInput').value = '';
-      document.getElementById('stafKumpulanInput').value = 'Kakitangan';
-    } else {
-      document.getElementById('tajukFormStafModal').innerText = 'Kemaskini Staf';
-      const s = senaraiStaf[idx];
-      document.getElementById('stafNamaInput').value = s.nama;
-      document.getElementById('stafJawatanInput').value = s.jawatan || '';
-      document.getElementById('stafKumpulanInput').value = s.kumpulan;
+    document.getElementById('stafGambarInput').value = "";
+    tempGambarB64 = "";
+    document.querySelectorAll('input[name="hbhHari"]').forEach(cb => cb.checked = false);
+    
+    if(idx === -1) { 
+      document.getElementById('stafNamaInput').value = ''; 
+      document.getElementById('stafJawatanInput').value = ''; 
+      document.getElementById('stafGambarPreview').style.display = 'none';
+      document.getElementById('stafGambarPreview').src = "";
+    } else { 
+      const s = senaraiStaf[idx]; 
+      document.getElementById('stafNamaInput').value = s.nama; 
+      document.getElementById('stafJawatanInput').value = s.jawatan||''; 
+      document.getElementById('stafKumpulanInput').value = s.kumpulan; 
+      if(s.hbh) document.querySelectorAll('input[name="hbhHari"]').forEach(cb => { if(s.hbh.includes(cb.value)) cb.checked = true; }); 
       
-      if(s.hbh) {
-        checkboxes.forEach(cb => { if(s.hbh.includes(cb.value)) cb.checked = true; });
+      if(s.gambar) {
+        tempGambarB64 = s.gambar;
+        document.getElementById('stafGambarPreview').src = s.gambar;
+        document.getElementById('stafGambarPreview').style.display = 'block';
+      } else {
+        document.getElementById('stafGambarPreview').style.display = 'none';
+        document.getElementById('stafGambarPreview').src = "";
       }
-    }
+    } 
     openModal('modalFormStaf');
   }
 
   async function simpanStafData() {
     const idx = parseInt(document.getElementById('editIndexStaf').value);
     const nama = document.getElementById('stafNamaInput').value.trim();
-    const jawatan = document.getElementById('stafJawatanInput').value.trim();
-    const kumpulan = document.getElementById('stafKumpulanInput').value;
-    const fileInput = document.getElementById('stafFotoFile');
+    if(!nama) return alert('Nama staf wajib diisi.');
+    const hbh = []; document.querySelectorAll('input[name="hbhHari"]:checked').forEach(cb => hbh.push(cb.value));
     
-    if(!nama) {
-      alert('Nama staf adalah wajib diisi.');
-      document.getElementById('stafNamaInput').focus();
-      return;
-    }
-
-    let foto = idx !== -1 ? senaraiStaf[idx].foto : '';
-    if (fileInput.files && fileInput.files[0]) {
-      try { foto = await resizeImage(fileInput.files[0], 150, 150, 0.7); } catch (err) { console.error(err); }
-    }
-    
-    const hbh = [];
-    document.querySelectorAll('input[name="hbhHari"]:checked').forEach(cb => hbh.push(cb.value));
+    const objBaru = { nama, jawatan: document.getElementById('stafJawatanInput').value, kumpulan: document.getElementById('stafKumpulanInput').value, hbh, gambar: tempGambarB64 };
 
     if(idx === -1) {
-      senaraiStaf.push({ nama, jawatan, kumpulan, hbh, foto });
+      senaraiStaf.push(objBaru);
     } else {
       const namaLama = senaraiStaf[idx].nama;
-      if (namaLama !== nama) {
-        rekodPergerakan.forEach(r => { if (r.nama === namaLama) r.nama = nama; });
-      }
-      senaraiStaf[idx] = { nama, jawatan, kumpulan, hbh, foto };
+      if(namaLama !== nama) rekodPergerakan.forEach(r => { if(r.nama === namaLama) r.nama = nama; });
+      senaraiStaf[idx] = objBaru;
     }
-
-    await simpanKeLocalStorage(); // INI AKAN HANTAR DATA KE JSONBIN
-    closeModal('modalFormStaf');
-    r9yMnTm4NSzvG9rrwjM2ec8xZgh1cafXH8();
-    kemaskiniPaparan();
+    await simpanKeLocalStorage(); closeModal('modalFormStaf'); r9yMnTm4NSzvG9rrwjM2ec8xZgh1cafXH8(); if(activeBoardId) kemaskiniPaparan();
   }
 
   async function padamStaf(idx) {
-    const namaStafDipadam = senaraiStaf[idx].nama;
-    if(!confirm(`Padam staf ${namaStafDipadam} berserta semua aktivitinya?`)) return;
-    
-    senaraiStaf.splice(idx, 1);
-    rekodPergerakan = rekodPergerakan.filter(r => r.nama !== namaStafDipadam);
+    if(confirm(`Padam staf ${senaraiStaf[idx].nama}?`)) {
+      const nm = senaraiStaf[idx].nama; senaraiStaf.splice(idx, 1); rekodPergerakan = rekodPergerakan.filter(r => r.nama !== nm);
+      await simpanKeLocalStorage(); r9yMnTm4NSzvG9rrwjM2ec8xZgh1cafXH8(); if(activeBoardId) kemaskiniPaparan();
+    }
+  }
 
-    await simpanKeLocalStorage();
-    r9yMnTm4NSzvG9rrwjM2ec8xZgh1cafXH8();
+  function r9yMnTm4NSzvG9rrwjM2ec8xZgh1cafXH8() {
+    document.getElementById('senaraiStafContainer').innerHTML = senaraiStaf.map((s, idx) => {
+      const avatarHTML = s.gambar ? `<img src="${s.gambar}" style="width:30px; height:30px; border-radius:50%; object-fit:cover; border:1px solid #cbd5e1;">` : `<span style="width:30px; height:30px; border-radius:50%; background:${generateAutoColor(idx, senaraiStaf.length)}; display:inline-block; border:1px solid #cbd5e1;"></span>`;
+      return `<div style="display:flex; justify-content:space-between; align-items:center; padding:10px; background:#f8fafc; border:1px solid #cbd5e1; border-radius:8px; margin-bottom:8px;">
+        <div style="display:flex; align-items:center; gap:10px;">
+          ${avatarHTML}
+          <div><strong>${s.nama}</strong> <span style="font-size:0.75rem;">(${s.kumpulan})</span></div>
+        </div>
+        <div style="display:flex; gap:6px;"><button style="background:#475569; color:white; border:none; padding:5px 10px; border-radius:6px;" onclick="bukaFormStafModal(${idx})">Edit</button><button style="background:#dc2626; color:white; border:none; padding:5px 10px; border-radius:6px;" onclick="padamStaf(${idx})">Buang</button></div>
+      </div>`;
+    }).join('') || '<p>Tiada Staf.</p>';
+  }
+
+  function bukaPanelPengurusanStaf() {
+    const id = document.getElementById('editBoardId').value;
+    const b = boards.find(x => x.id === id);
+    senaraiStaf = b.senaraiStaf || []; rekodPergerakan = b.rekodPergerakan || [];
+    closeModal('modalEditBoard'); openModal('modalPengurusanStaf'); r9yMnTm4NSzvG9rrwjM2ec8xZgh1cafXH8();
+  }
+
+  function formatTarikhDMY(t) { if(!t)return''; const p=t.split('-'); return p.length===3?`${p[2]}-${p[1]}-${p[0]}`:t; }
+  function openModal(id) { if(id === 'modalTetapanUtama') renderSenaraiBoard(); document.getElementById(id).style.display = 'flex'; }
+  function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+  
+  function switchView(view) {
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    document.getElementById(view==='list'?'btnTabList':view==='bulan'?'btnTabBulan':'btnTabHariIni').classList.add('active');
+    document.getElementById('viewList').style.display = view === 'list' ? 'flex' : 'none';
+    document.getElementById('viewBulan').style.display = view === 'bulan' ? 'flex' : 'none';
+    document.getElementById('viewHariIni').style.display = view === 'hari-ini' ? 'grid' : 'none';
     kemaskiniPaparan();
   }
 
-  function renderSenaraiAktivitiPegawai() {
-    const stafObj = senaraiStaf.find(s => s.nama === pemohonAktif);
-    const isKetua = stafObj?.kumpulan === 'Ketua';
+  function kemaskiniPaparan() {
+    renderStaffStrip(); renderHariIni(); renderListPergerakan();
+    if (document.getElementById('viewBulan').style.display === 'flex') renderCalendar();
+  }
 
+  function renderStaffStrip() {
+    const container = document.getElementById('staffStrip');
+    if (!senaraiStaf || senaraiStaf.length === 0) { container.innerHTML = '<i>Tiada staf. Buka Tetapan untuk tambah.</i>'; return; }
+    container.innerHTML = senaraiStaf.map((staf, index) => {
+      const bg = generateAutoColor(index, senaraiStaf.length);
+      const img = staf.gambar ? `<img src="${staf.gambar}" class="staff-avatar">` : `<span class="avatar-empty"></span>`;
+      return `<div class="profile-chip" onclick="bukaModulStaf('${staf.nama}')">
+        <span class="profile-photo-wrap" style="background: ${bg};">${img}</span><span>${staf.nama}</span>
+      </div>`;
+    }).join('');
+  }
+
+  function bukaModulStaf(nama) { pemohonAktif = nama; openModal('modalPermohonan'); renderSenaraiAktivitiPegawai(); }
+  function bukaModulSemakan() { closeModal('modalPermohonan'); openModal('modalPengesahan'); document.getElementById('senaraiPermohonanMenunggu').innerHTML = rekodPergerakan.filter(r => r.status==='Menunggu' && senaraiStaf.find(s=>s.nama===r.nama)?.kumpulan!=='Ketua').map((r,i) => `<div class="feedback-item"><strong>${r.nama} - [${r.jenis}]</strong><br>${r.catatan}<br><button onclick="keputusanPenyelia(${rekodPergerakan.indexOf(r)}, 'Lulus')" style="background:#16a34a; padding:4px 8px; color:white; border-radius:4px; border:none; margin-top:5px;">Luluskan</button> <button onclick="keputusanPenyelia(${rekodPergerakan.indexOf(r)}, 'Tidak')" style="background:#dc2626; padding:4px 8px; color:white; border-radius:4px; border:none;">Tolak</button></div>`).join('')||'Tiada.'; }
+  async function keputusanPenyelia(idx, s) { rekodPergerakan[idx].status = s; await simpanKeLocalStorage(); bukaModulSemakan(); kemaskiniPaparan(); }
+  function renderSenaraiAktivitiPegawai() {
+    const isKetua = senaraiStaf.find(s => s.nama === pemohonAktif)?.kumpulan === 'Ketua';
     document.getElementById('tajukModalPermohonan').innerText = pemohonAktif;
     document.getElementById('menuPenyeliaKhusus').style.display = isKetua ? 'block' : 'none';
-    document.getElementById('btnSubmitAktiviti').innerText = isKetua ? 'Simpan' : 'Hantar';
-
-    const container = document.getElementById('senaraiAktivitiPegawai');
-    const aktivitiStaf = rekodPergerakan.filter(r => r.nama === pemohonAktif);
-
-    container.innerHTML = aktivitiStaf.length ? aktivitiStaf.map(r => {
-      const idx = rekodPergerakan.indexOf(r);
-      let statusBadge = `<span style="color:#d97706; font-weight:bold;">Menunggu Kelulusan</span>`;
-      if(r.status === 'Lulus') statusBadge = `<span style="color:#16a34a; font-weight:bold;">Lulus</span>`;
-      if(r.status === 'Tidak') statusBadge = `<span style="color:#dc2626; font-weight:bold;">Ditolak</span>`;
-
-      let infoDetail = '';
-      if (r.jenis === 'Cuti' || r.jenis === 'Mesyuarat / Kursus') {
-        const tMula = formatTarikhDMY(r.tarikh);
-        const tAkhir = formatTarikhDMY(r.tarikhAkhir);
-        if (tAkhir && tAkhir !== tMula) {
-          infoDetail = `Tarikh: ${tMula} hingga ${tAkhir}`;
-        } else {
-          infoDetail = `Tarikh: ${tMula}`;
-        }
-      } else {
-        infoDetail = `Tarikh: ${formatTarikhDMY(r.tarikh)} (${format12H(r.masaMula)} - ${format12H(r.masaTamat)})`;
-      }
-
-      return `
-        <div class="feedback-item">
-          <strong>[${r.jenis}] ${r.catatan}</strong><br>
-          <span class="file-note">${infoDetail} | Status: ${statusBadge}</span>
-          ${r.sebab ? `<div class="chat-box"><strong>Nota Tolak:</strong> ${r.sebab}</div>` : ''}
-          <div class="feedback-actions">
-            <button style="background:#475569;" onclick="ubahSemula(${idx})">Edit</button>
-            <button style="background:#dc2626;" onclick="padamAktiviti(${idx})">Padam</button>
-          </div>
-        </div>
-      `;
-    }).join('') : '<p class="file-note">Tiada aktiviti direkodkan.</p>';
+    document.getElementById('senaraiAktivitiPegawai').innerHTML = rekodPergerakan.filter(r => r.nama === pemohonAktif).map(r => `<div class="feedback-item"><strong>[${r.jenis}]</strong> ${r.catatan} (${r.status}) <button onclick="rekodPergerakan.splice(${rekodPergerakan.indexOf(r)},1); simpanKeLocalStorage().then(()=>renderSenaraiAktivitiPegawai()); kemaskiniPaparan();" style="background:red; color:white; border:none; border-radius:4px; padding:2px 5px; float:right;">X</button></div>`).join('') || '<p>Tiada aktiviti.</p>';
     tutupFormAktiviti();
   }
-
-  function tukarJenisPermohonanForm() {
-    const jenis = document.getElementById('permJenis').value;
-    const groupMasa = document.getElementById('groupMasa');
-    const groupTarikhAkhir = document.getElementById('groupTarikhAkhir');
-    const labelTarikhMula = document.getElementById('labelTarikhMula');
-    const labelCatatan = document.getElementById('labelCatatan');
-
-    if(jenis === 'Cuti' || jenis === 'Mesyuarat / Kursus') {
-      groupMasa.style.display = 'none';
-      groupTarikhAkhir.style.display = 'block';
-      labelTarikhMula.innerText = 'Tarikh Mula';
-      labelCatatan.innerText = 'Butiran / Catatan';
-    } else {
-      groupMasa.style.display = 'flex';
-      groupTarikhAkhir.style.display = 'none';
-      labelTarikhMula.innerText = 'Tarikh';
-      labelCatatan.innerText = 'Tujuan / Butiran';
-    }
-  }
-
-  function bukaFormTambahAktiviti() {
-    editIndexAktiviti = null;
-    document.getElementById('formAktiviti').style.display = 'block';
-    document.getElementById('btnBukaBorangAktiviti').style.display = 'none';
-    document.getElementById('permJenis').value = 'Cuti';
-    tukarJenisPermohonanForm();
-    document.getElementById('permTarikh').value = new Date().toISOString().slice(0, 10);
-    document.getElementById('permTarikhAkhir').value = '';
-    document.getElementById('permTujuan').value = '';
-  }
-
-  function tutupFormAktiviti() {
-    document.getElementById('formAktiviti').style.display = 'none';
-    document.getElementById('btnBukaBorangAktiviti').style.display = 'block';
-  }
-
+  function tukarJenisPermohonanForm() { const j = document.getElementById('permJenis').value; document.getElementById('groupMasa').style.display = (j!=='Cuti' && j!=='Mesyuarat / Kursus') ? 'flex' : 'none'; document.getElementById('groupTarikhAkhir').style.display = (j==='Cuti'||j==='Mesyuarat / Kursus') ? 'block' : 'none'; }
+  function bukaFormTambahAktiviti() { document.getElementById('formAktiviti').style.display = 'block'; document.getElementById('btnBukaBorangAktiviti').style.display = 'none'; tukarJenisPermohonanForm(); }
+  function tutupFormAktiviti() { document.getElementById('formAktiviti').style.display = 'none'; document.getElementById('btnBukaBorangAktiviti').style.display = 'block'; }
   async function hantarPergerakan() {
-    const jenis = document.getElementById('permJenis').value;
-    const tarikh = document.getElementById('permTarikh').value;
-    const tarikhAkhir = document.getElementById('permTarikhAkhir').value;
-    const masaMula = document.getElementById('permMasaMula').value;
-    const masaTamat = document.getElementById('permMasaTamat').value;
-    const catatan = document.getElementById('permTujuan').value.trim();
-
-    if(!tarikh || !catatan) {
-      alert('Sila lengkapkan maklumat tarikh dan catatan.');
-      return;
-    }
-
-    const stafObj = senaraiStaf.find(s => s.nama === pemohonAktif);
-    const isKetua = stafObj?.kumpulan === 'Ketua';
-    const statusDefault = isKetua ? 'Lulus' : 'Menunggu';
-    const isTempohPanjang = (jenis === 'Cuti' || jenis === 'Mesyuarat / Kursus');
-
-    if(editIndexAktiviti !== null) {
-      rekodPergerakan[editIndexAktiviti].jenis = jenis;
-      rekodPergerakan[editIndexAktiviti].tarikh = tarikh;
-      rekodPergerakan[editIndexAktiviti].tarikhAkhir = isTempohPanjang ? tarikhAkhir : '';
-      rekodPergerakan[editIndexAktiviti].masaMula = !isTempohPanjang ? masaMula : '';
-      rekodPergerakan[editIndexAktiviti].masaTamat = !isTempohPanjang ? masaTamat : '';
-      rekodPergerakan[editIndexAktiviti].catatan = catatan;
-      rekodPergerakan[editIndexAktiviti].status = statusDefault;
-      rekodPergerakan[editIndexAktiviti].sebab = '';
-    } else {
-      rekodPergerakan.push({
-        nama: pemohonAktif,
-        jenis,
-        tarikh,
-        tarikhAkhir: isTempohPanjang ? tarikhAkhir : '',
-        masaMula: !isTempohPanjang ? masaMula : '',
-        masaTamat: !isTempohPanjang ? masaTamat : '',
-        catatan,
-        status: statusDefault,
-        sebab: ''
-      });
-    }
-
-    await simpanKeLocalStorage(); // HANTAR DATA AKTIVITI KE JSOBIN
-    renderSenaraiAktivitiPegawai();
-    kemaskiniPaparan();
-  }
-
-  function ubahSemula(idx) {
-    editIndexAktiviti = idx;
-    const r = rekodPergerakan[idx];
-    document.getElementById('formAktiviti').style.display = 'block';
-    document.getElementById('btnBukaBorangAktiviti').style.display = 'none';
-    document.getElementById('permJenis').value = r.jenis || 'Cuti';
-    tukarJenisPermohonanForm();
-    document.getElementById('permTarikh').value = r.tarikh;
-    if(r.tarikhAkhir) document.getElementById('permTarikhAkhir').value = r.tarikhAkhir;
-    if(r.masaMula) document.getElementById('permMasaMula').value = r.masaMula;
-    if(r.masaTamat) document.getElementById('permMasaTamat').value = r.masaTamat;
-    document.getElementById('permTujuan').value = r.catatan;
-  }
-
-  async function padamAktiviti(idx) {
-    if(!confirm('Padam aktiviti ini?')) return;
-    rekodPergerakan.splice(idx, 1);
-    await simpanKeLocalStorage();
-    renderSenaraiAktivitiPegawai();
-    kemaskiniPaparan();
-  }
-
-  function renderPermohonanPenyelia() {
-    const container = document.getElementById('senaraiPermohonanMenunggu');
-    const senaraiMenunggu = rekodPergerakan.filter(r => {
-      if (r.status !== 'Menunggu') return false;
-      const stafObj = senaraiStaf.find(s => s.nama === r.nama);
-      return stafObj && stafObj.kumpulan !== 'Ketua';
-    });
-
-    container.innerHTML = senaraiMenunggu.length ? senaraiMenunggu.map(r => {
-      const idx = rekodPergerakan.indexOf(r);
-      let infoDetail = '';
-      if (r.jenis === 'Cuti' || r.jenis === 'Mesyuarat / Kursus') {
-        const tMula = formatTarikhDMY(r.tarikh);
-        const tAkhir = formatTarikhDMY(r.tarikhAkhir);
-        if (tAkhir && tAkhir !== tMula) {
-          infoDetail = `Tarikh: ${tMula} hingga ${tAkhir}`;
-        } else {
-          infoDetail = `Tarikh: ${tMula}`;
-        }
-      } else {
-        infoDetail = `Tarikh: ${formatTarikhDMY(r.tarikh)} (${format12H(r.masaMula)} - ${format12H(r.masaTamat)})`;
-      }
-
-      return `
-        <div class="feedback-item" style="background:#ffffff; border-color:#cbd5e1;">
-          <strong>${r.nama} - [${r.jenis}]</strong><br>
-          <span>${r.catatan}</span><br>
-          <span class="file-note">${infoDetail}</span>
-          <div class="form-group" style="margin-top:6px;">
-            <input type="text" id="sebabTolak_${idx}" placeholder="Sebab penolakan (jika tolak)">
-          </div>
-          <div class="feedback-actions">
-            <button style="background:#16a34a;" onclick="keputusanPenyelia(${idx}, 'Lulus')">Lulus</button>
-            <button style="background:#dc2626;" onclick="keputusanPenyelia(${idx}, 'Tidak')">Tolak</button>
-          </div>
-        </div>
-      `;
-    }).join('') : '<p class="file-note">Tiada permohonan kakitangan yang menunggu kelulusan.</p>';
-  }
-
-  async function keputusanPenyelia(idx, status) {
-    const sebabInput = document.getElementById(`sebabTolak_${idx}`);
-    if(status === 'Tidak' && !sebabInput.value.trim()) {
-      alert('Sila nyatakan sebab penolakan.');
-      sebabInput.focus();
-      return;
-    }
-    rekodPergerakan[idx].status = status;
-    rekodPergerakan[idx].sebab = status === 'Tidak' ? sebabInput.value.trim() : '';
-    
-    await simpanKeLocalStorage();
-    renderPermohonanPenyelia();
-    kemaskiniPaparan();
+    const j = document.getElementById('permJenis').value, t = document.getElementById('permTarikh').value, c = document.getElementById('permTujuan').value;
+    if(!t||!c) return alert('Lengkapkan borang.');
+    rekodPergerakan.push({ nama: pemohonAktif, jenis: j, tarikh: t, tarikhAkhir: document.getElementById('permTarikhAkhir').value||t, masaMula: document.getElementById('permMasaMula').value, masaTamat: document.getElementById('permMasaTamat').value, catatan: c, status: (senaraiStaf.find(s=>s.nama===pemohonAktif)?.kumpulan==='Ketua'?'Lulus':'Menunggu') });
+    await simpanKeLocalStorage(); renderSenaraiAktivitiPegawai(); kemaskiniPaparan();
   }
 
   function renderListPergerakan() {
-    const container = document.getElementById('listPergerakanContent');
-    container.innerHTML = '';
-    const totalStaf = senaraiStaf.length;
-    
-    if (totalStaf === 0) {
-      container.innerHTML = `<div class="file-note">Senarai kosong.</div>`;
-      return;
-    }
-
-    senaraiStaf.forEach((staf, index) => {
-      const aktivitiStaf = rekodPergerakan.filter(r => r.nama === staf.nama && r.status === 'Lulus');
-      const autoColor = generateAutoColor(index, totalStaf);
-
-      let aktivitiHtml = '';
-      if (aktivitiStaf.length > 0) {
-        aktivitiHtml = aktivitiStaf.map((act, actIdx) => {
-          let rentetanTarikh = '';
-          if (act.jenis === 'Cuti' || act.jenis === 'Mesyuarat / Kursus') {
-            const tMula = formatTarikhDMY(act.tarikh);
-            const tAkhir = formatTarikhDMY(act.tarikhAkhir);
-            if (tAkhir && tAkhir !== tMula) {
-              rentetanTarikh = `${tMula} hingga ${tAkhir}`;
-            } else {
-              rentetanTarikh = `${tMula}`;
-            }
-          } else {
-            const tMula = formatTarikhDMY(act.tarikh);
-            const mRange = (act.masaMula && act.masaTamat) ? ` (${format12H(act.masaMula)} - ${format12H(act.masaTamat)})` : '';
-            rentetanTarikh = `${tMula}${mRange}`;
-          }
-
-          return `
-            <div class="activity-sub-item">
-              <div><strong>${actIdx + 1}.</strong> ${act.catatan} ${rentetanTarikh}</div>
-            </div>
-          `;
-        }).join('');
-      } else {
-        aktivitiHtml = `<div class="file-note" style="padding:4px 0;">Tiada aktiviti luar / cuti aktif direkodkan.</div>`;
-      }
-
-      container.innerHTML += `
-        <div class="staff-group-card" style="border-left: 5px solid ${autoColor};">
-          <div class="staff-group-header">
-            <span>${staf.nama}</span> <span style="font-size:0.8rem; color:#64748b; font-weight:normal;">(${staf.jawatan || staf.kumpulan})</span>
-          </div>
-          <div>${aktivitiHtml}</div>
-        </div>
-      `;
-    });
+    document.getElementById('listPergerakanContent').innerHTML = senaraiStaf.map((s,i) => {
+      const ak = rekodPergerakan.filter(r => r.nama === s.nama && r.status === 'Lulus');
+      return `<div class="staff-group-card" style="border-left:5px solid ${generateAutoColor(i,senaraiStaf.length)};"><div class="staff-group-header">${s.nama}</div>${ak.length ? ak.map((a,x)=>`<div class="activity-sub-item"><strong>${x+1}.</strong> ${a.catatan} (${formatTarikhDMY(a.tarikh)})</div>`).join('') : '<div class="activity-sub-item">Tiada aktiviti.</div>'}</div>`;
+    }).join('');
   }
-
+  
   function renderHariIni() {
-    const listPejabat = document.getElementById('listPejabat');
-    const listRumah = document.getElementById('listRumah');
-    const listLain = document.getElementById('listLain');
-    listPejabat.innerHTML = ''; listRumah.innerHTML = ''; listLain.innerHTML = '';
-    let cP = 0, cR = 0, cL = 0;
-
-    if (senaraiStaf.length === 0) {
-      document.getElementById('countPejabat').innerText = 0;
-      document.getElementById('countRumah').innerText = 0;
-      document.getElementById('countLain').innerText = 0;
-      return;
-    }
-
-    const hariIni = new Date();
-    const hariIniStr = hariIni.toISOString().slice(0, 10);
-    const namaHariIni = ["Ahad", "Isnin", "Selasa", "Rabu", "Khamis", "Jumaat", "Sabtu"][hariIni.getDay()];
-    
-    const currentHours = String(hariIni.getHours()).padStart(2, '0');
-    const currentMinutes = String(hariIni.getMinutes()).padStart(2, '0');
-    const currentTimeStr = `${currentHours}:${currentMinutes}`;
-    const totalStaf = senaraiStaf.length;
-    
-    senaraiStaf.forEach((staf, index) => {
-      const aktifLulus = rekodPergerakan.find(r => {
-        if (r.nama !== staf.nama || r.status !== 'Lulus') return false;
-        if (r.jenis === 'Cuti' || r.jenis === 'Mesyuarat / Kursus') {
-          return hariIniStr >= r.tarikh && hariIniStr <= (r.tarikhAkhir || r.tarikh);
-        } else {
-          if (r.tarikh !== hariIniStr) return false;
-          if (r.masaMula && r.masaTamat) {
-            return currentTimeStr >= r.masaMula && currentTimeStr <= r.masaTamat;
-          }
-          return true;
-        }
-      });
-
-      let kategori = 'Pejabat';
-      let infoKanan = ''; 
-
-      if(aktifLulus) {
-        kategori = 'Cuti / Urusan Lain';
-        let subTime = (aktifLulus.masaMula && aktifLulus.masaTamat) 
-          ? `<span class="staff-time-sub">${format12H(aktifLulus.masaMula)} - ${format12H(aktifLulus.masaTamat)}</span>` 
-          : '';
-        infoKanan = `${aktifLulus.catatan}${subTime}`;
-      } else if(staf.hbh && staf.hbh.includes(namaHariIni)) {
-        kategori = 'HBH';
-        infoKanan = 'Hari Bekerja Hibrid'; 
-      }
-
-      const fotoHtml = staf.foto ? `<img src="${staf.foto}" class="staff-avatar" alt="${staf.nama}">` : '<span class="avatar-empty"></span>';
-      const staffBgColor = generateAutoColor(index, totalStaf);
-
-      const card = `
-        <div class="staff-card" style="background-color: ${staffBgColor};">
-          <div class="staff-card-left">
-            ${fotoHtml}
-            <div class="staff-info">
-              <div class="staff-name">${staf.nama}</div>
-              <div class="staff-detail">${staf.jawatan || '-'}</div>
-            </div>
-          </div>
-          <div class="staff-right">${infoKanan}</div>
-        </div>
-      `;
-      
-      if(kategori === 'Pejabat') { listPejabat.innerHTML += card; cP++; }
-      else if(kategori === 'HBH') { listRumah.innerHTML += card; cR++; }
-      else { listLain.innerHTML += card; cL++; }
+    let cp=0, cr=0, cl=0, dp='', dr='', dl='';
+    const tStr = new Date().toISOString().slice(0,10), hr = ["Ahad","Isnin","Selasa","Rabu","Khamis","Jumaat","Sabtu"][new Date().getDay()];
+    senaraiStaf.forEach((s, i) => {
+      const bg = generateAutoColor(i, senaraiStaf.length);
+      const r = rekodPergerakan.find(x => x.nama===s.nama && x.status==='Lulus' && ((x.jenis==='Cuti' && tStr>=x.tarikh && tStr<=(x.tarikhAkhir||x.tarikh)) || x.tarikh===tStr));
+      const avatarHtml = s.gambar ? `<img src="${s.gambar}" style="width:35px;height:35px;border-radius:50%;object-fit:cover;border:1px solid rgba(0,0,0,0.2);">` : `<span class="avatar-empty" style="width:35px;height:35px;border:1px solid rgba(0,0,0,0.2);"></span>`;
+      const k = `<div class="staff-card" style="background:${bg};"><div class="staff-card-left">${avatarHtml} <span class="staff-name">${s.nama}</span></div><div class="staff-right">${r?r.catatan:(s.hbh&&s.hbh.includes(hr)?'HBH':'')}</div></div>`;
+      if(r){ dl+=k; cl++; } else if(s.hbh&&s.hbh.includes(hr)){ dr+=k; cr++; } else { dp+=k; cp++; }
     });
-
-    document.getElementById('countPejabat').innerText = cP;
-    document.getElementById('countRumah').innerText = cR;
-    document.getElementById('countLain').innerText = cL;
+    document.getElementById('listPejabat').innerHTML=dp; document.getElementById('listRumah').innerHTML=dr; document.getElementById('listLain').innerHTML=dl;
+    document.getElementById('countPejabat').innerText=cp; document.getElementById('countRumah').innerText=cr; document.getElementById('countLain').innerText=cl;
   }
-
+  
   function renderCalendar() {
-    const container = document.getElementById('calendarDays');
-    container.innerHTML = '';
-    const now = new Date();
-    const tahun = now.getFullYear();
-    const bulan = now.getMonth();
-    
-    const namaBulanArr = ["Januari", "Februari", "Mac", "April", "Mei", "Jun", "Julai", "Ogos", "September", "Oktober", "November", "Disember"];
-    document.getElementById('calendarHeader').innerText = `${namaBulanArr[bulan]} ${tahun}`;
-
-    const hariPertamaIndex = new Date(tahun, bulan, 1).getDay();
-    const jumlahHari = new Date(tahun, bulan + 1, 0).getDate();
-    const totalStaf = senaraiStaf.length;
-    
-    for(let i = 0; i < hariPertamaIndex; i++) {
-      container.innerHTML += `<div class="cal-day empty"></div>`;
-    }
-
-    for(let i = 1; i <= jumlahHari; i++) {
-      const tkhStr = `${tahun}-${String(bulan + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
-      const lulusHari = rekodPergerakan.filter(r => {
-        if(r.status !== 'Lulus') return false;
-        if(r.jenis === 'Cuti' || r.jenis === 'Mesyuarat / Kursus') {
-          return tkhStr >= r.tarikh && tkhStr <= (r.tarikhAkhir || r.tarikh);
-        } else {
-          return r.tarikh === tkhStr;
-        }
-      });
-
-      let tagHtml = lulusHari.map(l => {
-        const stafIndex = senaraiStaf.findIndex(s => s.nama === l.nama);
-        const warnaTag = stafIndex !== -1 ? generateAutoColor(stafIndex, totalStaf) : '#f1f5f9';
-        let masaTag = (l.masaMula && l.masaTamat) ? ` (${format12H(l.masaMula)})` : '';
-        return `<div class="event-tag" style="background-color: ${warnaTag};" title="${l.nama}: ${l.catatan}">${l.nama}: ${l.catatan}${masaTag}</div>`;
-      }).join('');
-      
-      const dayEl = document.createElement('div');
-      dayEl.className = 'cal-day';
-      dayEl.innerHTML = `<div class="cal-day-num">${i}</div>${tagHtml}`;
-      container.appendChild(dayEl);
+    const c = document.getElementById('calendarDays'); c.innerHTML = '';
+    const now = new Date(), thn = now.getFullYear(), bln = now.getMonth();
+    document.getElementById('calendarHeader').innerText = ["Januari","Februari","Mac","April","Mei","Jun","Julai","Ogos","September","Oktober","November","Disember"][bln] + " " + thn;
+    let wMula = new Date(thn, bln, 1).getDay(); wMula = (wMula>=1&&wMula<=5)?wMula-1:0;
+    for(let i=0; i<wMula; i++) c.innerHTML += `<div class="cal-day empty"></div>`;
+    for(let i=1; i<=new Date(thn, bln+1, 0).getDate(); i++) {
+      let wd = new Date(thn, bln, i).getDay(); if(wd===0||wd===6)continue;
+      let dt = `${thn}-${String(bln+1).padStart(2,'0')}-${String(i).padStart(2,'0')}`;
+      let ev = rekodPergerakan.filter(r => r.status==='Lulus' && ((r.jenis==='Cuti'&&dt>=r.tarikh&&dt<=(r.tarikhAkhir||r.tarikh)) || r.tarikh===dt)).map(r => `<div class="event-tag" style="background:${generateAutoColor(senaraiStaf.findIndex(s=>s.nama===r.nama),senaraiStaf.length)};">${r.nama}</div>`).join('');
+      c.innerHTML += `<div class="cal-day"><div class="cal-day-num">${i}</div>${ev}</div>`;
     }
   }
 
-  async function simpanTetapan() {
-    const tajuk = document.getElementById('tajukAplikasi').value.trim();
-    if(tajuk) {
-      appTitleText = tajuk;
-      document.getElementById('appTitle').innerText = `📌 ${appTitleText}`;
-      await simpanKeLocalStorage(); // KEMASKINI TAJUK KE JSOBIN
-    }
-    closeModal('modalStaf');
-  }
-
-  kemaskiniPaparan();
+  muatTurunDataAwan();
 </script>
-
 </body>
 </html>
