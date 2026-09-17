@@ -64,7 +64,6 @@
       flex-direction: column; min-height: 100vh; position: relative;
     }
 
-    /* Header tanpa garisan bawah */
     header {
       display: flex; justify-content: space-between; align-items: center;
       margin-bottom: 15px; gap: 15px;
@@ -90,14 +89,14 @@
 
     .feedback-item { margin-bottom: 10px; padding: 12px; background: var(--header-bg); border-radius: 8px; font-size: 0.9rem; }
     
-    /* TAB UTAMA (Teks Sahaja, Segitiga & Bold Tanpa Garisan) */
+    /* TAB UTAMA */
     .view-tabs { display: flex; justify-content: flex-start; gap: 28px; margin-bottom: 20px; overflow-x: auto; padding-bottom: 4px; }
     .tab-btn { background: transparent; border: none; padding: 6px 0; font-weight: 500; cursor: pointer; color: var(--grey-text); font-size: 0.95rem; white-space: nowrap; transition: color 0.2s; display: flex; align-items: center; gap: 4px; }
     .tab-btn.active { color: var(--text-color); font-weight: 700; }
     .tab-indicator { font-size: 0.7rem; display: none; color: var(--text-color); }
     .tab-btn.active .tab-indicator { display: inline-block; }
 
-    /* MENU GAYA ANDROID (Tanpa Box, Garis Halus) */
+    /* MENU GAYA ANDROID */
     .clean-menu-list {
       display: flex; flex-direction: column;
       background: var(--light-gray-bg); border-radius: 12px; border: 1px solid var(--card-border); overflow: hidden;
@@ -167,7 +166,7 @@
     <ol>
       <li>Klik ikon <strong>⚙️ (Tetapan)</strong> di penjuru atas kanan.</li>
       <li>Pilih <strong>+ Cipta Board Baru</strong>.</li>
-      <li>Buka Board tersebut dan mula masukkan senarai nama <strong>Staf</strong> beserta gambar.</li>
+      <li>Buka Board tersebut dan mula masukkan senarai nama <strong>Pengguna</strong> beserta gambar.</li>
     </ol>
   </div>
 </div>
@@ -188,7 +187,7 @@
 
   <div id="staffStrip" class="staff-strip"></div>
 
-  <!-- TAB UTAMA (Teks Sahaja, Segitiga & Bold Tanpa Garisan) -->
+  <!-- TAB UTAMA -->
   <div class="view-tabs">
     <button id="btnTabList" class="tab-btn active" onclick="switchView('list')">
       <span>Pegerakan Keluar</span> <span class="tab-indicator">▼</span>
@@ -257,7 +256,7 @@
   </div>
 </div>
 
-<!-- ================= MODAL EDIT BOARD (MENU GAYA ANDROID TANPA KOTAK) ================= -->
+<!-- ================= MODAL EDIT BOARD ================= -->
 <div id="modalEditBoard" class="modal">
   <div class="modal-content" style="max-width: 400px; background: var(--light-gray-bg); border: 1px solid var(--card-border);">
     <input type="hidden" id="editBoardId">
@@ -364,7 +363,7 @@
   </div>
 </div>
 
-<!-- ================= MODAL AKTIVITI & SEMAKAN ================= -->
+<!-- ================= MODAL AKTIVITI & PERMOHONAN ================= -->
 <div id="modalPermohonan" class="modal">
   <div class="modal-content" style="background: var(--light-gray-bg);">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
@@ -373,6 +372,15 @@
         <span class="material-symbols-outlined" style="font-size:1.3rem; color:#dc2626;">notifications</span>
         <span id="badgeBilanganMenunggu" style="background: #dc2626; color: white; border-radius: 50%; padding: 1px 6px; font-size: 0.75rem; font-weight: bold;">0</span>
       </div>
+    </div>
+
+    <!-- Notifikasi Penolakan untuk Kakitangan (Ada Loceng / Info Ditolak) -->
+    <div id="containerNotifikasiDitolak" style="display:none; margin-bottom: 12px; background: #fee2e2; border: 1px solid #f87171; border-radius: 8px; padding: 12px;">
+      <div style="display: flex; align-items: center; gap: 8px; font-weight: 700; color: #b91c1c; margin-bottom: 4px;">
+        <span class="material-symbols-outlined">notifications_active</span>
+        <span>Permohonan Ditolak</span>
+      </div>
+      <div id="teksSebabDitolak" style="font-size: 0.9rem; color: #7f1d1d;"></div>
     </div>
 
     <div id="senaraiAktivitiPegawai" style="margin: 10px 0; max-height: 150px; overflow-y: auto;"></div>
@@ -385,6 +393,7 @@
     </div>
     
     <div id="formAktiviti" style="display:none; margin-top: 15px; border-top: 1px solid var(--card-border); padding-top: 15px;">
+      <input type="hidden" id="editIndexAktiviti" value="-1">
       <div class="form-group"><label>Jenis</label><select id="permJenis" onchange="tukarJenisPermohonanForm()"><option value="Cuti">Cuti</option><option value="Keluar">Keluar Pejabat</option><option value="Mesyuarat / Kursus">Mesyuarat / Kursus</option></select></div>
       <div class="form-group"><label>Tarikh Mula</label><input type="date" id="permTarikh"></div>
       <div class="form-group" id="groupTarikhAkhir" style="display:none;"><label>Tarikh Akhir</label><input type="date" id="permTarikhAkhir"></div>
@@ -403,6 +412,7 @@
   </div>
 </div>
 
+<!-- ================= MODAL SEMAKAN PENYELIA ================= -->
 <div id="modalPengesahan" class="modal" style="z-index: 110;">
   <div class="modal-content" style="background: var(--light-gray-bg);">
     <h3 style="margin-bottom: 12px;">🔔 Senarai Kelulusan Kakitangan</h3>
@@ -715,7 +725,10 @@
       const bg = generateAutoColor(index, senaraiStaf.length);
       const img = staf.gambar ? `<img src="${staf.gambar}" class="staff-avatar">` : `<span class="avatar-empty"></span>`;
       const isPenyelia = staf.kumpulan === 'Penyelia' || staf.kumpulan === 'Ketua';
-      const showBadge = isPenyelia && adaMenunggu;
+      
+      // Semak sama ada staf ini ada permohonan yang ditolak (untuk paparan loceng notifikasi merah pada cip staf)
+      const adaDitolak = rekodPergerakan.some(r => r.nama === staf.nama && r.status === 'Ditolak');
+      const showBadge = (isPenyelia && adaMenunggu) || adaDitolak;
 
       return `<div class="profile-chip" onclick="bukaModulStaf('${staf.nama}')">
         <span class="profile-photo-wrap ${showBadge ? 'has-notif' : ''}" style="background: ${bg};">
@@ -749,20 +762,44 @@
       containerLoceng.style.display = 'none';
     }
 
-    const btnSubmit = document.getElementById('btnSimpanAtauHantar');
-    if (isPenyelia) {
-      btnSubmit.innerText = 'Simpan';
+    // Semak jika ada aktiviti ditolak untuk staf ini
+    const permohonanDitolak = rekodPergerakan.filter(r => r.nama === pemohonAktif && r.status === 'Ditolak');
+    const boxNotifDitolak = document.getElementById('containerNotifikasiDitolak');
+    if (permohonanDitolak.length > 0) {
+      boxNotifDitolak.style.display = 'block';
+      document.getElementById('teksSebabDitolak').innerHTML = permohonanDitolak.map(d => `• <b>[${d.jenis}]</b> ${d.catatan}<br><span style="color:#991b1b; font-style:italic;">Sebab ditolak: ${d.sebabTolak || 'Tiada sebab'}</span>`).join('<br>');
     } else {
-      btnSubmit.innerText = 'Hantar';
+      boxNotifDitolak.style.display = 'none';
     }
 
-    document.getElementById('senaraiAktivitiPegawai').innerHTML = rekodPergerakan.filter(r => r.nama === pemohonAktif).map(r => `
-      <div class="feedback-item">
-        <strong>[${r.jenis}]</strong> ${r.catatan} 
-        <span style="font-size:0.75rem; font-weight:bold; color:${r.status==='Lulus'?'green':r.status==='Tidak'?'red':'orange'}">(${r.status})</span> 
-        <button onclick="padamAktiviti(${rekodPergerakan.indexOf(r)})" style="background:none; border:none; color:red; font-weight:bold; float:right; cursor:pointer;">X</button>
-      </div>
-    `).join('') || '<p style="color:var(--grey-text); font-style:italic;">Tiada aktiviti.</p>';
+    const btnSubmit = document.getElementById('btnSimpanAtauHantar');
+    btnSubmit.innerText = isPenyelia ? 'Simpan' : 'Hantar';
+
+    document.getElementById('senaraiAktivitiPegawai').innerHTML = rekodPergerakan.filter(r => r.nama === pemohonAktif).map(r => {
+      const originalIdx = rekodPergerakan.indexOf(r);
+      let statusWarna = 'orange';
+      if(r.status === 'Lulus') statusWarna = 'green';
+      if(r.status === 'Ditolak') statusWarna = 'red';
+
+      let aksiEditHapus = '';
+      if (!isPenyelia && (r.status === 'Menunggu' || r.status === 'Ditolak')) {
+        aksiEditHapus = `<div style="margin-top:6px; display:flex; gap:8px;">
+          <button onclick="editAktiviti(${originalIdx})" style="background:#e2e8f0; border:none; padding:4px 8px; border-radius:4px; font-size:0.8rem; cursor:pointer; font-weight:600;">Edit & Hantar Semula</button>
+          <button onclick="padamAktiviti(${originalIdx})" style="background:#fee2e2; color:#dc2626; border:none; padding:4px 8px; border-radius:4px; font-size:0.8rem; cursor:pointer; font-weight:600;">Hapus</button>
+        </div>`;
+      } else {
+        aksiEditHapus = `<button onclick="padamAktiviti(${originalIdx})" style="background:none; border:none; color:red; font-weight:bold; float:right; cursor:pointer;">X</button>`;
+      }
+
+      return `
+        <div class="feedback-item">
+          <strong>[${r.jenis}]</strong> ${r.catatan} 
+          <span style="font-size:0.75rem; font-weight:bold; color:${statusWarna}">(${r.status})</span>
+          ${r.sebabTolak ? `<br><small style="color:#b91c1c;">Ditolak kerana: ${r.sebabTolak}</small>` : ''}
+          ${aksiEditHapus}
+        </div>
+      `;
+    }).join('') || '<p style="color:var(--grey-text); font-style:italic;">Tiada aktiviti.</p>';
     tutupFormAktiviti();
   }
 
@@ -780,25 +817,52 @@
           ${r.catatan} (${formatTarikhDMY(r.tarikh)})<br>
           <div style="margin-top:8px; display:flex; gap:10px;">
             <button class="clean-menu-item" style="padding:6px 12px; border:1px solid #cbd5e1; border-radius:6px; color:#16a34a; font-weight:600;" onclick="keputusanPenyelia(${originalIdx}, 'Lulus')">Luluskan</button> 
-            <button class="clean-menu-item" style="padding:6px 12px; border:1px solid #cbd5e1; border-radius:6px; color:#dc2626; font-weight:600;" onclick="keputusanPenyelia(${originalIdx}, 'Tidak')">Tolak</button>
+            <button class="clean-menu-item" style="padding:6px 12px; border:1px solid #cbd5e1; border-radius:6px; color:#dc2626; font-weight:600;" onclick="tolakPenyeliaPrompt(${originalIdx})">Tolak</button>
           </div>
         </div>
       `;
     }).join('') || '<p style="color:#64748b; font-style:italic;">Tiada permohonan baru menunggu kelulusan.</p>'; 
   }
 
+  async function tolakPenyeliaPrompt(idx) {
+    const sebab = prompt("Nyatakan sebab mengapa permohonan ini ditolak:");
+    if(sebab !== null) {
+      rekodPergerakan[idx].status = 'Ditolak';
+      rekodPergerakan[idx].sebabTolak = sebab.trim() || 'Tiada sebab dinyatakan';
+      await simpanKeLocalStorage();
+      bukaModulSemakan();
+      kemaskiniPaparan();
+    }
+  }
+
   async function keputusanPenyelia(idx, s) { 
     rekodPergerakan[idx].status = s; 
+    rekodPergerakan[idx].sebabTolak = ''; 
     await simpanKeLocalStorage(); 
     bukaModulSemakan(); 
     kemaskiniPaparan(); 
   }
 
   async function padamAktiviti(idx) {
-    rekodPergerakan.splice(idx, 1);
-    await simpanKeLocalStorage();
-    renderSenaraiAktivitiPegawai();
-    kemaskiniPaparan();
+    if(confirm("Padam aktiviti ini?")) {
+      rekodPergerakan.splice(idx, 1);
+      await simpanKeLocalStorage();
+      renderSenaraiAktivitiPegawai();
+      kemaskiniPaparan();
+    }
+  }
+
+  function editAktiviti(idx) {
+    const r = rekodPergerakan[idx];
+    document.getElementById('editIndexAktiviti').value = idx;
+    document.getElementById('permJenis').value = r.jenis;
+    document.getElementById('permTarikh').value = r.tarikh;
+    document.getElementById('permTarikhAkhir').value = r.tarikhAkhir || r.tarikh;
+    document.getElementById('permMasaMula').value = r.masaMula || '09:00';
+    document.getElementById('permMasaTamat').value = r.masaTamat || '13:00';
+    document.getElementById('permTujuan').value = r.catatan;
+    
+    bukaFormTambahAktiviti();
   }
 
   function tukarJenisPermohonanForm() { 
@@ -816,20 +880,21 @@
   function tutupFormAktiviti() { 
     document.getElementById('formAktiviti').style.display = 'none'; 
     document.getElementById('btnBukaBorangAktiviti').style.display = 'block'; 
+    document.getElementById('editIndexAktiviti').value = '-1';
   }
 
   async function hantarPergerakan() {
     const j = document.getElementById('permJenis').value;
     const t = document.getElementById('permTarikh').value;
     const c = document.getElementById('permTujuan').value;
+    const editIdx = parseInt(document.getElementById('editIndexAktiviti').value);
     if(!t || !c) return alert('Sila lengkapkan tarikh dan tujuan.');
 
     const stafObj = senaraiStaf.find(s => s.nama === pemohonAktif);
     const isPenyelia = stafObj?.kumpulan === 'Penyelia' || stafObj?.kumpulan === 'Ketua';
-    
     const statusPermohonan = isPenyelia ? 'Lulus' : 'Menunggu';
 
-    rekodPergerakan.push({
+    const dataBaru = {
       nama: pemohonAktif,
       jenis: j,
       tarikh: t,
@@ -837,14 +902,21 @@
       masaMula: document.getElementById('permMasaMula').value,
       masaTamat: document.getElementById('permMasaTamat').value,
       catatan: c,
-      status: statusPermohonan
-    });
+      status: statusPermohonan,
+      sebabTolak: ''
+    };
+
+    if(editIdx > -1) {
+      rekodPergerakan[editIdx] = dataBaru;
+    } else {
+      rekodPergerakan.push(dataBaru);
+    }
 
     await simpanKeLocalStorage();
     renderSenaraiAktivitiPegawai();
     kemaskiniPaparan();
     
-    alert(isPenyelia ? "✅ Aktiviti berjaya disimpan!" : "📤 Permohonan berjaya dihantar untuk kelulusan penyelia.");
+    alert(isPenyelia ? "✅ Aktiviti berjaya disimpan!" : "📤 Permohonan berjaya dihantar semula untuk kelulusan penyelia.");
   }
 
   function renderListPergerakan() {
