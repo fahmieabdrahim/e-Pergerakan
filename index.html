@@ -136,6 +136,7 @@
     .cal-day-head { text-align: center; font-weight: 600; font-size: 0.85rem; padding: 10px 4px; background: var(--header-bg); border-radius: 8px; color: var(--grey-text); }
     .cal-day { border: 1px solid var(--card-border); border-radius: 10px; padding: 10px; font-size: 0.85rem; display: flex; flex-direction: column; background: #ffffff; min-height: 110px; cursor: pointer; transition: border-color 0.2s, background 0.2s; }
     .cal-day:hover { border-color: #94a3b8; background: #fafafa; }
+    .cal-day.today { border: 2px solid #3b82f6 !important; background-color: #f0f9ff !important; }
     .cal-day.empty { background: transparent; border-color: transparent; cursor: default; }
     .cal-day-num { font-weight: 700; font-size: 1rem; margin-bottom: 6px; color: var(--text-color); }
     .event-tag { padding: 4px 8px; border-radius: 6px; margin-bottom: 4px; font-size: 0.75rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 600; color: #1e293b; border: 1px solid rgba(0,0,0,0.08); }
@@ -374,7 +375,7 @@
       </div>
     </div>
 
-    <!-- Notifikasi Penolakan untuk Kakitangan (Ada Loceng / Info Ditolak) -->
+    <!-- Notifikasi Penolakan untuk Kakitangan -->
     <div id="containerNotifikasiDitolak" style="display:none; margin-bottom: 12px; background: #fee2e2; border: 1px solid #f87171; border-radius: 8px; padding: 12px;">
       <div style="display: flex; align-items: center; gap: 8px; font-weight: 700; color: #b91c1c; margin-bottom: 4px;">
         <span class="material-symbols-outlined">notifications_active</span>
@@ -394,11 +395,18 @@
     
     <div id="formAktiviti" style="display:none; margin-top: 15px; border-top: 1px solid var(--card-border); padding-top: 15px;">
       <input type="hidden" id="editIndexAktiviti" value="-1">
-      <div class="form-group"><label>Jenis</label><select id="permJenis" onchange="tukarJenisPermohonanForm()"><option value="Cuti">Cuti</option><option value="Keluar">Keluar Pejabat</option><option value="Mesyuarat / Kursus">Mesyuarat / Kursus</option></select></div>
+      <div class="form-group">
+        <label>Kategori</label>
+        <select id="permJenis" onchange="tukarJenisPermohonanForm()">
+          <option value="Cuti / MC / Kecemasan">Cuti / MC / Kecemasan</option>
+          <option value="Mesyuarat / Kursus / Pameran">Mesyuarat / Kursus / Pameran</option>
+          <option value="Kebenaran Keluar Pejabat (4 Jam)">Kebenaran Keluar Pejabat (4 Jam)</option>
+        </select>
+      </div>
       <div class="form-group"><label>Tarikh Mula</label><input type="date" id="permTarikh"></div>
-      <div class="form-group" id="groupTarikhAkhir" style="display:none;"><label>Tarikh Akhir</label><input type="date" id="permTarikhAkhir"></div>
-      <div id="groupMasa" style="display: flex; gap: 10px;"><div class="form-group" style="flex:1;"><label>Masa Mula</label><input type="time" id="permMasaMula" value="09:00"></div><div class="form-group" style="flex:1;"><label>Masa Tamat</label><input type="time" id="permMasaTamat" value="13:00"></div></div>
-      <div class="form-group"><label>Tujuan / Butiran</label><input type="text" id="permTujuan" placeholder="Cth: Cuti rehat"></div>
+      <div class="form-group" id="groupTarikhAkhir"><label>Tarikh Akhir</label><input type="date" id="permTarikhAkhir"></div>
+      <div id="groupMasa" style="display: none; gap: 10px;"><div class="form-group" style="flex:1;"><label>Masa Mula</label><input type="time" id="permMasaMula" value="09:00"></div><div class="form-group" style="flex:1;"><label>Masa Tamat</label><input type="time" id="permMasaTamat" value="13:00"></div></div>
+      <div class="form-group"><label>Tujuan / Butiran</label><input type="text" id="permTujuan" placeholder="Cth: Urusan rasmi / peribadi"></div>
       
       <div class="clean-menu-list" style="margin-top: 12px;">
         <button id="btnSimpanAtauHantar" class="clean-menu-item" style="justify-content: center; font-weight: 600;" onclick="hantarPergerakan()">Hantar</button>
@@ -726,7 +734,6 @@
       const img = staf.gambar ? `<img src="${staf.gambar}" class="staff-avatar">` : `<span class="avatar-empty"></span>`;
       const isPenyelia = staf.kumpulan === 'Penyelia' || staf.kumpulan === 'Ketua';
       
-      // Semak sama ada staf ini ada permohonan yang ditolak (untuk paparan loceng notifikasi merah pada cip staf)
       const adaDitolak = rekodPergerakan.some(r => r.nama === staf.nama && r.status === 'Ditolak');
       const showBadge = (isPenyelia && adaMenunggu) || adaDitolak;
 
@@ -762,7 +769,6 @@
       containerLoceng.style.display = 'none';
     }
 
-    // Semak jika ada aktiviti ditolak untuk staf ini
     const permohonanDitolak = rekodPergerakan.filter(r => r.nama === pemohonAktif && r.status === 'Ditolak');
     const boxNotifDitolak = document.getElementById('containerNotifikasiDitolak');
     if (permohonanDitolak.length > 0) {
@@ -867,8 +873,9 @@
 
   function tukarJenisPermohonanForm() { 
     const j = document.getElementById('permJenis').value; 
-    document.getElementById('groupMasa').style.display = (j!=='Cuti' && j!=='Mesyuarat / Kursus') ? 'flex' : 'none'; 
-    document.getElementById('groupTarikhAkhir').style.display = (j==='Cuti'||j==='Mesyuarat / Kursus') ? 'block' : 'none'; 
+    const isKeluar = j.includes('Keluar');
+    document.getElementById('groupMasa').style.display = isKeluar ? 'flex' : 'none'; 
+    document.getElementById('groupTarikhAkhir').style.display = isKeluar ? 'none' : 'block'; 
   }
 
   function bukaFormTambahAktiviti() { 
@@ -898,7 +905,7 @@
       nama: pemohonAktif,
       jenis: j,
       tarikh: t,
-      tarikhAkhir: document.getElementById('permTarikhAkhir').value || t,
+      tarikhAkhir: j.includes('Keluar') ? t : (document.getElementById('permTarikhAkhir').value || t),
       masaMula: document.getElementById('permMasaMula').value,
       masaTamat: document.getElementById('permMasaTamat').value,
       catatan: c,
@@ -936,39 +943,82 @@
   
   function renderHariIni() {
     let cp=0, cr=0, cl=0, dp='', dr='', dl='';
-    const tStr = new Date().toISOString().slice(0,10), hr = ["Ahad","Isnin","Selasa","Rabu","Khamis","Jumaat","Sabtu"][new Date().getDay()];
+    const now = new Date();
+    const tStr = now.toISOString().slice(0,10);
+    const currentTimeStr = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
+    const hr = ["Ahad","Isnin","Selasa","Rabu","Khamis","Jumaat","Sabtu"][now.getDay()];
+
     senaraiStaf.forEach((s, i) => {
       const bg = generateAutoColor(i, senaraiStaf.length);
-      const r = rekodPergerakan.find(x => x.nama===s.nama && x.status==='Lulus' && ((x.jenis==='Cuti' && tStr>=x.tarikh && tStr<=(x.tarikhAkhir||x.tarikh)) || x.tarikh===tStr));
+      
+      const r = rekodPergerakan.find(x => x.nama === s.nama && x.status === 'Lulus' && (
+        (!x.jenis.includes('Keluar') && tStr >= x.tarikh && tStr <= (x.tarikhAkhir || x.tarikh)) || 
+        (x.tarikh === tStr)
+      ));
+
+      let isCurrentlyOut = false;
+      let displayCatatan = '';
+
+      if (r) {
+        if (r.jenis.includes('Keluar')) {
+          // Semak masa semasa adakah dalam lingkungan masa keluar 4 jam
+          if (currentTimeStr >= r.masaMula && currentTimeStr <= r.masaTamat) {
+            isCurrentlyOut = true;
+            displayCatatan = `${r.masaMula}-${r.masaTamat}: ${r.catatan}`;
+          }
+        } else {
+          // Cuti / Mesyuarat / Kursus sepanjang hari
+          isCurrentlyOut = true;
+          displayCatatan = r.catatan;
+        }
+      }
+
       const avatarHtml = s.gambar ? `<img src="${s.gambar}" style="width:38px;height:38px;border-radius:50%;object-fit:cover;border:1px solid rgba(0,0,0,0.1);">` : `<span class="avatar-empty" style="width:38px;height:38px;border:1px solid rgba(0,0,0,0.1);"></span>`;
       const jawatanText = s.jawatan ? `<div style="font-size:0.75rem; color:var(--grey-text); font-weight:normal;">${s.jawatan}</div>` : '';
+      
       const k = `<div class="staff-card" style="background:${bg};">
         <div class="staff-card-left">${avatarHtml} <div><span class="staff-name">${s.nama}</span>${jawatanText}</div></div>
-        <div class="staff-right">${r?r.catatan:(s.hbh&&s.hbh.includes(hr)?'HBH':'')}</div>
+        <div class="staff-right">${isCurrentlyOut ? displayCatatan : (s.hbh && s.hbh.includes(hr) ? 'HBH' : '')}</div>
       </div>`;
-      if(r){ dl+=k; cl++; } else if(s.hbh&&s.hbh.includes(hr)){ dr+=k; cr++; } else { dp+=k; cp++; }
+
+      if (isCurrentlyOut) { dl += k; cl++; }
+      else if (s.hbh && s.hbh.includes(hr)) { dr += k; cr++; }
+      else { dp += k; cp++; }
     });
-    document.getElementById('listPejabat').innerHTML=dp; document.getElementById('listRumah').innerHTML=dr; document.getElementById('listLain').innerHTML=dl;
-    document.getElementById('countPejabat').innerText=cp; document.getElementById('countRumah').innerText=cr; document.getElementById('countLain').innerText=cl;
+
+    document.getElementById('listPejabat').innerHTML = dp; 
+    document.getElementById('listRumah').innerHTML = dr; 
+    document.getElementById('listLain').innerHTML = dl;
+    document.getElementById('countPejabat').innerText = cp; 
+    document.getElementById('countRumah').innerText = cr; 
+    document.getElementById('countLain').innerText = cl;
   }
   
   function renderCalendar() {
     const c = document.getElementById('calendarDays'); c.innerHTML = '';
     const now = new Date(), thn = now.getFullYear(), bln = now.getMonth();
+    const todayStr = now.toISOString().slice(0,10);
+
     document.getElementById('calendarHeader').innerText = ["Januari","Februari","Mac","April","Mei","Jun","Julai","Ogos","September","Oktober","November","Disember"][bln] + " " + thn;
     let wMula = new Date(thn, bln, 1).getDay(); wMula = (wMula>=1&&wMula<=5)?wMula-1:0;
+    
     for(let i=0; i<wMula; i++) c.innerHTML += `<div class="cal-day empty"></div>`;
+    
     for(let i=1; i<=new Date(thn, bln+1, 0).getDate(); i++) {
       let wd = new Date(thn, bln, i).getDay(); if(wd===0||wd===6)continue;
       let dt = `${thn}-${String(bln+1).padStart(2,'0')}-${String(i).padStart(2,'0')}`;
-      let ev = rekodPergerakan.filter(r => r.status==='Lulus' && ((r.jenis==='Cuti'&&dt>=r.tarikh&&dt<=(r.tarikhAkhir||r.tarikh)) || r.tarikh===dt)).map(r => `<div class="event-tag" style="background:${generateAutoColor(senaraiStaf.findIndex(s=>s.nama===r.nama),senaraiStaf.length)};">${r.nama}</div>`).join('');
-      c.innerHTML += `<div class="cal-day" onclick="bukaDetailHari('${dt}', ${i})"><div class="cal-day-num">${i}</div>${ev}</div>`;
+      let isToday = (dt === todayStr);
+      let todayClass = isToday ? ' today' : '';
+
+      let ev = rekodPergerakan.filter(r => r.status==='Lulus' && ((!r.jenis.includes('Keluar') && dt>=r.tarikh && dt<=(r.tarikhAkhir||r.tarikh)) || r.tarikh===dt)).map(r => `<div class="event-tag" style="background:${generateAutoColor(senaraiStaf.findIndex(s=>s.nama===r.nama),senaraiStaf.length)};">${r.nama}</div>`).join('');
+      
+      c.innerHTML += `<div class="cal-day${todayClass}" onclick="bukaDetailHari('${dt}', ${i})"><div class="cal-day-num">${i}</div>${ev}</div>`;
     }
   }
 
   function bukaDetailHari(dt, hariNum) {
     document.getElementById('tajukModalDetailHari').innerText = `Aktiviti Pada: ${formatTarikhDMY(dt)}`;
-    const senaraiAktivitiHari = rekodPergerakan.filter(r => r.status==='Lulus' && ((r.jenis==='Cuti'&&dt>=r.tarikh&&dt<=(r.tarikhAkhir||r.tarikh)) || r.tarikh===dt));
+    const senaraiAktivitiHari = rekodPergerakan.filter(r => r.status==='Lulus' && ((!r.jenis.includes('Keluar') && dt>=r.tarikh && dt<=(r.tarikhAkhir||r.tarikh)) || r.tarikh===dt));
     
     document.getElementById('senaraiAktivitiHariTerpilih').innerHTML = senaraiAktivitiHari.map(r => {
       const staffIdx = senaraiStaf.findIndex(s => s.nama === r.nama);
