@@ -735,7 +735,7 @@
     container.innerHTML = senaraiStaf.map((staf, index) => {
       const bg = generateAutoColor(index, senaraiStaf.length);
       const img = staf.gambar ? `<img src="${staf.gambar}" class="staff-avatar">` : `<span class="avatar-empty"></span>`;
-      const isPenyelia = staf.kumpulan === 'Penyelia' || staf.kumpulan === 'Ketua';
+      const isPenyelia = (staf.kumpulan === 'Penyelia' || staf.kumpulan === 'Ketua') || !staf.kumpulan;
       
       const adaDitolak = rekodPergerakan.some(r => r.nama === staf.nama && r.status === 'Ditolak');
       const showBadge = (isPenyelia && adaMenunggu) || adaDitolak;
@@ -758,7 +758,7 @@
 
   function renderSenaraiAktivitiPegawai() {
     const stafObj = senaraiStaf.find(s => s.nama === pemohonAktif);
-    const isPenyelia = stafObj?.kumpulan === 'Penyelia' || stafObj?.kumpulan === 'Ketua';
+    const isPenyelia = (stafObj?.kumpulan === 'Penyelia' || stafObj?.kumpulan === 'Ketua') || !stafObj?.kumpulan;
     document.getElementById('tajukModalPermohonan').innerText = pemohonAktif;
     
     const senaraiMenunggu = rekodPergerakan.filter(r => r.status === 'Menunggu' && senaraiStaf.find(s => s.nama === r.nama)?.kumpulan === 'Kakitangan');
@@ -901,7 +901,7 @@
     if(!t || !c) return alert('Sila lengkapkan tarikh dan tujuan.');
 
     const stafObj = senaraiStaf.find(s => s.nama === pemohonAktif);
-    const isPenyelia = stafObj?.kumpulan === 'Penyelia' || stafObj?.kumpulan === 'Ketua';
+    const isPenyelia = (stafObj?.kumpulan === 'Penyelia' || stafObj?.kumpulan === 'Ketua') || !stafObj?.kumpulan;
     const statusPermohonan = isPenyelia ? 'Lulus' : 'Menunggu';
 
     const dataBaru = {
