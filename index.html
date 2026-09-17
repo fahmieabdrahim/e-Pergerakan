@@ -6,7 +6,6 @@
   <title>Sistem E-Pergerakan</title>
   <style>
     :root {
-      /* CSS Variables - Dikawal oleh Slider Tema (JavaScript) */
       --bg-color: hsl(210, 15%, 98%);
       --app-bg: hsl(210, 15%, 95%);
       --text-color: hsl(210, 15%, 15%);
@@ -23,18 +22,16 @@
       background-color: var(--app-bg);
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       color: var(--text-color);
-      transition: background-color 0.3s ease, color 0.3s ease;
     }
 
-    /* KELAS BUTANG HEADER */
-    .btn-header { 
-      background: #475569; color: white; border: none; padding: 10px 18px; 
-      border-radius: 8px; font-weight: bold; font-size: 1rem; cursor: pointer; 
-      box-shadow: 0 4px 6px rgba(0,0,0,0.1); transition: transform 0.2s; 
+    .plain-icon-btn { 
+      background: transparent; border: none; padding: 4px; 
+      font-size: 1.6rem; cursor: pointer; line-height: 1;
+      transition: opacity 0.2s; 
     }
-    .btn-header:hover { transform: translateY(-2px); }
+    .plain-icon-btn:hover { opacity: 0.7; }
 
-    /* SKRIN MUKA DEPAN (WELCOME SCREEN) */
+    /* SKRIN MUKA DEPAN */
     #welcomeScreen {
       position: fixed; top: 0; left: 0; right: 0; bottom: 0;
       background-color: #ffffff;
@@ -42,13 +39,11 @@
       z-index: 50; padding: 20px;
     }
 
-    /* KEDUDUKAN TETAPAN ATAS KANAN (DI LUAR & DI DALAM) */
     .top-right-nav {
       position: absolute;
       top: 20px; right: 20px;
     }
 
-    /* KOTAK ARAHAN MUKA DEPAN */
     .instruction-box {
       background: #f8fafc; border: 2px dashed #cbd5e1; border-radius: 12px;
       padding: 30px; max-width: 600px; width: 100%; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
@@ -58,21 +53,22 @@
     .instruction-box ol { margin-left: 20px; line-height: 1.8; font-size: 1.05rem; }
     .instruction-box li { margin-bottom: 10px; }
 
-    /* SISTEM UTAMA (DASHBOARD) */
+    /* SISTEM UTAMA */
     #mainDashboard {
       display: none; padding: 20px; max-width: 1400px; margin: 0 auto;
       flex-direction: column; min-height: 100vh; position: relative;
     }
 
     header {
-      display: flex; justify-content: space-between; align-items: center;
-      margin-bottom: 15px; flex-wrap: wrap; gap: 10px;
+      display: flex; justify-content: space-between; align-items: flex-start;
+      margin-bottom: 15px; gap: 15px;
       padding-bottom: 15px; border-bottom: 2px solid var(--card-border);
     }
     
-    h1 { font-size: 1.6rem; color: var(--text-color); font-weight: 800; }
+    .header-title-container { flex: 1; min-width: 0; }
+    h1 { font-size: 1.5rem; color: var(--text-color); font-weight: 800; word-break: break-word; line-height: 1.3; }
+    .header-action-container { flex-shrink: 0; }
 
-    /* STAFF STRIP */
     .staff-strip { display: flex; align-items: flex-start; gap: 12px; overflow-x: auto; margin-bottom: 12px; padding: 4px 0; scrollbar-width: thin; }
     .profile-chip { display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 60px; color: var(--text-color); font-size: 0.85rem; font-weight: bold; cursor: pointer; flex-shrink: 0; text-align: center;}
     .profile-chip .avatar, .staff-avatar { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; display: block; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
@@ -111,7 +107,6 @@
     .cal-day-num { font-weight: bold; font-size: 1rem; margin-bottom: 6px; color: var(--text-color); }
     .event-tag { padding: 4px 6px; border-radius: 4px; margin-bottom: 4px; font-size: 0.75rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 700; color: #1e293b; border: 1px solid rgba(0,0,0,0.1); }
 
-    /* MODAL STYLES */
     .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); align-items: center; justify-content: center; padding: 15px; z-index: 100; backdrop-filter: blur(3px); }
     .modal-content { background: white; padding: 20px; border-radius: 12px; width: 100%; max-width: 500px; max-height: 85vh; overflow-y: auto; box-shadow: 0 10px 25px rgba(0,0,0,0.2); color: #0f172a; }
     
@@ -119,23 +114,13 @@
     .form-group label { display: block; font-size: 0.9rem; font-weight: bold; margin-bottom: 5px; color: #334155; }
     .form-group input[type="text"], .form-group input[type="date"], .form-group input[type="time"], .form-group input[type="file"], .form-group select { width: 100%; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font: inherit; font-size: 0.95rem; }
     
-    /* SLIDER TEMA STYLE */
-    .slider-container { display: flex; align-items: center; gap: 10px; margin-top: 5px; }
-    input[type="range"] { -webkit-appearance: none; width: 100%; height: 8px; background: #cbd5e1; border-radius: 5px; outline: none; }
-    input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 20px; height: 20px; border-radius: 50%; background: #3b82f6; cursor: pointer; }
-    
     .modal-btns { display: flex; gap: 10px; margin-top: 15px; }
     .btn-submit { background: #0f172a; color: white; border: none; padding: 10px; border-radius: 8px; flex: 1; cursor: pointer; font-weight: bold; font-size: 0.95rem; }
     .btn-cancel { background: #94a3b8; color: white; border: none; padding: 10px; border-radius: 8px; flex: 1; cursor: pointer; font-weight: bold; font-size: 0.95rem; }
     .btn-danger { background: #dc2626; color: white; border: none; padding: 10px; border-radius: 8px; flex: 1; cursor: pointer; font-weight: bold; font-size: 0.95rem; }
     
-    .board-list-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; margin-bottom: 8px; }
-    
-    /* Responsive Header Buttons */
-    .header-buttons-container { display: flex; gap: 10px; position: absolute; right: 20px; top: 20px; }
-    @media (max-width: 650px) {
-      .header-buttons-container { position: static; margin-top: 15px; width: 100%; justify-content: flex-end; flex-wrap: wrap; }
-    }
+    .board-list-item { display: flex; flex-direction: column; padding: 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; margin-bottom: 8px; cursor: pointer; transition: background 0.2s; }
+    .board-list-item:hover { background: #f1f5f9; }
   </style>
 </head>
 <body>
@@ -143,13 +128,13 @@
 <!-- ================= SKRIN PERMULAAN ================= -->
 <div id="welcomeScreen">
   <div class="top-right-nav">
-    <button class="btn-header" style="background: #0f172a;" onclick="openModal('modalTetapanUtama')">⚙️ Tetapan Sistem</button>
+    <button class="plain-icon-btn" onclick="openModal('modalTetapanUtama')">⚙️</button>
   </div>
 
   <div class="instruction-box">
     <h2>Cara guna e-Pergerakan</h2>
     <ol>
-      <li>Klik butang <strong>⚙️ Tetapan Sistem</strong> di penjuru atas kanan.</li>
+      <li>Klik ikon <strong>⚙️</strong> di penjuru atas kanan.</li>
       <li>Pilih <strong>+ Cipta Board Baru</strong>.</li>
       <li>Buka Board tersebut dan mula masukkan senarai nama <strong>Staf</strong> anda beserta gambar.</li>
     </ol>
@@ -158,15 +143,13 @@
 
 <!-- ================= SISTEM UTAMA (DASHBOARD) ================= -->
 <div id="mainDashboard">
-  <header style="position: relative;">
-    <div style="display: flex; flex-direction: column;">
+  <header>
+    <div class="header-title-container">
       <h1 id="appTitle">📌 E-Pergerakan bulan ini</h1>
     </div>
     
-    <div class="header-buttons-container">
-      <button class="btn-header" onclick="salinLinkBoard()" style="background: #10b981;">Share</button>
-      <button class="btn-header" onclick="kembaliKeSkrinPutih()" style="background: #ef4444;">Tutup Board</button>
-      <button class="btn-header" onclick="bukaTetapanDalamBoard()" style="background: #0f172a;">⚙️ Tetapan Sistem</button>
+    <div class="header-action-container">
+      <button class="plain-icon-btn" onclick="bukaTetapanDalamBoard()">⚙️</button>
     </div>
   </header>
 
@@ -212,53 +195,39 @@
   </div>
 </div>
 
-<!-- ================= MODAL TETAPAN UTAMA (BOARDS) ================= -->
+<!-- ================= MODAL TETAPAN UTAMA (SITING UTAMA) ================= -->
 <div id="modalTetapanUtama" class="modal">
   <div class="modal-content">
-    <h3 style="font-size: 1.3rem; margin-bottom: 15px; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px;">⚙️ Tetapan Sistem</h3>
-    
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-      <span style="font-weight: bold; color: #475569;">Senarai Board:</span>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+      <span style="font-weight: bold; color: #475569; font-size: 1.1rem;">Senarai Board:</span>
       <button class="btn-submit" style="padding: 6px 12px; font-size: 0.85rem; flex: none; background: #16a34a;" onclick="ciptaBoardBaru()">+ Cipta Board Baru</button>
     </div>
     
     <div id="senaraiBoardContainer" style="max-height: 350px; overflow-y: auto; margin-bottom: 15px;"></div>
 
     <div class="modal-btns">
-      <button class="btn-cancel" onclick="closeModal('modalTetapanUtama')">Tutup</button>
+      <button class="btn-cancel" onclick="closeModal('modalTetapanUtama')" style="width: 100%;">Tutup</button>
     </div>
   </div>
 </div>
 
-<!-- ================= MODAL EDIT BOARD ================= -->
+<!-- ================= MODAL EDIT BOARD (SETING BOARD) ================= -->
 <div id="modalEditBoard" class="modal">
-  <div class="modal-content">
-    <h3 style="font-size: 1.2rem; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; margin-bottom: 15px;">Edit Board</h3>
+  <div class="modal-content" style="max-width: 400px;">
     <input type="hidden" id="editBoardId">
     
-    <div class="form-group">
-      <label>Tajuk Pautan (Teks Tajuk Utama)</label>
-      <input type="text" id="boardTitleInput" placeholder="Cth: E-Pergerakan bulan ini">
-    </div>
-    
-    <div class="form-group">
-      <label>Tema Background Kelabu (Terang ↔ Gelap)</label>
-      <div class="slider-container">
-        <span style="font-size:0.8rem; color:#64748b;">Terang</span>
-        <input type="range" id="boardThemeSlider" min="0" max="100" value="0" oninput="previewTheme(this.value)">
-        <span style="font-size:0.8rem; color:#64748b;">Gelap</span>
+    <div style="display: flex; flex-direction: column; gap: 10px;">
+      <button class="btn-submit" style="background: #0284c7; padding: 12px; width: 100%;" onclick="bukaPanelPengurusanStaf()">Urus Senarai Staf Board Ini</button>
+      
+      <div style="display: flex; gap: 10px;">
+        <button class="btn-submit" style="background: #ef4444; padding: 12px; flex: 1;" onclick="keluarKeSkrinUtamaDariSetting()">Tutup Board</button>
+        <button class="btn-submit" style="background: #10b981; padding: 12px; flex: 1;" onclick="salinLinkBoard()">Share</button>
       </div>
-    </div>
-    
-    <div style="margin-top: 15px;">
-      <button class="btn-submit" style="width: 100%; background: #0284c7; padding: 12px;" onclick="bukaPanelPengurusanStaf()">👥 Urus Senarai Staf Board Ini</button>
-    </div>
 
-    <!-- SUSUNAN BUTANG EDIT BOARD: [ Simpan ] [ Keluar ] [ Padam ] -->
-    <div class="modal-btns" style="margin-top: 20px;">
-      <button class="btn-submit" style="background: #0284c7;" onclick="simpanEditBoard()">Simpan</button>
-      <button class="btn-cancel" onclick="keluarEditBoard()">Keluar</button>
-      <button class="btn-danger" id="btnDeleteBoard" onclick="padamBoard()">Padam</button>
+      <div style="display: flex; gap: 10px;">
+        <button class="btn-cancel" style="flex: 1;" onclick="keluarEditBoard()">Keluar</button>
+        <button class="btn-danger" id="btnDeleteBoard" style="flex: 1;" onclick="padamBoard()">Padam</button>
+      </div>
     </div>
   </div>
 </div>
@@ -272,10 +241,9 @@
     </div>
     <div id="senaraiStafContainer" style="max-height: 300px; overflow-y: auto; margin-bottom: 15px;"></div>
     
-    <!-- SUSUNAN BUTANG MENU STAF: [ Edit Board ] [ Keluar ] -->
     <div class="modal-btns">
-      <button class="btn-submit" style="background: #0284c7;" onclick="closeModal('modalPengurusanStaf'); openModal('modalEditBoard');">Edit Board</button>
-      <button class="btn-cancel" onclick="closeModal('modalPengurusanStaf')">Keluar</button>
+      <button class="btn-submit" style="background: #0284c7;" onclick="closeModal('modalPengurusanStaf'); openModal('modalEditBoard');">Kembali</button>
+      <button class="btn-cancel" onclick="closeModal('modalPengurusanStaf')">Tutup</button>
     </div>
   </div>
 </div>
@@ -352,7 +320,6 @@
   let senaraiStaf = [];
   let rekodPergerakan = []; 
   let pemohonAktif = '';
-  let tempThemeValue = 0;
   let tempGambarB64 = '';
 
   async function muatTurunDataAwan() {
@@ -389,24 +356,6 @@
     } catch (e) {}
   }
 
-  function applyThemeVariables(sliderValue) {
-    const val = parseInt(sliderValue);
-    const bgLightness = 98 - (val * 0.8); 
-    const isDark = val > 50;
-    const cardLightness = isDark ? bgLightness + 4 : bgLightness - 2;
-    const headerLightness = isDark ? bgLightness + 2 : bgLightness - 4;
-    const textLightness = isDark ? 95 : 15;
-    const borderLightness = isDark ? bgLightness + 15 : bgLightness - 10;
-
-    const root = document.documentElement;
-    root.style.setProperty('--app-bg', `hsl(210, 10%, ${bgLightness}%)`);
-    root.style.setProperty('--bg-color', `hsl(210, 10%, ${cardLightness}%)`);
-    root.style.setProperty('--header-bg', `hsl(210, 10%, ${headerLightness}%)`);
-    root.style.setProperty('--text-color', `hsl(210, 10%, ${textLightness}%)`);
-    root.style.setProperty('--card-border', `hsl(210, 10%, ${borderLightness}%)`);
-  }
-  function previewTheme(val) { tempThemeValue = val; applyThemeVariables(val); }
-
   function salinLinkBoard() {
     if(!activeBoardId) return;
     const baseUrl = window.location.href.split('?')[0];
@@ -430,7 +379,6 @@
       
       document.getElementById('appTitle').innerText = `📌 ${b.tajukSistem || 'E-Pergerakan bulan ini'}`;
       
-      applyThemeVariables(b.themeValue || 0);
       kemaskiniPaparan();
       closeModal('modalTetapanUtama');
 
@@ -444,23 +392,21 @@
     document.getElementById('mainDashboard').style.display = 'none';
     document.getElementById('welcomeScreen').style.display = 'flex';
     activeBoardId = null;
-    applyThemeVariables(0); 
     try { const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname; window.history.pushState({path:newUrl}, '', newUrl); } catch(e) {}
+  }
+
+  function keluarKeSkrinUtamaDariSetting() {
+    closeModal('modalEditBoard');
+    kembaliKeSkrinPutih();
   }
 
   function renderSenaraiBoard() {
     const container = document.getElementById('senaraiBoardContainer');
     if(boards.length === 0) { container.innerHTML = '<p style="color:#64748b; font-style:italic;">Tiada Board. Sila cipta board baru.</p>'; return; }
     container.innerHTML = boards.map(b => `
-      <div class="board-list-item">
-        <div>
-          <strong style="font-size:1.05rem;">${b.name}</strong><br>
-          <span style="font-size:0.85rem; color:#64748b;">📌 ${b.tajukSistem || 'E-Pergerakan bulan ini'}</span>
-        </div>
-        <div style="display:flex; gap:8px;">
-          <button class="btn-header" style="background:#475569; font-size:0.85rem; padding:6px 12px;" onclick="bukaEditBoard('${b.id}')">Edit</button>
-          <button class="btn-header" style="background:#2563eb; font-size:0.85rem; padding:6px 12px;" onclick="masukKeBoard('${b.id}')">Masuk ➔</button>
-        </div>
+      <div class="board-list-item" onclick="masukKeBoard('${b.id}')">
+        <strong style="font-size:1.05rem; word-break: break-word; color: #0f172a;">${b.name}</strong>
+        <span style="font-size:0.85rem; color:#64748b; word-break: break-word; margin-top: 2px;">📌 ${b.tajukSistem || 'E-Pergerakan bulan ini'}</span>
       </div>
     `).join('');
   }
@@ -468,7 +414,7 @@
   function ciptaBoardBaru() {
     const namabaru = prompt("Masukkan Tajuk/Nama Board (Contoh: Bahagian IT):");
     if(namabaru) {
-      boards.push({ id: 'board_' + Date.now(), name: namabaru, tajukSistem: 'E-Pergerakan bulan ini', themeValue: 0, senaraiStaf: [], rekodPergerakan: [] });
+      boards.push({ id: 'board_' + Date.now(), name: namabaru, tajukSistem: 'E-Pergerakan bulan ini', senaraiStaf: [], rekodPergerakan: [] });
       simpanKeLocalStorage(); renderSenaraiBoard();
     }
   }
@@ -485,38 +431,13 @@
     const b = boards.find(x => x.id === id);
     if(!b) return;
     document.getElementById('editBoardId').value = b.id;
-    document.getElementById('boardTitleInput').value = b.tajukSistem || 'E-Pergerakan bulan ini';
-    let tVal = b.themeValue || 0;
-    document.getElementById('boardThemeSlider').value = tVal;
-    tempThemeValue = tVal;
-    previewTheme(tVal); 
     closeModal('modalTetapanUtama'); 
     closeModal('modalPengurusanStaf');
     openModal('modalEditBoard');
   }
 
   function keluarEditBoard() {
-    if(activeBoardId) {
-      const activeB = boards.find(x => x.id === activeBoardId);
-      applyThemeVariables(activeB.themeValue || 0);
-    } else { 
-      applyThemeVariables(0); 
-    }
     closeModal('modalEditBoard');
-  }
-
-  async function simpanEditBoard() {
-    const id = document.getElementById('editBoardId').value;
-    const title = document.getElementById('boardTitleInput').value.trim() || 'E-Pergerakan bulan ini';
-    const bIndex = boards.findIndex(x => x.id === id);
-    if(bIndex > -1) {
-      boards[bIndex].tajukSistem = title; 
-      boards[bIndex].themeValue = tempThemeValue;
-      if(activeBoardId === id) document.getElementById('appTitle').innerText = `📌 ${title}`;
-      await simpanKeLocalStorage(); 
-      closeModal('modalEditBoard'); 
-      renderSenaraiBoard();
-    }
   }
 
   async function padamBoard() {
