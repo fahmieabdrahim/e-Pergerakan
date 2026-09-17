@@ -139,7 +139,7 @@
     <ol>
       <li>Klik ikon <strong>⚙️</strong> di penjuru atas kanan.</li>
       <li>Pilih <strong>+ Cipta Board Baru</strong>.</li>
-      <li>Buka Board tersebut dan mula masukkan senarai nama <strong>Staf</strong> anda beserta gambar.</li>
+      <li>Buka Board tersebut dan mula masukkan senarai nama <strong>Staf</strong> (Kakitangan / Penyelia) beserta gambar.</li>
     </ol>
   </div>
 </div>
@@ -266,9 +266,15 @@
     </div>
     
     <div class="form-group"><label>Jawatan</label><input type="text" id="stafJawatanInput"></div>
-    <div class="form-group"><label>Kumpulan</label>
-      <select id="stafKumpulanInput"><option value="Kakitangan">Kakitangan</option><option value="Ketua">Ketua / Penyelia</option></select>
+    
+    <div class="form-group">
+      <label>Kumpulan</label>
+      <select id="stafKumpulanInput">
+        <option value="Kakitangan">Kakitangan</option>
+        <option value="Penyelia">Penyelia</option>
+      </select>
     </div>
+
     <div class="form-group"><label>Hari Bekerja Hibrid (HBH)</label>
       <div style="display: flex; gap: 15px; margin-top: 5px;">
         <label><input type="checkbox" name="hbhHari" value="Selasa"> Selasa</label>
@@ -288,10 +294,16 @@
   <div class="modal-content">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
       <h3 id="tajukModalPermohonan" style="margin:0;">Nama</h3>
-      <button class="plain-icon-btn" id="btnLocengSemakan" style="display:none; font-size:1.3rem;" onclick="bukaModulSemakan()" title="Semakan Kelulusan">🔔</button>
+      <!-- Loceng Khas untuk Penyelia -->
+      <div id="containerLocengPenyelia" style="display:none; align-items: center; gap: 6px; cursor: pointer; background: #fee2e2; padding: 4px 10px; border-radius: 20px;" onclick="bukaModulSemakan()" title="Semakan Kelulusan">
+        <span style="font-size:1.2rem;">🔔</span>
+        <span id="badgeBilanganMenunggu" style="background: #dc2626; color: white; border-radius: 50%; padding: 1px 6px; font-size: 0.75rem; font-weight: bold;">0</span>
+      </div>
     </div>
+
     <div id="senaraiAktivitiPegawai" style="margin: 10px 0; max-height: 150px; overflow-y: auto;"></div>
-    <button id="btnBukaBorangAktiviti" class="btn-submit" onclick="bukaFormTambahAktiviti()" style="width:100%;">+ Rekod Aktiviti / Pergerakan</button>
+    
+    <button id="btnBukaBorangAktiviti" class="btn-submit" onclick="bukaFormTambahAktiviti()" style="width:100%;">+ Tambah Aktiviti</button>
     
     <div id="formAktiviti" style="display:none; margin-top: 15px; border-top: 1px solid #e2e8f0; padding-top: 15px;">
       <div class="form-group"><label>Jenis</label><select id="permJenis" onchange="tukarJenisPermohonanForm()"><option value="Cuti">Cuti</option><option value="Keluar">Keluar Pejabat</option><option value="Mesyuarat / Kursus">Mesyuarat / Kursus</option></select></div>
@@ -299,22 +311,27 @@
       <div class="form-group" id="groupTarikhAkhir" style="display:none;"><label>Tarikh Akhir</label><input type="date" id="permTarikhAkhir"></div>
       <div id="groupMasa" style="display: flex; gap: 10px;"><div class="form-group" style="flex:1;"><label>Masa Mula</label><input type="time" id="permMasaMula" value="09:00"></div><div class="form-group" style="flex:1;"><label>Masa Tamat</label><input type="time" id="permMasaTamat" value="13:00"></div></div>
       <div class="form-group"><label>Tujuan / Butiran</label><input type="text" id="permTujuan" placeholder="Cth: Cuti rehat"></div>
-      <div class="modal-btns"><button class="btn-submit" onclick="hantarPergerakan()">Simpan</button><button class="btn-cancel" onclick="tutupFormAktiviti()">Batal</button></div>
+      
+      <div class="modal-btns">
+        <button id="btnSimpanAtauHantar" class="btn-submit" onclick="hantarPergerakan()">Hantar</button>
+        <button class="btn-cancel" onclick="tutupFormAktiviti()">Batal</button>
+      </div>
     </div>
+
     <div class="modal-btns" style="margin-top:15px;"><button class="btn-cancel" onclick="closeModal('modalPermohonan')" style="width:100%;">Tutup</button></div>
   </div>
 </div>
 
 <div id="modalPengesahan" class="modal" style="z-index: 110;">
   <div class="modal-content">
-    <h3 style="margin-bottom: 10px;">🔔 Semakan Kelulusan</h3>
+    <h3 style="margin-bottom: 10px;">🔔 Senarai Kelulusan Kakitangan</h3>
     <div id="senaraiPermohonanMenunggu" style="margin: 10px 0; max-height: 250px; overflow-y: auto;"></div>
     <div class="modal-btns"><button class="btn-cancel" onclick="closeModal('modalPengesahan'); openModal('modalPermohonan');" style="width:100%;">Kembali</button></div>
   </div>
 </div>
 
 <script>
-  // --- TETAPAN JSONBIN BARU ANDA ---
+  // --- TETAPAN JSONBIN ANDA ---
   const JSONBIN_ID = '6aab5fb7ac6210605ad6e552';
   const JSONBIN_MASTER_KEY = '$2a$10$KhOhb3FWCQpWIUWcZLY4xeUvXDMY/gxG8j/vcvJZtHdvaZoaseqFu';
 
@@ -389,7 +406,7 @@
       document.getElementById('welcomeScreen').style.display = 'none';
       document.getElementById('mainDashboard').style.display = 'flex';
       
-      document.getElementById('appTitle').innerText = `📌 ${b.tajukSistem || 'E-Pergerakan bulan ini'}`;
+      document.getElementById('appTitle').innerText = `📌 ${b.name || 'E-Pergerakan bulan ini'}`;
       
       kemaskiniPaparan();
       closeModal('modalTetapanUtama');
@@ -418,7 +435,6 @@
     container.innerHTML = boards.map(b => `
       <div class="board-list-item" onclick="masukKeBoard('${b.id}')">
         <strong style="font-size:1.05rem; word-break: break-word; color: #0f172a;">${b.name}</strong>
-        <span style="font-size:0.85rem; color:#64748b; word-break: break-word; margin-top: 2px;">📌 ${b.tajukSistem || 'E-Pergerakan bulan ini'}</span>
       </div>
     `).join('');
   }
@@ -426,7 +442,7 @@
   function ciptaBoardBaru() {
     const namabaru = prompt("Masukkan Tajuk/Nama Board (Contoh: Bahagian IT):");
     if(namabaru) {
-      boards.push({ id: 'board_' + Date.now(), name: namabaru, tajukSistem: 'E-Pergerakan bulan ini', senaraiStaf: [], rekodPergerakan: [] });
+      boards.push({ id: 'board_' + Date.now(), name: namabaru, senaraiStaf: [], rekodPergerakan: [] });
       simpanKeLocalStorage(); renderSenaraiBoard();
     }
   }
@@ -507,13 +523,14 @@
     if(idx === -1) { 
       document.getElementById('stafNamaInput').value = ''; 
       document.getElementById('stafJawatanInput').value = ''; 
+      document.getElementById('stafKumpulanInput').value = 'Kakitangan';
       document.getElementById('stafGambarPreview').style.display = 'none';
       document.getElementById('stafGambarPreview').src = "";
     } else { 
       const s = senaraiStaf[idx]; 
       document.getElementById('stafNamaInput').value = s.nama; 
       document.getElementById('stafJawatanInput').value = s.jawatan||''; 
-      document.getElementById('stafKumpulanInput').value = s.kumpulan; 
+      document.getElementById('stafKumpulanInput').value = s.kumpulan || 'Kakitangan'; 
       if(s.hbh) document.querySelectorAll('input[name="hbhHari"]').forEach(cb => { if(s.hbh.includes(cb.value)) cb.checked = true; }); 
       
       if(s.gambar) {
@@ -534,7 +551,13 @@
     if(!nama) return alert('Nama staf wajib diisi.');
     const hbh = []; document.querySelectorAll('input[name="hbhHari"]:checked').forEach(cb => hbh.push(cb.value));
     
-    const objBaru = { nama, jawatan: document.getElementById('stafJawatanInput').value, kumpulan: document.getElementById('stafKumpulanInput').value, hbh, gambar: tempGambarB64 };
+    const objBaru = { 
+      nama, 
+      jawatan: document.getElementById('stafJawatanInput').value, 
+      kumpulan: document.getElementById('stafKumpulanInput').value, 
+      hbh, 
+      gambar: tempGambarB64 
+    };
 
     if(idx === -1) {
       senaraiStaf.push(objBaru);
@@ -559,7 +582,7 @@
       return `<div style="display:flex; justify-content:space-between; align-items:center; padding:10px; background:#f8fafc; border:1px solid #cbd5e1; border-radius:8px; margin-bottom:8px;">
         <div style="display:flex; align-items:center; gap:10px;">
           ${avatarHTML}
-          <div><strong>${s.nama}</strong> <span style="font-size:0.75rem;">(${s.kumpulan})</span></div>
+          <div><strong>${s.nama}</strong> <span style="font-size:0.75rem; background:#e2e8f0; padding:2px 6px; border-radius:4px;">${s.kumpulan || 'Kakitangan'}</span></div>
         </div>
         <div style="display:flex; gap:6px;"><button style="background:#475569; color:white; border:none; padding:5px 10px; border-radius:6px;" onclick="bukaFormStafModal(${idx})">Edit</button><button style="background:#dc2626; color:white; border:none; padding:5px 10px; border-radius:6px;" onclick="padamStaf(${idx})">Buang</button></div>
       </div>`;
@@ -609,10 +632,62 @@
     renderSenaraiAktivitiPegawai(); 
   }
 
+  function renderSenaraiAktivitiPegawai() {
+    const stafObj = senaraiStaf.find(s => s.nama === pemohonAktif);
+    const isPenyelia = stafObj?.kumpulan === 'Penyelia' || stafObj?.kumpulan === 'Ketua';
+    document.getElementById('tajukModalPermohonan').innerText = pemohonAktif;
+    
+    // Kira permohonan menunggu dari kakitangan khusus untuk Penyelia
+    const senaraiMenunggu = rekodPergerakan.filter(r => r.status === 'Menunggu' && senaraiStaf.find(s => s.nama === r.nama)?.kumpulan === 'Kakitangan');
+    const containerLoceng = document.getElementById('containerLocengPenyelia');
+    const badge = document.getElementById('badgeBilanganMenunggu');
+    
+    if (isPenyelia) {
+      containerLoceng.style.display = 'flex';
+      badge.innerText = senaraiMenunggu.length;
+    } else {
+      containerLoceng.style.display = 'none';
+    }
+
+    // Ubah teks butang mengikut kumpulan
+    const btnSubmit = document.getElementById('btnSimpanAtauHantar');
+    if (isPenyelia) {
+      btnSubmit.innerText = 'Simpan';
+      btnSubmit.style.background = '#16a34a'; // Hijau untuk Simpan
+    } else {
+      btnSubmit.innerText = 'Hantar';
+      btnSubmit.style.background = '#0f172a'; // Gelap untuk Hantar
+    }
+
+    document.getElementById('senaraiAktivitiPegawai').innerHTML = rekodPergerakan.filter(r => r.nama === pemohonAktif).map(r => `
+      <div class="feedback-item">
+        <strong>[${r.jenis}]</strong> ${r.catatan} 
+        <span style="font-size:0.75rem; font-weight:bold; color:${r.status==='Lulus'?'green':r.status==='Tidak'?'red':'orange'}">(${r.status})</span> 
+        <button onclick="padamAktiviti(${rekodPergerakan.indexOf(r)})" style="background:red; color:white; border:none; border-radius:4px; padding:2px 5px; float:right; cursor:pointer;">X</button>
+      </div>
+    `).join('') || '<p>Tiada aktiviti.</p>';
+    tutupFormAktiviti();
+  }
+
   function bukaModulSemakan() { 
     closeModal('modalPermohonan'); 
     openModal('modalPengesahan'); 
-    document.getElementById('senaraiPermohonanMenunggu').innerHTML = rekodPergerakan.filter(r => r.status==='Menunggu' && senaraiStaf.find(s=>s.nama===r.nama)?.kumpulan!=='Ketua').map((r,i) => `<div class="feedback-item"><strong>${r.nama} - [${r.jenis}]</strong><br>${r.catatan}<br><button onclick="keputusanPenyelia(${rekodPergerakan.indexOf(r)}, 'Lulus')" style="background:#16a34a; padding:4px 8px; color:white; border-radius:4px; border:none; margin-top:5px;">Luluskan</button> <button onclick="keputusanPenyelia(${rekodPergerakan.indexOf(r)}, 'Tidak')" style="background:#dc2626; padding:4px 8px; color:white; border-radius:4px; border:none;">Tolak</button></div>`).join('')||'Tiada.'; 
+    
+    const senaraiMenunggu = rekodPergerakan.filter(r => r.status === 'Menunggu' && senaraiStaf.find(s => s.nama === r.nama)?.kumpulan === 'Kakitangan');
+    
+    document.getElementById('senaraiPermohonanMenunggu').innerHTML = senaraiMenunggu.map((r) => {
+      const originalIdx = rekodPergerakan.indexOf(r);
+      return `
+        <div class="feedback-item">
+          <strong>${r.nama} - [${r.jenis}]</strong><br>
+          ${r.catatan} (${formatTarikhDMY(r.tarikh)})<br>
+          <div style="margin-top:6px; display:flex; gap:8px;">
+            <button onclick="keputusanPenyelia(${originalIdx}, 'Lulus')" style="background:#16a34a; padding:4px 10px; color:white; border-radius:4px; border:none; cursor:pointer;">Luluskan</button> 
+            <button onclick="keputusanPenyelia(${originalIdx}, 'Tidak')" style="background:#dc2626; padding:4px 10px; color:white; border-radius:4px; border:none; cursor:pointer;">Tolak</button>
+          </div>
+        </div>
+      `;
+    }).join('') || '<p style="color:#64748b; font-style:italic;">Tiada permohonan baru menunggu kelulusan.</p>'; 
   }
 
   async function keputusanPenyelia(idx, s) { 
@@ -622,22 +697,11 @@
     kemaskiniPaparan(); 
   }
 
-  function renderSenaraiAktivitiPegawai() {
-    const stafObj = senaraiStaf.find(s => s.nama === pemohonAktif);
-    const isKetua = stafObj?.kumpulan === 'Ketua';
-    document.getElementById('tajukModalPermohonan').innerText = pemohonAktif;
-    
-    // Paparkan ikon loceng jika ketua dan ada permohonan menunggu
-    const adaMenunggu = rekodPergerakan.some(r => r.status === 'Menunggu' && senaraiStaf.find(s=>s.nama===r.nama)?.kumpulan!=='Ketua');
-    const btnLoceng = document.getElementById('btnLocengSemakan');
-    if (isKetua && adaMenunggu) {
-      btnLoceng.style.display = 'block';
-    } else {
-      btnLoceng.style.display = 'none';
-    }
-
-    document.getElementById('senaraiAktivitiPegawai').innerHTML = rekodPergerakan.filter(r => r.nama === pemohonAktif).map(r => `<div class="feedback-item"><strong>[${r.jenis}]</strong> ${r.catatan} (${r.status}) <button onclick="rekodPergerakan.splice(${rekodPergerakan.indexOf(r)},1); simpanKeLocalStorage().then(()=>renderSenaraiAktivitiPegawai()); kemaskiniPaparan();" style="background:red; color:white; border:none; border-radius:4px; padding:2px 5px; float:right;">X</button></div>`).join('') || '<p>Tiada aktiviti.</p>';
-    tutupFormAktiviti();
+  async function padamAktiviti(idx) {
+    rekodPergerakan.splice(idx, 1);
+    await simpanKeLocalStorage();
+    renderSenaraiAktivitiPegawai();
+    kemaskiniPaparan();
   }
 
   function tukarJenisPermohonanForm() { 
@@ -658,17 +722,40 @@
   }
 
   async function hantarPergerakan() {
-    const j = document.getElementById('permJenis').value, t = document.getElementById('permTarikh').value, c = document.getElementById('permTujuan').value;
-    if(!t||!c) return alert('Lengkapkan borang.');
-    rekodPergerakan.push({ nama: pemohonAktif, jenis: j, tarikh: t, tarikhAkhir: document.getElementById('permTarikhAkhir').value||t, masaMula: document.getElementById('permMasaMula').value, masaTamat: document.getElementById('permMasaTamat').value, catatan: c, status: (senaraiStaf.find(s=>s.nama===pemohonAktif)?.kumpulan==='Ketua'?'Lulus':'Menunggu') });
-    await simpanKeLocalStorage(); renderSenaraiAktivitiPegawai(); kemaskiniPaparan();
+    const j = document.getElementById('permJenis').value;
+    const t = document.getElementById('permTarikh').value;
+    const c = document.getElementById('permTujuan').value;
+    if(!t || !c) return alert('Sila lengkapkan tarikh dan tujuan.');
+
+    const stafObj = senaraiStaf.find(s => s.nama === pemohonAktif);
+    const isPenyelia = stafObj?.kumpulan === 'Penyelia' || stafObj?.kumpulan === 'Ketua';
+    
+    // Penyelia terus 'Lulus' (Simpan), Kakitangan 'Menunggu' (Hantar)
+    const statusPermohonan = isPenyelia ? 'Lulus' : 'Menunggu';
+
+    rekodPergerakan.push({
+      nama: pemohonAktif,
+      jenis: j,
+      tarikh: t,
+      tarikhAkhir: document.getElementById('permTarikhAkhir').value || t,
+      masaMula: document.getElementById('permMasaMula').value,
+      masaTamat: document.getElementById('permMasaTamat').value,
+      catatan: c,
+      status: statusPermohonan
+    });
+
+    await simpanKeLocalStorage();
+    renderSenaraiAktivitiPegawai();
+    kemaskiniPaparan();
+    
+    alert(isPenyelia ? "✅ Aktiviti berjaya disimpan!" : "📤 Permohonan berjaya dihantar untuk kelulusan penyelia.");
   }
 
   function renderListPergerakan() {
     document.getElementById('listPergerakanContent').innerHTML = senaraiStaf.map((s,i) => {
       const ak = rekodPergerakan.filter(r => r.nama === s.nama && r.status === 'Lulus');
       return `<div class="staff-group-card" style="border-left:5px solid ${generateAutoColor(i,senaraiStaf.length)};">
-        <div class="staff-group-header">${s.nama}</div>
+        <div class="staff-group-header">${s.nama} <span style="font-size:0.75rem; color:#64748b; font-weight:normal;">(${s.kumpulan||'Kakitangan'})</span></div>
         ${ak.length ? ak.map((a,x)=>`
           <div class="activity-sub-item">
             <div class="activity-left"><strong>${x+1}.</strong> <span>${a.catatan}</span></div>
