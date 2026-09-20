@@ -48,7 +48,7 @@
     }
 
     .top-right-nav { position: absolute; top: 16px; right: 16px; display: flex; gap: 8px; }
-    .welcome-header { width: 100%; max-width: 600px; padding: 20px 10px; text-align: center; }
+    .welcome-header { width: 100%; max-width: 700px; padding: 20px 10px; text-align: center; }
     .welcome-header h1 { font-size: 1.8rem; color: #0f172a; margin-bottom: 20px; font-weight: 700; text-align: center; }
 
     /* MAIN DASHBOARD */
@@ -82,26 +82,37 @@
     .board-note-box .material-symbols-outlined { color: #d97706; }
     .board-note-text { flex: 1; line-height: 1.5; white-space: pre-wrap; font-weight: 600; text-align: left; }
 
-    /* STAFF STRIP - Profile pictures enlarged by 20% (65px * 1.2 = 78px, 70px * 1.2 = 84px) */
+    /* STAFF STRIP - Responsive Mobile & Desktop */
     .staff-strip { 
       display: flex; align-items: flex-start; justify-content: flex-start; 
-      gap: 0; overflow-x: auto; margin-bottom: 20px; padding: 6px 4px; 
-      scrollbar-width: thin; width: 100%; -webkit-overflow-scrolling: touch; 
+      gap: 6px; margin-bottom: 20px; padding: 6px 4px; 
+      scrollbar-width: thin; width: 100%; 
     }
-    .profile-chip { display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 110px; color: var(--text-color); font-size: 0.85rem; cursor: pointer; flex-shrink: 0; text-align: center;}
-    .profile-chip .avatar, .staff-avatar { width: 78px; height: 78px; border-radius: 50%; object-fit: cover; display: block; border: 2px solid white; box-shadow: 0 2px 6px rgba(0,0,0,0.06); }
-    .avatar-empty { display: block; border-radius: 50%; width: 78px; height: 78px; background: #e2e8f0; }
-    .profile-photo-wrap { position: relative; display: flex; align-items: center; justify-content: center; border-radius: 50%; width: 84px; height: 84px; background: #e2e8f0; }
+    .profile-chip { display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 90px; color: var(--text-color); font-size: 0.8rem; flex-shrink: 0; text-align: center;}
+    .profile-chip .avatar, .staff-avatar { width: 56px; height: 56px; border-radius: 50%; object-fit: cover; display: block; border: 2px solid white; box-shadow: 0 2px 6px rgba(0,0,0,0.06); }
+    .avatar-empty { display: block; border-radius: 50%; width: 56px; height: 56px; background: #e2e8f0; }
+    .profile-photo-wrap { position: relative; display: flex; align-items: center; justify-content: center; border-radius: 50%; width: 62px; height: 62px; background: #e2e8f0; }
+    
+    @media (max-width: 768px) {
+      .staff-strip { flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    }
+
+    @media (min-width: 769px) {
+      .staff-strip { flex-wrap: wrap; overflow-x: visible; justify-content: center; }
+      .profile-chip .avatar, .staff-avatar { width: 52px; height: 52px; }
+      .avatar-empty { width: 52px; height: 52px; }
+      .profile-photo-wrap { width: 58px; height: 58px; }
+      .profile-chip { min-width: 85px; font-size: 0.75rem; }
+    }
     
     .notification-badge {
-      position: absolute; top: 0; right: 0; width: 16px; height: 16px; background: #dc2626;
+      position: absolute; top: 0; right: 0; width: 14px; height: 14px; background: #dc2626;
       border: 2px solid #ffffff; border-radius: 50%; display: none;
     }
     .profile-photo-wrap.has-notif .notification-badge { display: block; }
 
     .feedback-item { margin-bottom: 10px; padding: 12px; background: var(--header-bg); border-radius: 8px; font-size: 0.9rem; text-align: left; }
     
-    /* MAIN TABS & ACTIONS ROW - Clean Icon Only without Background */
     .view-tabs { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; width: 100%; gap: 10px; }
     .tabs-left { display: flex; gap: 16px; overflow-x: auto; padding-bottom: 4px; align-items: center; }
     .tabs-right { display: flex; gap: 8px; align-items: center; flex-shrink: 0; }
@@ -110,7 +121,6 @@
     .tab-btn span.material-symbols-outlined { font-size: 1.5rem; color: var(--grey-text); transition: color 0.2s; }
     .tab-btn.active span.material-symbols-outlined { color: var(--text-color); font-weight: bold; }
 
-    /* CLEAN MENU LIST */
     .clean-menu-list { display: flex; flex-direction: column; background: #ffffff; border-radius: 12px; border: 1px solid var(--card-border); overflow: hidden; }
     .clean-menu-item { padding: 14px 18px; background: transparent; border: none; border-bottom: 1px solid var(--card-border); text-align: left; font-size: 0.95rem; font-weight: 500; color: var(--text-color); cursor: pointer; display: flex; align-items: center; gap: 14px; transition: background 0.2s; width: 100%; }
     .clean-menu-item:last-child { border-bottom: none; }
@@ -124,7 +134,6 @@
     .column-scroll { overflow-y: auto; flex: 1; padding-right: 4px; text-align: left; }
     .column-title { font-size: 1.05rem; font-weight: 700; padding-bottom: 10px; margin-bottom: 12px; border-bottom: 1px solid var(--card-border); display: flex; justify-content: space-between; color: var(--text-color); text-align: left; }
 
-    /* PLANNER */
     .list-pergerakan-container { display: flex; flex-direction: column; gap: 12px; background: transparent; border: none; border-radius: 0; padding: 0; box-shadow: none; text-align: left; }
     .staff-group-card { background: transparent; border: none; border-bottom: 1px solid var(--card-border); border-radius: 0; padding: 12px 0; box-shadow: none; text-align: left; }
     .staff-group-card:last-child { border-bottom: none; }
@@ -137,7 +146,6 @@
     .staff-name { font-weight: 600; font-size: 0.95rem; display: block; text-align: left; }
     .staff-right { font-size: 0.9rem; font-weight: 600; text-align: left; max-width: 55%; word-break: break-word; line-height: 1.35; color: var(--grey-text); }
 
-    /* MOBILE TODAY BOXES */
     .mobile-today-box {
       background: #ffffff !important;
       border: 1px solid var(--card-border);
@@ -151,12 +159,8 @@
       box-shadow: 0 1px 3px var(--box-shadow);
       transition: background 0.2s, border-color 0.2s;
     }
-    .mobile-today-box:hover {
-      background: #f8fafc !important;
-      border-color: #cbd5e1;
-    }
+    .mobile-today-box:hover { background: #f8fafc !important; border-color: #cbd5e1; }
 
-    /* CALENDAR VIEW */
     .calendar-container { background: transparent; border: none; border-radius: 0; padding: 0; display: flex; flex-direction: column; width: 100%; box-shadow: none; }
     .calendar-header { display: flex; justify-content: space-between; align-items: center; font-size: 1.15rem; font-weight: 700; margin-bottom: 12px; color: var(--text-color); }
     .calendar-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 6px; width: 100%; }
@@ -166,50 +170,23 @@
     .cal-day.today { border: 2px solid #3b82f6 !important; background-color: #eff6ff !important; }
     .cal-day.empty { background: transparent; border-color: transparent; cursor: default; box-shadow: none; }
     .cal-day.weekend { background-color: #f1f5f9; color: var(--grey-text); opacity: 0.85; }
-    .cal-day.weekend .cal-day-num { color: var(--grey-text); }
 
-    /* PHONE VIEW SPECIFIC STYLING FOR MONTH & TODAY */
     @media (max-width: 768px) {
-      .cal-day > div:not(.cal-day-num) {
-        display: none !important;
-      }
-      .cal-day {
-        min-height: 52px !important;
-        align-items: center;
-        justify-content: center;
-      }
+      .cal-day > div:not(.cal-day-num) { display: none !important; }
+      .cal-day { min-height: 52px !important; align-items: center; justify-content: center; }
     }
 
-    /* MODAL STYLES & EXIT ICON BUTTON */
     .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.4); align-items: center; justify-content: center; padding: 16px; z-index: 100; backdrop-filter: blur(2px); }
     .modal-content { position: relative; background: #ffffff; padding: 24px 20px 20px 20px; border-radius: 16px; width: 100%; max-width: 450px; max-height: 85vh; overflow-y: auto; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); color: #0f172a; text-align: left; }
     
     .modal-exit-btn {
-      position: absolute;
-      top: 12px;
-      right: 12px;
-      background: transparent;
-      border: none;
-      cursor: pointer;
-      color: var(--grey-text);
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      padding: 6px;
-      border-radius: 50%;
-      transition: background 0.2s, color 0.2s;
-      z-index: 10;
+      position: absolute; top: 12px; right: 12px; background: transparent; border: none; cursor: pointer; color: var(--grey-text);
+      display: inline-flex; align-items: center; justify-content: center; padding: 6px; border-radius: 50%;
+      transition: background 0.2s, color 0.2s; z-index: 10;
     }
     .modal-exit-btn:hover { background: #f1f5f9; color: var(--text-color); }
 
-    .modal-title-head {
-      font-size: 1.15rem;
-      font-weight: 700;
-      color: var(--text-color);
-      margin-bottom: 16px;
-      padding-right: 30px;
-      text-align: left;
-    }
+    .modal-title-head { font-size: 1.15rem; font-weight: 700; color: var(--text-color); margin-bottom: 16px; padding-right: 30px; text-align: left; }
 
     .form-group { margin-bottom: 14px; text-align: left; }
     .form-group label { display: block; font-size: 0.95rem; font-weight: 600; margin-bottom: 6px; color: #334155; text-align: left; }
@@ -220,8 +197,9 @@
     .checkbox-item:hover { background: #f8fafc; }
     .checkbox-item input[type="checkbox"] { width: 18px; height: 18px; cursor: pointer; }
 
-    .board-list-item { display: flex; justify-content: space-between; align-items: center; padding: 16px 18px; background: #ffffff; border: 1px solid var(--card-border); border-radius: 12px; margin-bottom: 10px; cursor: pointer; transition: background 0.2s; text-align: left; box-shadow: 0 1px 3px var(--box-shadow); }
-    .board-list-item:hover { background: #f8fafc; }
+    .board-list-item { display: flex; justify-content: space-between; align-items: center; padding: 16px 18px; background: #ffffff; border: 1px solid var(--card-border); border-radius: 12px; margin-bottom: 10px; transition: background 0.2s; text-align: left; box-shadow: 0 1px 3px var(--box-shadow); }
+    .board-list-item.clickable { cursor: pointer; }
+    .board-list-item.clickable:hover { background: #f8fafc; }
 
     @media print {
       body * { visibility: hidden; }
@@ -265,7 +243,6 @@
 
   <div id="staffStrip" class="staff-strip"></div>
 
-  <!-- MAIN TABS & ACTIONS ROW - Icon Only without Background (Today: e7fd, Planner: e241, Month: ebcc) -->
   <div class="view-tabs">
     <div class="tabs-left">
       <button id="btnTabHariIni" class="tab-btn active" onclick="switchView('hari-ini')" title="Today">
@@ -362,7 +339,7 @@
   </div>
 </div>
 
-<!-- ================= EDIT BOARD MODAL (Tanpa fungsi Delete Board) ================= -->
+<!-- ================= EDIT BOARD MODAL ================= -->
 <div id="modalEditBoard" class="modal">
   <div class="modal-content" style="max-width: 400px; background: #ffffff; border: 1px solid var(--card-border);">
     <button class="modal-exit-btn" onclick="closeModal('modalEditBoard')" title="Close">
@@ -383,6 +360,27 @@
       <button class="clean-menu-item" onclick="salinLinkBoard()">
         <span class="material-symbols-outlined">share</span>
         <span>Share Board</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ================= RENEW BOARD MODAL (CALENDAR) ================= -->
+<div id="modalRenewBoard" class="modal" style="z-index: 130;">
+  <div class="modal-content" style="max-width: 380px; background: #ffffff;">
+    <button class="modal-exit-btn" onclick="closeModal('modalRenewBoard')" title="Close">
+      <span class="material-symbols-outlined">close</span>
+    </button>
+    <div class="modal-title-head">Pilih Tarikh Tamat Tempoh</div>
+    
+    <div class="form-group">
+      <label>Tarikh Tamat Baharu *</label>
+      <input type="date" id="inputTarikhRenew">
+    </div>
+
+    <div class="clean-menu-list" style="margin-top: 15px;">
+      <button class="clean-menu-item" style="justify-content: center; font-weight: 600; color:#16a34a;" onclick="simpanRenewBoard()">
+        <span>Simpan</span>
       </button>
     </div>
   </div>
@@ -447,7 +445,7 @@
     <div class="form-group" style="text-align: left;">
       <label>Profile Picture</label>
       <input type="file" id="stafGambarInput" accept="image/*" onchange="previewGambarStaf(event)">
-      <img id="stafGambarPreview" src="" style="display:none; width:84px; height:84px; border-radius:50%; object-fit:cover; margin:10px 0 0 0; border:2px solid #cbd5e1;">
+      <img id="stafGambarPreview" src="" style="display:none; width:62px; height:62px; border-radius:50%; object-fit:cover; margin:10px 0 0 0; border:2px solid #cbd5e1;">
     </div>
 
     <div class="clean-menu-list" style="margin-top: 15px;">
@@ -639,6 +637,7 @@
   let tempGambarB64 = '';
   let currentMonthOffset = 0;
   let dataHariIniCache = { pejabat: '', engagements: '', rumah: '', lain: '' };
+  let renewingBoardId = null;
   
   let adminPassword = 'admin'; 
 
@@ -653,6 +652,24 @@
     const month = String(dateObj.getMonth() + 1).padStart(2, '0');
     const day = String(dateObj.getDate()).padStart(2, '0');
     return `${year}-${month}-${day}`;
+  }
+
+  function formatExpiryDate(dateStr) {
+    if (!dateStr || !dateStr.includes('-')) return dateStr;
+    const parts = dateStr.split('-');
+    if (parts.length !== 3) return dateStr;
+    const year = parts[0];
+    const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+    const monthIndex = parseInt(parts[1], 10) - 1;
+    const monthName = monthNames[monthIndex] || parts[1];
+    const day = parts[2];
+    return `expires on ${day} ${monthName} ${year}`;
+  }
+
+  function isBoardExpired(b) {
+    if (!b.tarikhFreez) return false;
+    const today = getLocalDateString();
+    return today > b.tarikhFreez;
   }
 
   function toggleAdminLogin() {
@@ -700,6 +717,7 @@
     const isAdmin = sessionStorage.getItem('isAdmin') === 'true';
     const btnSettings = document.getElementById('btnSettingsMain');
     const adminIcon = document.getElementById('adminLockIcon');
+    const headerAction = document.querySelector('.header-action-container');
 
     if (isAdmin) {
       if(btnSettings) btnSettings.style.display = 'inline-flex';
@@ -707,14 +725,19 @@
         adminIcon.innerText = 'admin_panel_settings';
         adminIcon.style.color = '#16a34a'; 
       }
+      if(headerAction) headerAction.style.display = 'flex';
     } else {
       if(btnSettings) btnSettings.style.display = 'none';
       if(adminIcon) {
         adminIcon.innerText = 'admin_panel_settings';
         adminIcon.style.color = 'var(--grey-text)';
       }
+      if(headerAction) headerAction.style.display = 'none';
     }
     renderMainBoardsList();
+    if (document.getElementById('staffStrip')) {
+       renderStaffStrip();
+    }
   }
 
   async function muatTurunDataAwan() {
@@ -734,12 +757,27 @@
       boards = JSON.parse(localStorage.getItem('boards')) || [];
     }
     
+    const todayStr = getLocalDateString();
+    boards.forEach(b => {
+      if (!b.tarikhMula) b.tarikhMula = todayStr;
+      if (!b.tarikhFreez) {
+        const d = new Date();
+        d.setDate(d.getDate() + 14);
+        b.tarikhFreez = getLocalDateString(d);
+      }
+    });
+
     checkAdminStatus();
 
+    const isAdmin = sessionStorage.getItem('isAdmin') === 'true';
     const urlParams = new URLSearchParams(window.location.search);
     const boardIdDariUrl = urlParams.get('board');
     if (boardIdDariUrl && boards.find(b => b.id === boardIdDariUrl)) {
-      masukKeBoard(boardIdDariUrl, true);
+      if (isAdmin) {
+        masukKeBoard(boardIdDariUrl, true);
+      } else {
+        try { const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname; window.history.replaceState({path:newUrl}, '', newUrl); } catch(e) {}
+      }
     }
   }
 
@@ -770,8 +808,18 @@
   }
 
   function masukKeBoard(id, dariUrl = false) {
+    const isAdmin = sessionStorage.getItem('isAdmin') === 'true';
+    if (!isAdmin && !dariUrl) {
+      alert("⚠️ Sila log masuk sebagai Admin di halaman utama untuk membuka board ini.");
+      return; 
+    }
+
     const b = boards.find(x => x.id === id);
     if(b) {
+      if (isBoardExpired(b) && !isAdmin) {
+        alert("⚠️ Board ini telah tamat tempoh.");
+      }
+
       activeBoardId = id;
       senaraiStaf = b.senaraiStaf || [];
       rekodPergerakan = b.rekodPergerakan || [];
@@ -784,7 +832,7 @@
       kemaskiniPaparan();
       closeModal('modalTetapanUtama');
 
-      if (!dariUrl) {
+      if (!dariUrl || isAdmin) {
         try { const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?board=' + id; window.history.pushState({path:newUrl}, '', newUrl); } catch(e) {}
       }
     }
@@ -798,7 +846,6 @@
     try { const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname; window.history.pushState({path:newUrl}, '', newUrl); } catch(e) {}
   }
 
-  /* RENDER MAIN BOARDS LIST - Format seperti CMS: SEKSYEN PROMOSI 10 user Delete */
   function renderMainBoardsList() {
     const container = document.getElementById('mainBoardsListContainer');
     if(!container) return;
@@ -821,13 +868,22 @@
         `;
       }
 
+      const tarikhFreez = b.tarikhFreez || '-';
+      const formattedExpiry = formatExpiryDate(tarikhFreez);
+
+      const itemActionAttr = isAdmin ? `onclick="masukKeBoard('${b.id}')"` : '';
+      const freezeClickAction = isAdmin ? `onclick="bukaRenewBoard('${b.id}', event)"` : '';
+
       return `
-        <div class="board-list-item" onclick="masukKeBoard('${b.id}')" style="display:flex; justify-content:space-between; align-items:center;">
+        <div class="board-list-item ${isAdmin ? 'clickable' : ''}" ${itemActionAttr}>
           <div style="display:flex; align-items:center; gap:16px;">
             <strong style="font-size:1.05rem; color: #0f172a; text-transform: uppercase;">${b.name}</strong>
           </div>
-          <div style="display:flex; align-items:center; gap:16px;">
+          <div style="display:flex; align-items:center; gap:16px; flex-wrap:wrap; justify-content:flex-end;">
             <span style="font-size:0.9rem; color: var(--grey-text); font-weight:500;">${userCount} user</span>
+            <span style="font-size:0.85rem; color: #334155; font-weight:600; background:#f1f5f9; padding:4px 8px; border-radius:6px; ${isAdmin ? 'cursor:pointer; text-decoration:underline; color:#2563eb;' : ''}" ${freezeClickAction} ${isAdmin ? 'title="Klik untuk renew menggunakan kalendar"' : ''}>
+              ${formattedExpiry}
+            </span>
             ${adminDelete}
           </div>
         </div>
@@ -835,7 +891,40 @@
     }).join('');
   }
 
+  function bukaRenewBoard(id, event) {
+    if(event) event.stopPropagation();
+    const isAdmin = sessionStorage.getItem('isAdmin') === 'true';
+    if (!isAdmin) {
+      alert("⚠️ Anda perlu log masuk sebagai Admin untuk renew tarikh.");
+      return;
+    }
+    const b = boards.find(x => x.id === id);
+    if(!b) return;
+
+    renewingBoardId = id;
+    document.getElementById('inputTarikhRenew').value = b.tarikhFreez || getLocalDateString();
+    openModal('modalRenewBoard');
+  }
+
+  async function simpanRenewBoard() {
+    const tarikhBaru = document.getElementById('inputTarikhRenew').value;
+    if(!tarikhBaru) {
+      alert("Sila pilih tarikh!");
+      return;
+    }
+    const b = boards.find(x => x.id === renewingBoardId);
+    if(b) {
+      b.tarikhFreez = tarikhBaru;
+      await simpanKeLocalStorage();
+      renderMainBoardsList();
+      alert("✅ Tarikh freez berjaya diperbaharui (renew)!");
+    }
+    closeModal('modalRenewBoard');
+  }
+
   async function padamBoardPantas(id) {
+    const isAdmin = sessionStorage.getItem('isAdmin') === 'true';
+    if (!isAdmin) return;
     const bIndex = boards.findIndex(x => x.id === id);
     if(bIndex > -1) {
       if(confirm(`Adakah anda pasti untuk memadam board "${boards[bIndex].name}" secara kekal?`)) {
@@ -847,15 +936,32 @@
   }
 
   function ciptaBoardBaru() {
-    const namabaru = prompt("Enter Board Name (e.g., SEKSYEN PROMOSI):");
+    const isAdmin = sessionStorage.getItem('isAdmin') === 'true';
+    if (!isAdmin) return;
+    const namabaru = prompt("Enter Board Name (e.g., Board1):");
     if(namabaru) {
-      boards.push({ id: 'board_' + Date.now(), name: namabaru, senaraiStaf: [], rekodPergerakan: [], boardNote: '' });
+      const todayStr = getLocalDateString();
+      const freezeDateObj = new Date();
+      freezeDateObj.setDate(freezeDateObj.getDate() + 14);
+      const freezeStr = getLocalDateString(freezeDateObj);
+
+      boards.push({ 
+        id: 'board_' + Date.now(), 
+        name: namabaru, 
+        senaraiStaf: [], 
+        rekodPergerakan: [], 
+        boardNote: '',
+        tarikhMula: todayStr,
+        tarikhFreez: freezeStr
+      });
       simpanKeLocalStorage(); 
       renderMainBoardsList();
     }
   }
 
   function bukaTetapanDalamBoard() {
+    const isAdmin = sessionStorage.getItem('isAdmin') === 'true';
+    if (!isAdmin) return;
     if (activeBoardId) {
       bukaEditBoard(activeBoardId);
     } else {
@@ -863,7 +969,17 @@
     }
   }
 
+  function cekDanPaparPopupRenew() {
+    const b = boards.find(x => x.id === activeBoardId);
+    if (b && isBoardExpired(b)) {
+      alert("⚠️ Board ini telah tamat tempoh. Sila renew untuk melakukan suntingan atau menambah aktiviti.");
+      return true;
+    }
+    return false;
+  }
+
   function bukaEditBoard(id) {
+    if (cekDanPaparPopupRenew()) return;
     const b = boards.find(x => x.id === id);
     if(!b) return;
     document.getElementById('editBoardId').value = b.id;
@@ -873,6 +989,7 @@
   }
 
   async function editHeaderBoard() {
+    if (cekDanPaparPopupRenew()) return;
     const id = document.getElementById('editBoardId').value;
     const b = boards.find(x => x.id === id);
     if(!b) return;
@@ -916,6 +1033,7 @@
   }
 
   function bukaFormStafModal(idx) {
+    if (cekDanPaparPopupRenew()) return;
     document.getElementById('editIndexStaf').value = idx;
     document.getElementById('stafGambarInput').value = "";
     tempGambarB64 = "";
@@ -947,6 +1065,7 @@
   }
 
   async function simpanStafData() {
+    if (cekDanPaparPopupRenew()) return;
     const idx = parseInt(document.getElementById('editIndexStaf').value);
     const nama = document.getElementById('stafNamaInput').value.trim();
     if(!nama) return alert('User name is required.');
@@ -970,6 +1089,7 @@
   }
 
   async function padamStaf(idx) {
+    if (cekDanPaparPopupRenew()) return;
     if(confirm(`Delete user ${senaraiStaf[idx].nama}?`)) {
       const nm = senaraiStaf[idx].nama; senaraiStaf.splice(idx, 1); rekodPergerakan = rekodPergerakan.filter(r => r.nama !== nm);
       await simpanKeLocalStorage(); r9yMnTm4NSzvG9rrwjM2ec8xZgh1cafXH8(); if(activeBoardId) kemaskiniPaparan();
@@ -993,6 +1113,7 @@
   }
 
   function bukaPanelPengurusanStaf() {
+    if (cekDanPaparPopupRenew()) return;
     const id = document.getElementById('editBoardId').value;
     const b = boards.find(x => x.id === id);
     senaraiStaf = b.senaraiStaf || []; rekodPergerakan = b.rekodPergerakan || [];
@@ -1002,7 +1123,7 @@
   function formatTarikhDMY(t) { 
     if(!t) return ''; 
     const p = t.split('-'); 
-    return p.length === 3 ? `${p[2]}/${p[1]}/${p[0]}` : t; 
+    return p.length === 3 ? `${p[2]}-${p[1]}-${p[0]}` : t; 
   }
 
   function openModal(id) { document.getElementById(id).style.display = 'flex'; }
@@ -1078,6 +1199,8 @@
     const container = document.getElementById('staffStrip');
     if (!senaraiStaf || senaraiStaf.length === 0) { container.innerHTML = '<i>No users. Open Settings to add users.</i>'; return; }
     
+    const isAdmin = sessionStorage.getItem('isAdmin') === 'true';
+
     const sortedStaf = [...senaraiStaf].sort((a, b) => {
       return getRoleLevel(a.kumpulan) - getRoleLevel(b.kumpulan);
     });
@@ -1106,13 +1229,13 @@
         marginRight = '9px';
       }
 
-      return `<div class="profile-chip" style="margin-right: ${marginRight};" onclick="bukaModulStaf('${staf.nama}')">
+      return `<div class="profile-chip" style="margin-right: ${marginRight}; cursor: ${isAdmin ? 'pointer' : 'default'};" ${isAdmin ? `onclick="bukaModulStaf('${staf.nama}')"` : ''}>
         <span class="profile-photo-wrap ${showBadge ? 'has-notif' : ''}">
           ${img}
           <span class="notification-badge"></span>
         </span>
-        <span style="font-weight: 700; max-width: 105px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${staf.nama}</span>
-        <span style="font-size: 0.7rem; color: var(--grey-text); max-width: 105px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${staf.jawatan || ''}</span>
+        <span style="font-weight: 700; max-width: 90px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${staf.nama}</span>
+        <span style="font-size: 0.65rem; color: var(--grey-text); max-width: 90px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${staf.jawatan || ''}</span>
       </div>`;
     }).join('');
   }
@@ -1218,6 +1341,7 @@
   }
 
   function bukaPopUpAddNote() {
+    if (cekDanPaparPopupRenew()) return;
     closeModal('modalMenuProfil');
     const b = boards.find(x => x.id === activeBoardId);
     document.getElementById('inputNotaTeks').value = b.boardNote || '';
@@ -1225,6 +1349,7 @@
   }
 
   async function simpanNotaBoard() {
+    if (cekDanPaparPopupRenew()) return;
     const teksNota = document.getElementById('inputNotaTeks').value.trim();
     const bIndex = boards.findIndex(x => x.id === activeBoardId);
     
@@ -1238,6 +1363,7 @@
   }
 
   function bukaPopUpAddActivity() {
+    if (cekDanPaparPopupRenew()) return;
     closeModal('modalMenuProfil');
     
     document.getElementById('editIndexAktiviti').value = -1;
@@ -1257,6 +1383,7 @@
   }
 
   function suntingAktiviti(index) {
+    if (cekDanPaparPopupRenew()) return;
     closeModal('modalMenuProfil');
     const r = rekodPergerakan[index];
     
@@ -1279,6 +1406,7 @@
   }
 
   async function padamAktiviti(index) {
+    if (cekDanPaparPopupRenew()) return;
     if(confirm("Are you sure you want to delete this item?")) {
       rekodPergerakan.splice(index, 1);
       await simpanKeLocalStorage();
@@ -1296,12 +1424,14 @@
   }
 
   function bukaPopUpHBH() {
+    if (cekDanPaparPopupRenew()) return;
     closeModal('modalMenuProfil');
     document.querySelectorAll('input[name="hbhDay"]').forEach(cb => cb.checked = false);
     openModal('modalHBHPopUp');
   }
 
   async function hantarHBH() {
+    if (cekDanPaparPopupRenew()) return;
     const selectedCheckboxes = document.querySelectorAll('input[name="hbhDay"]:checked');
     if (selectedCheckboxes.length === 0) return alert("Please select at least one day.");
     
@@ -1392,6 +1522,7 @@
   }
 
   async function hantarPergerakan() {
+    if (cekDanPaparPopupRenew()) return;
     const selectElem = document.getElementById('permJenis');
     const j = selectElem ? selectElem.value : '';
     const t = document.getElementById('permTarikh').value;
@@ -1651,29 +1782,17 @@
       if (r.jenis === 'Hari Bekerja Hibrid (HBH)') return false;
       return (!r.jenis.includes('Keluar') && !r.jenis.includes('Outing') && dt >= r.tarikh && dt <= (r.tarikhAkhir || r.tarikh)) || r.tarikh === dt;
     });
-
-    const container = document.getElementById('senaraiAktivitiHariTerpilih');
-    if (ev.length === 0) {
-      container.innerHTML = '<p style="color:var(--grey-text); font-style:italic;">Tiada pergerakan direkodkan.</p>';
-    } else {
-      container.innerHTML = ev.map(r => {
-        let masaInfo = (r.masaMula && r.masaTamat) ? ` (${r.masaMula} - ${r.masaTamat})` : '';
-        return `
-          <div style="background:#f8fafc; border:1px solid var(--card-border); border-radius:8px; padding:10px; margin-bottom:8px; text-align:left;">
-            <strong style="color:var(--text-color);">${r.nama}</strong><br>
-            <span style="font-size:0.85rem; color:var(--grey-text);">${r.jenis}${masaInfo}</span><br>
-            <span style="font-size:0.9rem; color:var(--text-color);">${r.catatan}</span>
-          </div>
-        `;
-      }).join('');
-    }
-
+    
+    document.getElementById('senaraiAktivitiHariTerpilih').innerHTML = ev.length ? ev.map(r => `
+      <div style="padding:8px 0; border-bottom:1px solid #e2e8f0; text-align:left;">
+        <strong>${r.nama}</strong>: ${r.catatan}
+      </div>
+    `).join('') : '<p style="color:#64748b; font-style:italic;">Tiada aktiviti.</p>';
+    
     openModal('modalDetailHari');
   }
 
-  window.onload = function() {
-    muatTurunDataAwan();
-  };
+  window.onload = muatTurunDataAwan;
 </script>
 </body>
 </html>
