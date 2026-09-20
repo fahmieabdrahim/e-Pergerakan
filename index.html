@@ -1675,48 +1675,69 @@
         isHBHToday = true;
       }
 
-      const r = rekodPergerakan.find(x => x.nama === s.nama && x.status === 'Lulus' && x.jenis !== 'Hari Bekerja Hibrid (HBH)' && (
+      if (isHBHToday) {
+        const k = `<div class="staff-card">
+          <div class="staff-card-left"><div><span class="staff-name">${s.nama}</span></div></div>
+          <div class="staff-right">${hbhRec.catatan}</div>
+        </div>`;
+        dr += k; 
+        cr++;
+        return;
+      }
+
+      // Ambil SEMUA permohonan yang lulus untuk hari ini
+      const approvedRecords = rekodPergerakan.filter(x => x.nama === s.nama && x.status === 'Lulus' && x.jenis !== 'Hari Bekerja Hibrid (HBH)' && (
         (!x.jenis.includes('Keluar') && !x.jenis.includes('Outing') && tStr >= x.tarikh && tStr <= (x.tarikhAkhir || x.tarikh)) || 
         (x.tarikh === tStr)
       ));
 
-      let isCurrentlyOut = false;
-      let displayCatatan = '';
-      let isEngagement = false;
+      // Tapis permohonan aktif berdasarkan masa (jika masa tamat telah lepas, ia akan gugur/padam secara live)
+      const activeRecords = approvedRecords.filter(r => {
+        if (r.masaMula && r.masaTamat) {
+          return currentTimeStr >= r.masaMula && currentTimeStr <= r.masaTamat;
+        }
+        return true;
+      });
 
-      if (r) {
-        if (r.jenis.includes('Mesyuarat') || r.jenis.includes('Kursus') || r.jenis.includes('Pameran')) {
-          isEngagement = true;
+      if (activeRecords.length > 0) {
+        const engagementRecs = activeRecords.filter(r => r.jenis.includes('Mesyuarat') || r.jenis.includes('Kursus') || r.jenis.includes('Pameran'));
+        const lainRecs = activeRecords.filter(r => !engagementRecs.includes(r));
+
+        if (engagementRecs.length > 0) {
+          let notesHtml = engagementRecs.map(r => {
+            let timeStr = (r.masaMula && r.masaTamat) ? `${r.masaMula}-${r.masaTamat}: ` : '';
+            return `• ${timeStr}${r.catatan}`;
+          }).join('<br>');
+          const k = `<div class="staff-card">
+            <div class="staff-card-left"><div><span class="staff-name">${s.nama}</span></div></div>
+            <div class="staff-right" style="text-align: left;">${notesHtml}</div>
+          </div>`;
+          de += k;
+          ce++;
         }
 
-        if (r.jenis.includes('Keluar') || r.jenis.includes('Outing')) {
-          if (currentTimeStr >= r.masaMula && currentTimeStr <= r.masaTamat) {
-            isCurrentlyOut = true;
-            displayCatatan = `${r.masaMula}-${r.masaTamat}: ${r.catatan}`;
-          }
-        } else {
-          isCurrentlyOut = true;
-          displayCatatan = r.catatan;
+        if (lainRecs.length > 0) {
+          let notesHtml = lainRecs.map(r => {
+            let timeStr = (r.masaMula && r.masaTamat) ? `${r.masaMula}-${r.masaTamat}: ` : '';
+            return `• ${timeStr}${r.catatan}`;
+          }).join('<br>');
+          const k = `<div class="staff-card">
+            <div class="staff-card-left"><div><span class="staff-name">${s.nama}</span></div></div>
+            <div class="staff-right" style="text-align: left;">${notesHtml}</div>
+          </div>`;
+          dl += k;
+          cl++;
+        }
+      } else {
+        if (!isWeekend) {
+          const k = `<div class="staff-card">
+            <div class="staff-card-left"><div><span class="staff-name">${s.nama}</span></div></div>
+            <div class="staff-right"></div>
+          </div>`;
+          dp += k;
+          cp++;
         }
       }
-
-      if (isWeekend && !isHBHToday && !isCurrentlyOut) {
-        return;
-      }
-
-      const avatarHtml = s.gambar ? `<img src="${s.gambar}" style="width:46px;height:46px;border-radius:50%;object-fit:cover;border:1px solid rgba(0,0,0,0.1);">` : `<span class="avatar-empty" style="width:46px;height:46px;border:1px solid rgba(0,0,0,0.1);"></span>`;
-      
-      const k = `<div class="staff-card">
-        <div class="staff-card-left">${avatarHtml} <div><span class="staff-name">${s.nama}</span></div></div>
-        <div class="staff-right">${isHBHToday ? (hbhRec.catatan) : (isCurrentlyOut ? displayCatatan : '')}</div>
-      </div>`;
-
-      if (isHBHToday) { dr += k; cr++; }
-      else if (isCurrentlyOut) {
-        if (isEngagement) { de += k; ce++; }
-        else { dl += k; cl++; }
-      }
-      else { dp += k; cp++; }
     });
 
     document.getElementById('listPejabat').innerHTML = dp; 
@@ -1777,87 +1798,86 @@
   }
 
   function renderCalendar() {
-    const c = document.getElementById('calendarDays'); c.innerHTML = '';
-    const now = new Date();
-    now.setMonth(now.getMonth() + currentMonthOffset);
-    const thn = now.getFullYear(), bln = now.getMonth();
-    
-    const exactToday = new Date();
-    const todayStr = getLocalDateString(exactToday);
+    const calendarDaysEl = document.getElementById('calendarDays');
+    const calendarHeaderTitleEl = document.getElementById('calendarHeaderTitle');
+    if(!calendarDaysEl) return;
 
-    const bulanMalay = ["Januari","Februari","Mac","April","Mei","Jun","Julai","Ogos","September","Oktober","November","Disember"];
-    document.getElementById('calendarHeaderTitle').innerText = bulanMalay[bln] + " " + thn;
+    const date = new Date();
+    date.setMonth(date.getMonth() + currentMonthOffset);
     
-    let wMula = new Date(thn, bln, 1).getDay(); 
+    const year = date.getFullYear();
+    const month = date.getMonth();
     
-    for(let i=0; i<wMula; i++) c.innerHTML += `<div class="cal-day empty"></div>`;
+    const monthNames = ["Januari", "Februari", "Mac", "April", "Mei", "Jun", "Julai", "Ogos", "September", "Oktober", "November", "Disember"];
+    calendarHeaderTitleEl.innerText = `${monthNames[month]} ${year}`;
+
+    const firstDayIndex = new Date(year, month, 1).getDay();
+    const totalDays = new Date(year, month + 1, 0).getDate();
+    const todayStr = getLocalDateString();
+
+    let daysHtml = '';
     
-    const totalDays = new Date(thn, bln+1, 0).getDate();
-    for(let i=1; i<=totalDays; i++) {
-      let dt = `${thn}-${String(bln+1).padStart(2,'0')}-${String(i).padStart(2,'0')}`;
-      let isToday = (dt === todayStr);
+    for(let i=0; i<firstDayIndex; i++) {
+      daysHtml += `<div class="cal-day empty"></div>`;
+    }
 
-      let dayOfWeek = new Date(thn, bln, i).getDay();
-      let isWeekend = (dayOfWeek === 0 || dayOfWeek === 6);
+    for(let day=1; day<=totalDays; day++) {
+      const currentDayDateStr = `${year}-${String(month+1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+      const isToday = (currentDayDateStr === todayStr);
+      
+      const dayOfWeekNum = new Date(year, month, day).getDay();
+      const isWeekendDay = (dayOfWeekNum === 0 || dayOfWeekNum === 6);
+      const weekendClass = isWeekendDay ? 'weekend' : '';
 
-      let dayClasses = ['cal-day'];
-      if (isToday) dayClasses.push('today');
-      if (isWeekend) dayClasses.push('weekend');
+      const hariNamaMelayu = ["Ahad", "Isnin", "Selasa", "Rabu", "Khamis", "Jumaat", "Sabtu"][dayOfWeekNum];
 
-      let ev = rekodPergerakan.filter(r => {
+      const activeRecsForDay = rekodPergerakan.filter(r => {
         if (r.status !== 'Lulus') return false;
-        if (r.jenis === 'Hari Bekerja Hibrid (HBH)') return false;
-        
-        let isWithinDate = (!r.jenis.includes('Keluar') && !r.jenis.includes('Outing') && dt >= r.tarikh && dt <= (r.tarikhAkhir || r.tarikh)) || r.tarikh === dt;
-        if (!isWithinDate) return false;
-
-        let isWorkCategory = r.jenis.includes('Mesyuarat') || r.jenis.includes('Kursus') || r.jenis.includes('Pameran');
-        
-        if (isWeekend && !isWorkCategory) {
-          return false;
+        if (r.jenis === 'Hari Bekerja Hibrid (HBH)') {
+          return r.hariHBH && r.hariHBH.includes(hariNamaMelayu);
         }
+        return currentDayDateStr >= r.tarikh && currentDayDateStr <= (r.tarikhAkhir || r.tarikh);
+      });
 
-        return true;
-      }).map(r => {
-        let timeInfo = '';
-        if (r.masaMula && r.masaTamat && (r.jenis.includes('Mesyuarat') || r.jenis.includes('Kursus') || r.jenis.includes('Pameran') || r.jenis.includes('Keluar'))) {
-          timeInfo = ` (${r.masaMula}-${r.masaTamat})`;
-        }
-        return `
-          <div style="font-size:0.8rem; color:var(--text-color); margin-bottom:3px; text-align:left; line-height:1.3;">
-            • <strong>${r.nama}</strong>${timeInfo}: ${r.catatan}
-          </div>
-        `;
-      }).join('');
+      let summaryHtml = activeRecsForDay.map(r => `<div style="font-size:0.7rem; background:#e2e8f0; padding:2px 4px; border-radius:4px; margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${r.nama}: ${r.jenis.includes('HBH')?'HBH':r.jenis}</div>`).join('');
 
-      c.innerHTML += `
-        <div class="${dayClasses.join(' ')}" onclick="bukaModalDetailHari('${dt}')">
-          <div class="cal-day-num" style="font-weight:700; margin-bottom:4px; text-align:left;">${i}</div>
-          <div style="flex:1; overflow-y:auto;">${ev}</div>
+      daysHtml += `
+        <div class="cal-day ${isToday ? 'today' : ''} ${weekendClass}" onclick="bukaDetailHari('${currentDayDateStr}')">
+          <div class="cal-day-num" style="font-weight:700; margin-bottom:4px;">${day}</div>
+          ${summaryHtml}
         </div>
       `;
     }
+
+    calendarDaysEl.innerHTML = daysHtml;
   }
 
-  function bukaModalDetailHari(dt) {
-    document.getElementById('tajukModalDetailHari').innerText = `Aktiviti Pada ${formatTarikhDMY(dt)}`;
+  function bukaDetailHari(tarikhStr) {
+    const hariNamaMelayu = ["Ahad", "Inisn", "Selasa", "Rabu", "Khamis", "Jumaat", "Sabtu"][(new Date(tarikhStr)).getDay()];
+    document.getElementById('tajukModalDetailHari').innerText = `Aktiviti pada ${formatTarikhDMY(tarikhStr)}`;
     
-    let ev = rekodPergerakan.filter(r => {
+    const activeRecs = rekodPergerakan.filter(r => {
       if (r.status !== 'Lulus') return false;
-      if (r.jenis === 'Hari Bekerja Hibrid (HBH)') return false;
-      return (!r.jenis.includes('Keluar') && !r.jenis.includes('Outing') && dt >= r.tarikh && dt <= (r.tarikhAkhir || r.tarikh)) || r.tarikh === dt;
+      if (r.jenis === 'Hari Bekerja Hibrid (HBH)') {
+        return r.hariHBH && r.hariHBH.includes(hariNamaMelayu);
+      }
+      return tarikhStr >= r.tarikh && tarikhStr <= (r.tarikhAkhir || r.tarikh);
     });
-    
-    document.getElementById('senaraiAktivitiHariTerpilih').innerHTML = ev.length ? ev.map(r => `
-      <div style="padding:8px 0; border-bottom:1px solid #e2e8f0; text-align:left;">
-        <strong>${r.nama}</strong>: ${r.catatan}
+
+    document.getElementById('senaraiAktivitiHariTerpilih').innerHTML = activeRecs.map(r => `
+      <div style="background:#f8fafc; border:1px solid var(--card-border); border-radius:8px; padding:10px; margin-bottom:8px; text-align:left;">
+        <strong>${r.nama}</strong><br>
+        <span style="color:var(--grey-text); font-size:0.9rem;">${r.jenis}</span><br>
+        <div style="margin-top:4px; font-size:0.9rem;">${r.catatan}</div>
       </div>
-    `).join('') : '<p style="color:#64748b; font-style:italic;">Tiada aktiviti.</p>';
-    
+    `).join('') || '<p style="color:var(--grey-text); font-style:italic;">Tiada aktiviti pada tarikh ini.</p>';
+
     openModal('modalDetailHari');
   }
 
-  window.onload = muatTurunDataAwan;
+  window.onload = function() {
+    muatTurunDataAwan();
+  };
 </script>
 </body>
 </html>
