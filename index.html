@@ -43,13 +43,13 @@
     #welcomeScreen {
       position: fixed; top: 0; left: 0; right: 0; bottom: 0;
       background-color: var(--app-bg);
-      display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
       z-index: 50; padding: 24px 16px; overflow-y: auto;
     }
 
     .top-right-nav { position: absolute; top: 16px; right: 16px; display: flex; gap: 8px; }
     .welcome-header { width: 100%; max-width: 700px; padding: 20px 10px; text-align: center; }
-    .welcome-header h1 { font-size: 1.8rem; color: #0f172a; margin-bottom: 20px; font-weight: 700; text-align: center; }
+    .welcome-header h1 { font-size: 2.5rem; color: #0f172a; margin-bottom: 20px; font-weight: 700; text-align: center; }
 
     /* MAIN DASHBOARD */
     #mainDashboard {
@@ -223,7 +223,8 @@
 
   <div class="welcome-header">
     <h1>ePergerakan</h1>
-    <div id="mainBoardsListContainer" style="width: 100%; display: flex; flex-direction: column;"></div>
+    <!-- Panel kawalan / senarai board disorokkan untuk pengguna biasa dan hanya dipaparkan apabila admin log masuk -->
+    <div id="mainBoardsListContainer" style="width: 100%; display: none; flex-direction: column; margin-top: 20px;"></div>
   </div>
 </div>
 
@@ -235,7 +236,7 @@
     </div>
     
     <div class="header-action-container">
-      <button class="plain-icon-btn" onclick="bukaTetapanDalamBoard()" title="Settings">
+      <button class="plain-icon-btn" onclick="bukaTetapanDalamBoard()" title="Board Settings">
         <span class="material-symbols-outlined">tune</span>
       </button>
     </div>
@@ -319,13 +320,13 @@
   </div>
 </div>
 
-<!-- ================= SETTINGS MENU MODAL ================= -->
+<!-- ================= SETTINGS MENU MODAL (ADMIN ONLY) ================= -->
 <div id="modalTetapanUtama" class="modal">
   <div class="modal-content" style="max-width: 400px; background: #ffffff; border: 1px solid var(--card-border);">
     <button class="modal-exit-btn" onclick="closeModal('modalTetapanUtama')" title="Close">
       <span class="material-symbols-outlined">close</span>
     </button>
-    <div class="modal-title-head">Settings</div>
+    <div class="modal-title-head">Admin Settings</div>
     <div class="clean-menu-list">
       <button class="clean-menu-item" onclick="ciptaBoardBaru(); closeModal('modalTetapanUtama');">
         <span class="material-symbols-outlined">add_circle</span>
@@ -339,7 +340,7 @@
   </div>
 </div>
 
-<!-- ================= EDIT BOARD MODAL ================= -->
+<!-- ================= EDIT BOARD MODAL (BOARD SETTINGS) ================= -->
 <div id="modalEditBoard" class="modal">
   <div class="modal-content" style="max-width: 400px; background: #ffffff; border: 1px solid var(--card-border);">
     <button class="modal-exit-btn" onclick="closeModal('modalEditBoard')" title="Close">
@@ -365,7 +366,7 @@
   </div>
 </div>
 
-<!-- ================= RENEW BOARD MODAL (CALENDAR) ================= -->
+<!-- ================= RENEW BOARD MODAL (ADMIN ONLY) ================= -->
 <div id="modalRenewBoard" class="modal" style="z-index: 130;">
   <div class="modal-content" style="max-width: 380px; background: #ffffff;">
     <button class="modal-exit-btn" onclick="closeModal('modalRenewBoard')" title="Close">
@@ -625,6 +626,17 @@
   </div>
 </div>
 
+<!-- ================= CUSTOM MESSAGE BOX / MODAL (COMPLIANCE) ================= -->
+<div id="modalCustomMsg" class="modal" style="z-index: 250;">
+  <div class="modal-content" style="max-width: 360px; background: #ffffff; text-align: center; padding: 24px;">
+    <div id="customMsgText" style="margin-bottom: 20px; font-size: 1rem; color: #1e293b; font-weight: 500; text-align: center; line-height: 1.5;"></div>
+    <div id="customMsgButtons" style="display: flex; gap: 10px; justify-content: center;">
+      <button id="customMsgBtnOk" class="clean-menu-item" style="justify-content: center; background: #2563eb; color: white; border-radius: 8px; padding: 10px 24px; font-weight: 600;">OK</button>
+      <button id="customMsgBtnCancel" class="clean-menu-item" style="display: none; justify-content: center; background: #e2e8f0; color: #1e293b; border-radius: 8px; padding: 10px 24px; font-weight: 600;">Batal</button>
+    </div>
+  </div>
+</div>
+
 <script>
   const JSONBIN_ID = '6aab5fb7ac6210605ad6e552';
   const JSONBIN_MASTER_KEY = '$2a$10$KhOhb3FWCQpWIUWcZLY4xeUvXDMY/gxG8j/vcvJZtHdvaZoaseqFu';
@@ -638,8 +650,56 @@
   let currentMonthOffset = 0;
   let dataHariIniCache = { pejabat: '', engagements: '', rumah: '', lain: '' };
   let renewingBoardId = null;
-  
   let adminPassword = 'admin'; 
+
+  function showMsg(message, callback = null, showCancel = false) {
+    const modal = document.getElementById('modalCustomMsg');
+    const textEl = document.getElementById('customMsgText');
+    const okBtn = document.getElementById('customMsgBtnOk');
+    const cancelBtn = document.getElementById('customMsgBtnCancel');
+
+    textEl.innerText = message;
+    modal.style.display = 'flex';
+
+    cancelBtn.style.display = showCancel ? 'inline-flex' : 'none';
+
+    okBtn.onclick = function() {
+      modal.style.display = 'none';
+      if(callback) callback(true);
+    };
+
+    cancelBtn.onclick = function() {
+      modal.style.display = 'none';
+      if(callback) callback(false);
+    };
+  }
+
+  function showPrompt(message, defaultValue = '', callback) {
+    const modal = document.getElementById('modalCustomMsg');
+    const textEl = document.getElementById('customMsgText');
+    const okBtn = document.getElementById('customMsgBtnOk');
+    const cancelBtn = document.getElementById('customMsgBtnCancel');
+
+    textEl.innerHTML = `${message}<br><input type="text" id="customPromptInput" value="${defaultValue}" style="width:100%; padding:10px; margin-top:12px; border:1px solid #cbd5e1; border-radius:8px; font-size:0.95rem;">`;
+    modal.style.display = 'flex';
+    cancelBtn.style.display = 'inline-flex';
+
+    setTimeout(() => {
+      const input = document.getElementById('customPromptInput');
+      if(input) { input.focus(); input.select(); }
+    }, 50);
+
+    okBtn.onclick = function() {
+      const val = document.getElementById('customPromptInput').value;
+      modal.style.display = 'none';
+      if(callback) callback(val);
+    };
+
+    cancelBtn.onclick = function() {
+      modal.style.display = 'none';
+      if(callback) callback(null);
+    };
+  }
 
   function getRoleLevel(role) {
     if (!role || role === '') return 6; 
@@ -675,49 +735,54 @@
   function toggleAdminLogin() {
     const isAdmin = sessionStorage.getItem('isAdmin') === 'true';
     if (isAdmin) {
-      if(confirm("Adakah anda pasti untuk log keluar dari mod Admin?")) {
-        sessionStorage.removeItem('isAdmin');
-        checkAdminStatus();
-      }
+      showMsg("Adakah anda pasti untuk log keluar dari mod Admin?", (confirmed) => {
+        if (confirmed) {
+          sessionStorage.removeItem('isAdmin');
+          checkAdminStatus();
+        }
+      }, true);
     } else {
-      const pwd = prompt("Sila masukkan kata laluan Admin:");
-      if (pwd === adminPassword) {
-        sessionStorage.setItem('isAdmin', 'true');
-        checkAdminStatus();
-      } else if (pwd !== null) {
-        alert("Kata laluan salah!");
-      }
+      showPrompt("Sila masukkan kata laluan Admin:", "", (pwd) => {
+        if (pwd === null) return;
+        if (pwd === adminPassword) {
+          sessionStorage.setItem('isAdmin', 'true');
+          checkAdminStatus();
+        } else {
+          showMsg("Kata laluan salah!");
+        }
+      });
     }
   }
 
   function tukarKataLaluanAdmin() {
     const isAdmin = sessionStorage.getItem('isAdmin') === 'true';
     if (!isAdmin) {
-      alert("Sila log masuk sebagai Admin terlebih dahulu untuk menukar kata laluan.");
+      showMsg("Sila log masuk sebagai Admin terlebih dahulu untuk menukar kata laluan.");
       return;
     }
-    const oldPwd = prompt("Masukkan kata laluan Admin semasa:");
-    if (oldPwd === null) return;
-    if (oldPwd !== adminPassword) {
-      alert("Kata laluan semasa salah!");
-      return;
-    }
-    const newPwd = prompt("Masukkan kata laluan Admin baru:");
-    if (newPwd === null) return;
-    if (newPwd.trim() === "") {
-      alert("Kata laluan tidak boleh kosong!");
-      return;
-    }
-    adminPassword = newPwd.trim();
-    simpanKeLocalStorage();
-    alert("✅ Kata laluan admin berjaya ditukar!");
+    showPrompt("Masukkan kata laluan Admin semasa:", "", (oldPwd) => {
+      if (oldPwd === null) return;
+      if (oldPwd !== adminPassword) {
+        showMsg("Kata laluan semasa salah!");
+        return;
+      }
+      showPrompt("Masukkan kata laluan Admin baru:", "", (newPwd) => {
+        if (newPwd === null) return;
+        if (newPwd.trim() === "") {
+          showMsg("Kata laluan tidak boleh kosong!");
+          return;
+        }
+        adminPassword = newPwd.trim();
+        simpanKeLocalStorage();
+        showMsg("✅ Kata laluan admin berjaya ditukar!");
+      });
+    });
   }
 
   function checkAdminStatus() {
     const isAdmin = sessionStorage.getItem('isAdmin') === 'true';
     const btnSettings = document.getElementById('btnSettingsMain');
     const adminIcon = document.getElementById('adminLockIcon');
-    const headerAction = document.querySelector('.header-action-container');
 
     if (isAdmin) {
       if(btnSettings) btnSettings.style.display = 'inline-flex';
@@ -725,14 +790,12 @@
         adminIcon.innerText = 'admin_panel_settings';
         adminIcon.style.color = '#16a34a'; 
       }
-      if(headerAction) headerAction.style.display = 'flex';
     } else {
       if(btnSettings) btnSettings.style.display = 'none';
       if(adminIcon) {
         adminIcon.innerText = 'admin_panel_settings';
         adminIcon.style.color = 'var(--grey-text)';
       }
-      if(headerAction) headerAction.style.display = 'none';
     }
     renderMainBoardsList();
     if (document.getElementById('staffStrip')) {
@@ -769,15 +832,10 @@
 
     checkAdminStatus();
 
-    const isAdmin = sessionStorage.getItem('isAdmin') === 'true';
     const urlParams = new URLSearchParams(window.location.search);
     const boardIdDariUrl = urlParams.get('board');
     if (boardIdDariUrl && boards.find(b => b.id === boardIdDariUrl)) {
-      if (isAdmin) {
-        masukKeBoard(boardIdDariUrl, true);
-      } else {
-        try { const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname; window.history.replaceState({path:newUrl}, '', newUrl); } catch(e) {}
-      }
+      masukKeBoard(boardIdDariUrl, true);
     }
   }
 
@@ -801,23 +859,17 @@
     const baseUrl = window.location.href.split('?')[0];
     const shareUrl = `${baseUrl}?board=${activeBoardId}`;
     if (navigator.clipboard && window.isSecureContext) {
-      navigator.clipboard.writeText(shareUrl).then(() => alert("✅ Link Successfully Copied!")).catch(err => prompt("Copy link:", shareUrl));
+      navigator.clipboard.writeText(shareUrl).then(() => showMsg("✅ Link Successfully Copied!")).catch(err => showPrompt("Copy link:", shareUrl, ()=>{}));
     } else {
-      prompt("Copy link:", shareUrl);
+      showPrompt("Copy link:", shareUrl, ()=>{});
     }
   }
 
   function masukKeBoard(id, dariUrl = false) {
-    const isAdmin = sessionStorage.getItem('isAdmin') === 'true';
-    if (!isAdmin && !dariUrl) {
-      alert("⚠️ Sila log masuk sebagai Admin di halaman utama untuk membuka board ini.");
-      return; 
-    }
-
     const b = boards.find(x => x.id === id);
     if(b) {
-      if (isBoardExpired(b) && !isAdmin) {
-        alert("⚠️ Board ini telah tamat tempoh.");
+      if (isBoardExpired(b)) {
+        showMsg("⚠️ Board ini telah tamat tempoh.");
       }
 
       activeBoardId = id;
@@ -832,9 +884,7 @@
       kemaskiniPaparan();
       closeModal('modalTetapanUtama');
 
-      if (!dariUrl || isAdmin) {
-        try { const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?board=' + id; window.history.pushState({path:newUrl}, '', newUrl); } catch(e) {}
-      }
+      try { const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?board=' + id; window.history.pushState({path:newUrl}, '', newUrl); } catch(e) {}
     }
   }
 
@@ -849,39 +899,44 @@
   function renderMainBoardsList() {
     const container = document.getElementById('mainBoardsListContainer');
     if(!container) return;
+
+    const isAdmin = sessionStorage.getItem('isAdmin') === 'true';
+
+    /* Pengguna biasa hanya lihat tajuk sahaja, panel kawalan (senarai board) disorokkan melainkan admin log masuk */
+    if (!isAdmin) {
+      container.style.display = 'none';
+      container.innerHTML = '';
+      return;
+    }
+
+    container.style.display = 'flex';
+
     if(boards.length === 0) { 
       container.innerHTML = '<p style="color:#64748b; font-style:italic; text-align:center; padding:20px;">Tiada rekod board. Sila log masuk admin untuk membina board baru.</p>'; 
       return; 
     }
 
-    const isAdmin = sessionStorage.getItem('isAdmin') === 'true';
-
     container.innerHTML = boards.map(b => {
       const userCount = (b.senaraiStaf || []).length;
-      let adminDelete = '';
-      
-      if (isAdmin) {
-        adminDelete = `
-          <button class="plain-icon-btn" onclick="event.stopPropagation(); padamBoardPantas('${b.id}')" style="color:#dc2626; padding:4px 8px; font-size:0.9rem; font-weight:600;" title="Padam Board">
-            Delete
-          </button>
-        `;
-      }
+      let adminDelete = `
+        <button class="plain-icon-btn" onclick="event.stopPropagation(); padamBoardPantas('${b.id}')" style="color:#dc2626; padding:4px 8px; font-size:0.9rem; font-weight:600;" title="Padam Board">
+          Delete
+        </button>
+      `;
 
       const tarikhFreez = b.tarikhFreez || '-';
       const formattedExpiry = formatExpiryDate(tarikhFreez);
 
-      const itemActionAttr = isAdmin ? `onclick="masukKeBoard('${b.id}')"` : '';
-      const freezeClickAction = isAdmin ? `onclick="bukaRenewBoard('${b.id}', event)"` : '';
+      const freezeClickAction = `onclick="bukaRenewBoard('${b.id}', event)"`;
 
       return `
-        <div class="board-list-item ${isAdmin ? 'clickable' : ''}" ${itemActionAttr}>
+        <div class="board-list-item clickable" onclick="masukKeBoard('${b.id}')">
           <div style="display:flex; align-items:center; gap:16px;">
             <strong style="font-size:1.05rem; color: #0f172a; text-transform: uppercase;">${b.name}</strong>
           </div>
           <div style="display:flex; align-items:center; gap:16px; flex-wrap:wrap; justify-content:flex-end;">
             <span style="font-size:0.9rem; color: var(--grey-text); font-weight:500;">${userCount} user</span>
-            <span style="font-size:0.85rem; color: #334155; font-weight:600; background:#f1f5f9; padding:4px 8px; border-radius:6px; ${isAdmin ? 'cursor:pointer; text-decoration:underline; color:#2563eb;' : ''}" ${freezeClickAction} ${isAdmin ? 'title="Klik untuk renew menggunakan kalendar"' : ''}>
+            <span style="font-size:0.85rem; color: #334155; font-weight:600; background:#f1f5f9; padding:4px 8px; border-radius:6px; cursor:pointer; text-decoration:underline; color:#2563eb;" ${freezeClickAction} title="Klik untuk renew menggunakan kalendar (Admin sahaja)">
               ${formattedExpiry}
             </span>
             ${adminDelete}
@@ -895,7 +950,7 @@
     if(event) event.stopPropagation();
     const isAdmin = sessionStorage.getItem('isAdmin') === 'true';
     if (!isAdmin) {
-      alert("⚠️ Anda perlu log masuk sebagai Admin untuk renew tarikh.");
+      showMsg("⚠️ Anda perlu log masuk sebagai Admin untuk renew tarikh tamat tempoh board.");
       return;
     }
     const b = boards.find(x => x.id === id);
@@ -909,7 +964,7 @@
   async function simpanRenewBoard() {
     const tarikhBaru = document.getElementById('inputTarikhRenew').value;
     if(!tarikhBaru) {
-      alert("Sila pilih tarikh!");
+      showMsg("Sila pilih tarikh!");
       return;
     }
     const b = boards.find(x => x.id === renewingBoardId);
@@ -917,7 +972,7 @@
       b.tarikhFreez = tarikhBaru;
       await simpanKeLocalStorage();
       renderMainBoardsList();
-      alert("✅ Tarikh freez berjaya diperbaharui (renew)!");
+      showMsg("✅ Tarikh freez berjaya diperbaharui (renew)!");
     }
     closeModal('modalRenewBoard');
   }
@@ -927,52 +982,51 @@
     if (!isAdmin) return;
     const bIndex = boards.findIndex(x => x.id === id);
     if(bIndex > -1) {
-      if(confirm(`Adakah anda pasti untuk memadam board "${boards[bIndex].name}" secara kekal?`)) {
-        boards.splice(bIndex, 1);
-        await simpanKeLocalStorage();
-        renderMainBoardsList();
-      }
+      showMsg(`Adakah anda pasti untuk memadam board "${boards[bIndex].name}" secara kekal?`, async (confirmed) => {
+        if(confirmed) {
+          boards.splice(bIndex, 1);
+          await simpanKeLocalStorage();
+          renderMainBoardsList();
+        }
+      }, true);
     }
   }
 
   function ciptaBoardBaru() {
     const isAdmin = sessionStorage.getItem('isAdmin') === 'true';
     if (!isAdmin) return;
-    const namabaru = prompt("Enter Board Name (e.g., Board1):");
-    if(namabaru) {
-      const todayStr = getLocalDateString();
-      const freezeDateObj = new Date();
-      freezeDateObj.setDate(freezeDateObj.getDate() + 14);
-      const freezeStr = getLocalDateString(freezeDateObj);
+    showPrompt("Enter Board Name (e.g., Board1):", "", async (namabaru) => {
+      if(namabaru && namabaru.trim() !== "") {
+        const todayStr = getLocalDateString();
+        const freezeDateObj = new Date();
+        freezeDateObj.setDate(freezeDateObj.getDate() + 14);
+        const freezeStr = getLocalDateString(freezeDateObj);
 
-      boards.push({ 
-        id: 'board_' + Date.now(), 
-        name: namabaru, 
-        senaraiStaf: [], 
-        rekodPergerakan: [], 
-        boardNote: '',
-        tarikhMula: todayStr,
-        tarikhFreez: freezeStr
-      });
-      simpanKeLocalStorage(); 
-      renderMainBoardsList();
-    }
+        boards.push({ 
+          id: 'board_' + Date.now(), 
+          name: namabaru.trim(), 
+          senaraiStaf: [], 
+          rekodPergerakan: [], 
+          boardNote: '',
+          tarikhMula: todayStr,
+          tarikhFreez: freezeStr
+        });
+        await simpanKeLocalStorage(); 
+        renderMainBoardsList();
+      }
+    });
   }
 
   function bukaTetapanDalamBoard() {
-    const isAdmin = sessionStorage.getItem('isAdmin') === 'true';
-    if (!isAdmin) return;
     if (activeBoardId) {
       bukaEditBoard(activeBoardId);
-    } else {
-      openModal('modalTetapanUtama');
     }
   }
 
   function cekDanPaparPopupRenew() {
     const b = boards.find(x => x.id === activeBoardId);
     if (b && isBoardExpired(b)) {
-      alert("⚠️ Board ini telah tamat tempoh. Sila renew untuk melakukan suntingan atau menambah aktiviti.");
+      showMsg("⚠️ Board ini telah tamat tempoh.");
       return true;
     }
     return false;
@@ -993,16 +1047,17 @@
     const id = document.getElementById('editBoardId').value;
     const b = boards.find(x => x.id === id);
     if(!b) return;
-    const namaBaru = prompt("Enter new Header / Board Name:", b.name);
-    if(namaBaru !== null && namaBaru.trim() !== "") {
-      b.name = namaBaru.trim();
-      await simpanKeLocalStorage();
-      if(activeBoardId === id) {
-        document.getElementById('appTitle').innerText = b.name;
+    showPrompt("Enter new Header / Board Name:", b.name, async (namaBaru) => {
+      if(namaBaru !== null && namaBaru.trim() !== "") {
+        b.name = namaBaru.trim();
+        await simpanKeLocalStorage();
+        if(activeBoardId === id) {
+          document.getElementById('appTitle').innerText = b.name;
+        }
+        renderMainBoardsList();
+        closeModal('modalEditBoard');
       }
-      renderMainBoardsList();
-      closeModal('modalEditBoard');
-    }
+    });
   }
 
   function previewGambarStaf(event) {
@@ -1068,7 +1123,7 @@
     if (cekDanPaparPopupRenew()) return;
     const idx = parseInt(document.getElementById('editIndexStaf').value);
     const nama = document.getElementById('stafNamaInput').value.trim();
-    if(!nama) return alert('User name is required.');
+    if(!nama) { showMsg('User name is required.'); return; }
     
     const objBaru = { 
       nama, 
@@ -1085,18 +1140,27 @@
       if(namaLama !== nama) rekodPergerakan.forEach(r => { if(r.nama === namaLama) r.nama = nama; });
       senaraiStaf[idx] = objBaru;
     }
-    await simpanKeLocalStorage(); closeModal('modalFormStaf'); r9yMnTm4NSzvG9rrwjM2ec8xZgh1cafXH8(); if(activeBoardId) kemaskiniPaparan();
+    await simpanKeLocalStorage(); 
+    closeModal('modalFormStaf'); 
+    rahJ91ZuNL8Y2px8iYciYeHN8sfSh5eXH8(); 
+    if(activeBoardId) kemaskiniPaparan();
   }
 
   async function padamStaf(idx) {
     if (cekDanPaparPopupRenew()) return;
-    if(confirm(`Delete user ${senaraiStaf[idx].nama}?`)) {
-      const nm = senaraiStaf[idx].nama; senaraiStaf.splice(idx, 1); rekodPergerakan = rekodPergerakan.filter(r => r.nama !== nm);
-      await simpanKeLocalStorage(); r9yMnTm4NSzvG9rrwjM2ec8xZgh1cafXH8(); if(activeBoardId) kemaskiniPaparan();
-    }
+    showMsg(`Delete user ${senaraiStaf[idx].nama}?`, async (confirmed) => {
+      if(confirmed) {
+        const nm = senaraiStaf[idx].nama; 
+        senaraiStaf.splice(idx, 1); 
+        rekodPergerakan = rekodPergerakan.filter(r => r.nama !== nm);
+        await simpanKeLocalStorage(); 
+        rahJ91ZuNL8Y2px8iYciYeHN8sfSh5eXH8(); 
+        if(activeBoardId) kemaskiniPaparan();
+      }
+    }, true);
   }
 
-  function r9yMnTm4NSzvG9rrwjM2ec8xZgh1cafXH8() {
+  function rahJ91ZuNL8Y2px8iYciYeHN8sfSh5eXH8() {
     document.getElementById('senaraiStafContainer').innerHTML = senaraiStaf.map((s, idx) => {
       const avatarHTML = s.gambar ? `<img src="${s.gambar}" style="width:36px; height:36px; border-radius:50%; object-fit:cover; border:1px solid #cbd5e1;">` : `<span style="width:36px; height:36px; border-radius:50%; background:#e2e8f0; display:inline-block; border:1px solid #cbd5e1;"></span>`;
       return `<div style="display:flex; justify-content:space-between; align-items:center; padding:10px; background:#f8fafc; border:1px solid #cbd5e1; border-radius:8px; margin-bottom:8px;">
@@ -1117,7 +1181,7 @@
     const id = document.getElementById('editBoardId').value;
     const b = boards.find(x => x.id === id);
     senaraiStaf = b.senaraiStaf || []; rekodPergerakan = b.rekodPergerakan || [];
-    closeModal('modalEditBoard'); openModal('modalPengurusanStaf'); r9yMnTm4NSzvG9rrwjM2ec8xZgh1cafXH8();
+    closeModal('modalEditBoard'); openModal('modalPengurusanStaf'); rahJ91ZuNL8Y2px8iYciYeHN8sfSh5eXH8();
   }
 
   function formatTarikhDMY(t) { 
@@ -1162,12 +1226,12 @@
     const text = contentEl.innerText;
     if (navigator.clipboard && window.isSecureContext) {
       navigator.clipboard.writeText(text).then(() => {
-        alert("✅ Planner content successfully copied!");
+        showMsg("✅ Planner content successfully copied!");
       }).catch(err => {
-        prompt("Copy planner content:", text);
+        showPrompt("Copy planner content:", text, ()=>{});
       });
     } else {
-      prompt("Copy planner content:", text);
+      showPrompt("Copy planner content:", text, ()=>{});
     }
   }
 
@@ -1198,8 +1262,6 @@
   function renderStaffStrip() {
     const container = document.getElementById('staffStrip');
     if (!senaraiStaf || senaraiStaf.length === 0) { container.innerHTML = '<i>No users. Open Settings to add users.</i>'; return; }
-    
-    const isAdmin = sessionStorage.getItem('isAdmin') === 'true';
 
     const sortedStaf = [...senaraiStaf].sort((a, b) => {
       return getRoleLevel(a.kumpulan) - getRoleLevel(b.kumpulan);
@@ -1229,7 +1291,7 @@
         marginRight = '9px';
       }
 
-      return `<div class="profile-chip" style="margin-right: ${marginRight}; cursor: ${isAdmin ? 'pointer' : 'default'};" ${isAdmin ? `onclick="bukaModulStaf('${staf.nama}')"` : ''}>
+      return `<div class="profile-chip" style="margin-right: ${marginRight}; cursor: pointer;" onclick="bukaModulStaf('${staf.nama}')">
         <span class="profile-photo-wrap ${showBadge ? 'has-notif' : ''}">
           ${img}
           <span class="notification-badge"></span>
@@ -1407,18 +1469,20 @@
 
   async function padamAktiviti(index) {
     if (cekDanPaparPopupRenew()) return;
-    if(confirm("Are you sure you want to delete this item?")) {
-      rekodPergerakan.splice(index, 1);
-      await simpanKeLocalStorage();
-      kemaskiniPaparan();
-      renderSenaraiAktivitiPeribadiModal();
-    }
+    showMsg("Are you sure you want to delete this item?", async (confirmed) => {
+      if(confirmed) {
+        rekodPergerakan.splice(index, 1);
+        await simpanKeLocalStorage();
+        kemaskiniPaparan();
+        renderSenaraiAktivitiPeribadiModal();
+      }
+    }, true);
   }
 
   function hadkanPilihanHBH(checkbox) {
     const checkboxes = document.querySelectorAll('input[name="hbhDay"]:checked');
     if (checkboxes.length > 2) {
-      alert("You are only allowed to select a maximum of 2 hybrid working days.");
+      showMsg("You are only allowed to select a maximum of 2 hybrid working days.");
       checkbox.checked = false;
     }
   }
@@ -1433,7 +1497,7 @@
   async function hantarHBH() {
     if (cekDanPaparPopupRenew()) return;
     const selectedCheckboxes = document.querySelectorAll('input[name="hbhDay"]:checked');
-    if (selectedCheckboxes.length === 0) return alert("Please select at least one day.");
+    if (selectedCheckboxes.length === 0) { showMsg("Please select at least one day."); return; }
     
     const hariPilihan = Array.from(selectedCheckboxes).map(cb => cb.value).join(', ');
     
@@ -1456,7 +1520,7 @@
     await simpanKeLocalStorage();
     kemaskiniPaparan();
     
-    alert(`✅ Hybrid Working Days (${hariPilihan}) successfully saved!`);
+    showMsg(`✅ Hybrid Working Days (${hariPilihan}) successfully saved!`);
     kembaliKeMenuProfil('modalHBHPopUp');
   }
 
@@ -1491,14 +1555,15 @@
   }
 
   async function tolakPenyeliaPrompt(idx) {
-    const sebab = prompt("State rejection reason:");
-    if(sebab !== null) {
-      rekodPergerakan[idx].status = 'Ditolak';
-      rekodPergerakan[idx].sebabTolak = sebab.trim() || 'No reason specified';
-      await simpanKeLocalStorage();
-      bukaModulSemakan();
-      kemaskiniPaparan();
-    }
+    showPrompt("State rejection reason:", "", async (sebab) => {
+      if(sebab !== null) {
+        rekodPergerakan[idx].status = 'Ditolak';
+        rekodPergerakan[idx].sebabTolak = sebab.trim() || 'No reason specified';
+        await simpanKeLocalStorage();
+        bukaModulSemakan();
+        kemaskiniPaparan();
+      }
+    });
   }
 
   async function keputusanPenyelia(idx, s) { 
@@ -1529,7 +1594,7 @@
     const c = document.getElementById('permTujuan').value;
     const editIdx = parseInt(document.getElementById('editIndexAktiviti').value);
     
-    if(!t || !c) return alert('Please complete the date and notes.');
+    if(!t || !c) { showMsg('Please complete the date and notes.'); return; }
 
     const stafObj = senaraiStaf.find(s => s.nama === pemohonAktif);
     const myRoleLevel = getRoleLevel(stafObj?.kumpulan);
@@ -1559,7 +1624,7 @@
     await simpanKeLocalStorage();
     kemaskiniPaparan();
     
-    alert(editIdx === -1 ? (isLeader ? "✅ Activity successfully saved!" : "📤 Application successfully sent for supervisor approval.") : "✅ Activity successfully updated!");
+    showMsg(editIdx === -1 ? (isLeader ? "✅ Activity successfully saved!" : "📤 Application successfully sent for supervisor approval.") : "✅ Activity successfully updated!");
     kembaliKeMenuProfil('modalAddActivityPopUp');
   }
 
