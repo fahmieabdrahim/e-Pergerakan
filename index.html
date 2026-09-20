@@ -1551,10 +1551,18 @@
     
     document.getElementById('senaraiPermohonanMenunggu').innerHTML = senaraiMenunggu.map((r) => {
       const originalIdx = rekodPergerakan.indexOf(r);
+      let tFormat = formatTarikhDMY(r.tarikh);
+      if(!r.jenis.includes('Keluar') && r.tarikhAkhir && r.tarikhAkhir !== r.tarikh) {
+        tFormat += ` to ${formatTarikhDMY(r.tarikhAkhir)}`;
+      }
+      let timePart = '';
+      if (r.masaMula && r.masaTamat) {
+        timePart = ` (${formatMasa12Jam(r.masaMula)} -${formatMasa12Jam(r.masaTamat)})`;
+      }
       return `
         <div class="feedback-item">
           <strong>${r.nama}</strong><br>
-          ${r.catatan} (${formatTarikhDMY(r.tarikh)})<br>
+          ${r.catatan} ${tFormat}${timePart}<br>
           <div style="margin-top:8px; display:flex; gap:10px;">
             <button class="clean-menu-item" style="padding:6px 12px; border:1px solid #cbd5e1; border-radius:6px; color:#16a34a; font-weight:600;" onclick="keputusanPenyelia(${originalIdx}, 'Lulus')">Approve</button> 
             <button class="clean-menu-item" style="padding:6px 12px; border:1px solid #cbd5e1; border-radius:6px; color:#dc2626; font-weight:600;" onclick="tolakPenyeliaPrompt(${originalIdx})">Reject</button>
@@ -1679,7 +1687,7 @@
     const hariSemasaNama = namaHariMelayu[dayOfWeek];
 
     senaraiStaf.forEach((s) => {
-      const hbhRec = rekodPergerakan.find(x => x.nama === s.nama && x.status === 'Lulus' && x.jenis === 'Hari Bekerja Hibrid (HBH)');
+      const hbhRec = rekodPergerakan.filter(x => x.nama === s.nama && x.status === 'Lulus' && x.jenis === 'Hari Bekerja Hibrid (HBH)')[0];
       let isHBHToday = false;
       if (hbhRec && hbhRec.hariHBH && hbhRec.hariHBH.includes(hariSemasaNama)) {
         isHBHToday = true;
