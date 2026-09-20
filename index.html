@@ -82,36 +82,33 @@
     .board-note-box .material-symbols-outlined { color: #d97706; }
     .board-note-text { flex: 1; line-height: 1.5; white-space: pre-wrap; font-weight: 600; text-align: left; }
 
-    /* STAFF STRIP */
+    /* STAFF STRIP - Profile pictures enlarged by 20% (65px * 1.2 = 78px, 70px * 1.2 = 84px) */
     .staff-strip { 
       display: flex; align-items: flex-start; justify-content: flex-start; 
       gap: 0; overflow-x: auto; margin-bottom: 20px; padding: 6px 4px; 
       scrollbar-width: thin; width: 100%; -webkit-overflow-scrolling: touch; 
     }
-    .profile-chip { display: flex; flex-direction: column; align-items: center; gap: 3px; min-width: 85px; color: var(--text-color); font-size: 0.8rem; cursor: pointer; flex-shrink: 0; text-align: center;}
-    .profile-chip .avatar, .staff-avatar { width: 54px; height: 54px; border-radius: 50%; object-fit: cover; display: block; border: 2px solid white; box-shadow: 0 2px 6px rgba(0,0,0,0.06); }
-    .avatar-empty { display: block; border-radius: 50%; width: 54px; height: 54px; background: #e2e8f0; }
-    .profile-photo-wrap { position: relative; display: flex; align-items: center; justify-content: center; border-radius: 50%; width: 58px; height: 58px; background: #e2e8f0; }
+    .profile-chip { display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 110px; color: var(--text-color); font-size: 0.85rem; cursor: pointer; flex-shrink: 0; text-align: center;}
+    .profile-chip .avatar, .staff-avatar { width: 78px; height: 78px; border-radius: 50%; object-fit: cover; display: block; border: 2px solid white; box-shadow: 0 2px 6px rgba(0,0,0,0.06); }
+    .avatar-empty { display: block; border-radius: 50%; width: 78px; height: 78px; background: #e2e8f0; }
+    .profile-photo-wrap { position: relative; display: flex; align-items: center; justify-content: center; border-radius: 50%; width: 84px; height: 84px; background: #e2e8f0; }
     
     .notification-badge {
-      position: absolute; top: 0; right: 0; width: 14px; height: 14px; background: #dc2626;
+      position: absolute; top: 0; right: 0; width: 16px; height: 16px; background: #dc2626;
       border: 2px solid #ffffff; border-radius: 50%; display: none;
     }
     .profile-photo-wrap.has-notif .notification-badge { display: block; }
 
     .feedback-item { margin-bottom: 10px; padding: 12px; background: var(--header-bg); border-radius: 8px; font-size: 0.9rem; text-align: left; }
     
-    /* MAIN TABS & ACTIONS ROW */
+    /* MAIN TABS & ACTIONS ROW - Clean Icon Only without Background */
     .view-tabs { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; width: 100%; gap: 10px; }
-    .tabs-left { display: flex; gap: 20px; overflow-x: auto; padding-bottom: 4px; align-items: center; }
+    .tabs-left { display: flex; gap: 16px; overflow-x: auto; padding-bottom: 4px; align-items: center; }
     .tabs-right { display: flex; gap: 8px; align-items: center; flex-shrink: 0; }
 
-    .tab-btn { background: transparent; border: none; padding: 6px 0; font-weight: 500; cursor: pointer; color: var(--grey-text); font-size: 0.95rem; white-space: nowrap; transition: color 0.2s; display: flex; align-items: center; gap: 6px; }
-    .tab-btn span.material-symbols-outlined { font-size: 1.1rem; color: var(--grey-text); transition: color 0.2s; }
-    .tab-btn.active { color: var(--text-color); font-weight: 700; }
-    .tab-btn.active span.material-symbols-outlined { color: var(--text-color); }
-    .tab-indicator { font-size: 0.7rem; display: none; color: var(--text-color); }
-    .tab-btn.active .tab-indicator { display: inline-block; }
+    .tab-btn { background: transparent; border: none; padding: 6px 8px; cursor: pointer; color: var(--grey-text); transition: color 0.2s; display: flex; align-items: center; justify-content: center; }
+    .tab-btn span.material-symbols-outlined { font-size: 1.5rem; color: var(--grey-text); transition: color 0.2s; }
+    .tab-btn.active span.material-symbols-outlined { color: var(--text-color); font-weight: bold; }
 
     /* CLEAN MENU LIST */
     .clean-menu-list { display: flex; flex-direction: column; background: #ffffff; border-radius: 12px; border: 1px solid var(--card-border); overflow: hidden; }
@@ -140,7 +137,7 @@
     .staff-name { font-weight: 600; font-size: 0.95rem; display: block; text-align: left; }
     .staff-right { font-size: 0.9rem; font-weight: 600; text-align: left; max-width: 55%; word-break: break-word; line-height: 1.35; color: var(--grey-text); }
 
-    /* MOBILE TODAY BOXES (Clean White & Easy to click) */
+    /* MOBILE TODAY BOXES */
     .mobile-today-box {
       background: #ffffff !important;
       border: 1px solid var(--card-border);
@@ -174,7 +171,7 @@
     /* PHONE VIEW SPECIFIC STYLING FOR MONTH & TODAY */
     @media (max-width: 768px) {
       .cal-day > div:not(.cal-day-num) {
-        display: none !important; /* Sembunyikan senarai teks tarikh pada calendar phone */
+        display: none !important;
       }
       .cal-day {
         min-height: 52px !important;
@@ -268,20 +265,17 @@
 
   <div id="staffStrip" class="staff-strip"></div>
 
-  <!-- MAIN TABS & ACTIONS ROW -->
+  <!-- MAIN TABS & ACTIONS ROW - Icon Only without Background (Today: e7fd, Planner: e241, Month: ebcc) -->
   <div class="view-tabs">
     <div class="tabs-left">
-      <button id="btnTabHariIni" class="tab-btn active" onclick="switchView('hari-ini')">
-        <span class="material-symbols-outlined">today</span>
-        <span>Today</span> <span class="tab-indicator">▼</span>
+      <button id="btnTabHariIni" class="tab-btn active" onclick="switchView('hari-ini')" title="Today">
+        <span class="material-symbols-outlined">&#xe7fd;</span>
       </button>
-      <button id="btnTabList" class="tab-btn" onclick="switchView('list')">
-        <span class="material-symbols-outlined">event_note</span>
-        <span>Planner</span> <span class="tab-indicator">▼</span>
+      <button id="btnTabList" class="tab-btn" onclick="switchView('list')" title="Planner">
+        <span class="material-symbols-outlined">&#xe241;</span>
       </button>
-      <button id="btnTabBulan" class="tab-btn" onclick="switchView('bulan')">
-        <span class="material-symbols-outlined">calendar_month</span>
-        <span>Month</span> <span class="tab-indicator">▼</span>
+      <button id="btnTabBulan" class="tab-btn" onclick="switchView('bulan')" title="Month">
+        <span class="material-symbols-outlined">&#xebcc;</span>
       </button>
     </div>
     <div class="tabs-right" id="plannerActionsRow" style="display: none;">
@@ -294,7 +288,7 @@
     </div>
   </div>
 
-  <!-- Papan Pengumuman / Nota Board / Seksyen Promosi (Rata Kiri) -->
+  <!-- Papan Pengumuman / Nota Board -->
   <div id="boardNoteContainer" class="board-note-box" style="display:none;">
     <span class="material-symbols-outlined">campaign</span>
     <div id="boardNoteText" class="board-note-text"></div>
@@ -320,7 +314,7 @@
     </div>
   </div>
 
-  <!-- MOBILE TODAY VIEW (Boxes that open list when clicked) -->
+  <!-- MOBILE TODAY VIEW -->
   <div id="mobileTodayView" style="display: none; flex-direction: column; gap: 10px; width: 100%;"></div>
 
   <div id="viewList" class="list-pergerakan-container" style="display: none;">
@@ -368,7 +362,7 @@
   </div>
 </div>
 
-<!-- ================= EDIT BOARD MODAL ================= -->
+<!-- ================= EDIT BOARD MODAL (Tanpa fungsi Delete Board) ================= -->
 <div id="modalEditBoard" class="modal">
   <div class="modal-content" style="max-width: 400px; background: #ffffff; border: 1px solid var(--card-border);">
     <button class="modal-exit-btn" onclick="closeModal('modalEditBoard')" title="Close">
@@ -389,10 +383,6 @@
       <button class="clean-menu-item" onclick="salinLinkBoard()">
         <span class="material-symbols-outlined">share</span>
         <span>Share Board</span>
-      </button>
-      <button id="btnDeleteBoardModal" class="clean-menu-item" onclick="padamBoard()">
-        <span class="material-symbols-outlined" style="color:#dc2626;">delete</span>
-        <span style="color:#dc2626; font-weight:600;">Delete Board</span>
       </button>
     </div>
   </div>
@@ -457,7 +447,7 @@
     <div class="form-group" style="text-align: left;">
       <label>Profile Picture</label>
       <input type="file" id="stafGambarInput" accept="image/*" onchange="previewGambarStaf(event)">
-      <img id="stafGambarPreview" src="" style="display:none; width:70px; height:70px; border-radius:50%; object-fit:cover; margin:10px 0 0 0; border:2px solid #cbd5e1;">
+      <img id="stafGambarPreview" src="" style="display:none; width:84px; height:84px; border-radius:50%; object-fit:cover; margin:10px 0 0 0; border:2px solid #cbd5e1;">
     </div>
 
     <div class="clean-menu-list" style="margin-top: 15px;">
@@ -483,7 +473,6 @@
       </div>
     </div>
 
-    <!-- Rejection Notification Box -->
     <div id="containerNotifikasiDitolak" style="display:none; margin-bottom: 16px; background: #fee2e2; border: 1px solid #f87171; border-radius: 8px; padding: 12px; text-align: left;">
       <div style="display: flex; align-items: center; gap: 8px; font-weight: 700; color: #b91c1c; margin-bottom: 4px;">
         <span class="material-symbols-outlined">notifications_active</span>
@@ -508,10 +497,8 @@
       </button>
     </div>
 
-    <!-- Paparan Status HBH Pengguna -->
     <div id="statusHBHMenuContainer" style="font-size: 0.9rem; font-weight: 600; margin-bottom: 12px; color: var(--text-color); text-align: left;"></div>
 
-    <!-- Senarai Aktiviti User Ini -->
     <div style="font-size: 0.95rem; font-weight: 700; margin-bottom: 8px; color: var(--text-color); text-align: left;">My Activities:</div>
     <div id="senaraiAktivitiPeribadiModal" style="max-height: 200px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px;"></div>
   </div>
@@ -811,6 +798,7 @@
     try { const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname; window.history.pushState({path:newUrl}, '', newUrl); } catch(e) {}
   }
 
+  /* RENDER MAIN BOARDS LIST - Format seperti CMS: SEKSYEN PROMOSI 10 user Delete */
   function renderMainBoardsList() {
     const container = document.getElementById('mainBoardsListContainer');
     if(!container) return;
@@ -823,23 +811,25 @@
 
     container.innerHTML = boards.map(b => {
       const userCount = (b.senaraiStaf || []).length;
-      let adminExtras = '';
+      let adminDelete = '';
       
       if (isAdmin) {
-        adminExtras = `
-          <div style="display:flex; gap:10px; align-items:center;">
-            <span style="font-size:0.85rem; background: #e2e8f0; padding: 4px 10px; border-radius: 12px; color: var(--grey-text); font-weight: 600;">${userCount} Users</span>
-            <button class="plain-icon-btn" onclick="event.stopPropagation(); padamBoardPantas('${b.id}')" style="color:#dc2626; padding:0;" title="Padam Board">
-              <span class="material-symbols-outlined" style="font-size:1.2rem;">delete</span>
-            </button>
-          </div>
+        adminDelete = `
+          <button class="plain-icon-btn" onclick="event.stopPropagation(); padamBoardPantas('${b.id}')" style="color:#dc2626; padding:4px 8px; font-size:0.9rem; font-weight:600;" title="Padam Board">
+            Delete
+          </button>
         `;
       }
 
       return `
-        <div class="board-list-item" onclick="masukKeBoard('${b.id}')">
-          <strong style="font-size:1.05rem; color: #0f172a;">${b.name}</strong>
-          ${adminExtras}
+        <div class="board-list-item" onclick="masukKeBoard('${b.id}')" style="display:flex; justify-content:space-between; align-items:center;">
+          <div style="display:flex; align-items:center; gap:16px;">
+            <strong style="font-size:1.05rem; color: #0f172a; text-transform: uppercase;">${b.name}</strong>
+          </div>
+          <div style="display:flex; align-items:center; gap:16px;">
+            <span style="font-size:0.9rem; color: var(--grey-text); font-weight:500;">${userCount} user</span>
+            ${adminDelete}
+          </div>
         </div>
       `;
     }).join('');
@@ -857,7 +847,7 @@
   }
 
   function ciptaBoardBaru() {
-    const namabaru = prompt("Enter Board Name (e.g., MANAGEMENT SECTION):");
+    const namabaru = prompt("Enter Board Name (e.g., SEKSYEN PROMOSI):");
     if(namabaru) {
       boards.push({ id: 'board_' + Date.now(), name: namabaru, senaraiStaf: [], rekodPergerakan: [], boardNote: '' });
       simpanKeLocalStorage(); 
@@ -877,12 +867,6 @@
     const b = boards.find(x => x.id === id);
     if(!b) return;
     document.getElementById('editBoardId').value = b.id;
-    
-    const btnDeleteBoardModal = document.getElementById('btnDeleteBoardModal');
-    if (btnDeleteBoardModal) {
-      btnDeleteBoardModal.style.display = 'flex';
-    }
-
     closeModal('modalTetapanUtama'); 
     closeModal('modalPengurusanStaf');
     openModal('modalEditBoard');
@@ -901,20 +885,6 @@
       }
       renderMainBoardsList();
       closeModal('modalEditBoard');
-    }
-  }
-
-  async function padamBoard() {
-    const id = document.getElementById('editBoardId').value;
-    const bIndex = boards.findIndex(x => x.id === id);
-    if(bIndex > -1) {
-      if(confirm(`Adakah anda pasti untuk memadam board "${boards[bIndex].name}" secara kekal?`)) {
-        boards.splice(bIndex, 1);
-        if(activeBoardId === id) kembaliKeSkrinPutih();
-        await simpanKeLocalStorage(); 
-        closeModal('modalEditBoard'); 
-        renderMainBoardsList();
-      }
     }
   }
 
@@ -1008,7 +978,7 @@
 
   function r9yMnTm4NSzvG9rrwjM2ec8xZgh1cafXH8() {
     document.getElementById('senaraiStafContainer').innerHTML = senaraiStaf.map((s, idx) => {
-      const avatarHTML = s.gambar ? `<img src="${s.gambar}" style="width:30px; height:30px; border-radius:50%; object-fit:cover; border:1px solid #cbd5e1;">` : `<span style="width:30px; height:30px; border-radius:50%; background:#e2e8f0; display:inline-block; border:1px solid #cbd5e1;"></span>`;
+      const avatarHTML = s.gambar ? `<img src="${s.gambar}" style="width:36px; height:36px; border-radius:50%; object-fit:cover; border:1px solid #cbd5e1;">` : `<span style="width:36px; height:36px; border-radius:50%; background:#e2e8f0; display:inline-block; border:1px solid #cbd5e1;"></span>`;
       return `<div style="display:flex; justify-content:space-between; align-items:center; padding:10px; background:#f8fafc; border:1px solid #cbd5e1; border-radius:8px; margin-bottom:8px;">
         <div style="display:flex; align-items:center; gap:10px;">
           ${avatarHTML}
@@ -1141,8 +1111,8 @@
           ${img}
           <span class="notification-badge"></span>
         </span>
-        <span style="font-weight: 700; max-width: 80px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${staf.nama}</span>
-        <span style="font-size: 0.7rem; color: var(--grey-text); max-width: 80px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${staf.jawatan || ''}</span>
+        <span style="font-weight: 700; max-width: 105px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${staf.nama}</span>
+        <span style="font-size: 0.7rem; color: var(--grey-text); max-width: 105px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${staf.jawatan || ''}</span>
       </div>`;
     }).join('');
   }
@@ -1538,7 +1508,7 @@
         return;
       }
 
-      const avatarHtml = s.gambar ? `<img src="${s.gambar}" style="width:38px;height:38px;border-radius:50%;object-fit:cover;border:1px solid rgba(0,0,0,0.1);">` : `<span class="avatar-empty" style="width:38px;height:38px;border:1px solid rgba(0,0,0,0.1);"></span>`;
+      const avatarHtml = s.gambar ? `<img src="${s.gambar}" style="width:46px;height:46px;border-radius:50%;object-fit:cover;border:1px solid rgba(0,0,0,0.1);">` : `<span class="avatar-empty" style="width:46px;height:46px;border:1px solid rgba(0,0,0,0.1);"></span>`;
       
       const k = `<div class="staff-card">
         <div class="staff-card-left">${avatarHtml} <div><span class="staff-name">${s.nama}</span></div></div>
@@ -1564,7 +1534,6 @@
 
     dataHariIniCache = { pejabat: dp, engagements: de, rumah: dr, lain: dl };
 
-    // Render Mobile Today Summary Boxes (Clean white background, touch friendly)
     const mobileTodayEl = document.getElementById('mobileTodayView');
     if (mobileTodayEl) {
       mobileTodayEl.innerHTML = `
@@ -1664,40 +1633,47 @@
           </div>
         `;
       }).join('');
-      
-      let hasEvents = ev.trim() !== '';
-      let numFontWeight = hasEvents ? 'font-weight: 700; color: #0f172a;' : 'font-weight: 400; color: var(--grey-text);';
 
       c.innerHTML += `
-        <div class="${dayClasses.join(' ')}" onclick="bukaDetailHari('${dt}', ${i})">
-          <div class="cal-day-num" style="${numFontWeight}">${i}</div>
-          ${ev}
+        <div class="${dayClasses.join(' ')}" onclick="bukaModalDetailHari('${dt}')">
+          <div class="cal-day-num" style="font-weight:700; margin-bottom:4px; text-align:left;">${i}</div>
+          <div style="flex:1; overflow-y:auto;">${ev}</div>
         </div>
       `;
     }
   }
 
-  function bukaDetailHari(dt, hariNum) {
-    document.getElementById('tajukModalDetailHari').innerText = `Activity Date: ${formatTarikhDMY(dt)}`;
-    const senaraiAktivitiHari = rekodPergerakan.filter(r => r.status==='Lulus' && r.jenis !== 'Hari Bekerja Hibrid (HBH)' && ((!r.jenis.includes('Keluar') && !r.jenis.includes('Outing') && dt>=r.tarikh && dt<=(r.tarikhAkhir||r.tarikh)) || r.tarikh===dt));
+  function bukaModalDetailHari(dt) {
+    document.getElementById('tajukModalDetailHari').innerText = `Aktiviti Pada ${formatTarikhDMY(dt)}`;
     
-    document.getElementById('senaraiAktivitiHariTerpilih').innerHTML = senaraiAktivitiHari.map(r => {
-      let timeInfo = '';
-      if ((r.jenis.includes('Keluar') || r.jenis.includes('Mesyuarat') || r.jenis.includes('Kursus') || r.jenis.includes('Pameran')) && r.masaMula && r.masaTamat) {
-        timeInfo = ` (${r.masaMula} - ${r.masaTamat})`;
-      }
-      return `
-        <div class="feedback-item">
-          <strong>${r.nama}</strong>${timeInfo}<br>
-          <span>${r.catatan}</span>
-        </div>
-      `;
-    }).join('') || '<p style="color:var(--grey-text); font-style:italic; text-align:center;">No movement or activity on this date.</p>';
-    
+    let ev = rekodPergerakan.filter(r => {
+      if (r.status !== 'Lulus') return false;
+      if (r.jenis === 'Hari Bekerja Hibrid (HBH)') return false;
+      return (!r.jenis.includes('Keluar') && !r.jenis.includes('Outing') && dt >= r.tarikh && dt <= (r.tarikhAkhir || r.tarikh)) || r.tarikh === dt;
+    });
+
+    const container = document.getElementById('senaraiAktivitiHariTerpilih');
+    if (ev.length === 0) {
+      container.innerHTML = '<p style="color:var(--grey-text); font-style:italic;">Tiada pergerakan direkodkan.</p>';
+    } else {
+      container.innerHTML = ev.map(r => {
+        let masaInfo = (r.masaMula && r.masaTamat) ? ` (${r.masaMula} - ${r.masaTamat})` : '';
+        return `
+          <div style="background:#f8fafc; border:1px solid var(--card-border); border-radius:8px; padding:10px; margin-bottom:8px; text-align:left;">
+            <strong style="color:var(--text-color);">${r.nama}</strong><br>
+            <span style="font-size:0.85rem; color:var(--grey-text);">${r.jenis}${masaInfo}</span><br>
+            <span style="font-size:0.9rem; color:var(--text-color);">${r.catatan}</span>
+          </div>
+        `;
+      }).join('');
+    }
+
     openModal('modalDetailHari');
   }
 
-  muatTurunDataAwan();
+  window.onload = function() {
+    muatTurunDataAwan();
+  };
 </script>
 </body>
 </html>
