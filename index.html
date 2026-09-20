@@ -1693,11 +1693,9 @@
         isHBHToday = true;
       }
 
-      const avatarHtml = s.gambar ? `<img src="${s.gambar}" style="width:46px;height:46px;border-radius:50%;object-fit:cover;border:1px solid rgba(0,0,0,0.1);">` : `<span class="avatar-empty" style="width:46px;height:46px;border:1px solid rgba(0,0,0,0.1);"></span>`;
-
       if (isHBHToday) {
         const k = `<div class="staff-card">
-          <div class="staff-card-left">${avatarHtml} <div><span class="staff-name">${s.nama}</span></div></div>
+          <div class="staff-card-left"><div><span class="staff-name">${s.nama}</span></div></div>
           <div class="staff-right">${hbhRec.catatan}</div>
         </div>`;
         dr += k; 
@@ -1729,7 +1727,7 @@
             return `• ${timeStr}${r.catatan}`;
           }).join('<br>');
           const k = `<div class="staff-card">
-            <div class="staff-card-left">${avatarHtml} <div><span class="staff-name">${s.nama}</span></div></div>
+            <div class="staff-card-left"><div><span class="staff-name">${s.nama}</span></div></div>
             <div class="staff-right" style="text-align: left;">${notesHtml}</div>
           </div>`;
           de += k;
@@ -1742,7 +1740,7 @@
             return `• ${timeStr}${r.catatan}`;
           }).join('<br>');
           const k = `<div class="staff-card">
-            <div class="staff-card-left">${avatarHtml} <div><span class="staff-name">${s.nama}</span></div></div>
+            <div class="staff-card-left"><div><span class="staff-name">${s.nama}</span></div></div>
             <div class="staff-right" style="text-align: left;">${notesHtml}</div>
           </div>`;
           dl += k;
@@ -1751,7 +1749,7 @@
       } else {
         if (!isWeekend) {
           const k = `<div class="staff-card">
-            <div class="staff-card-left">${avatarHtml} <div><span class="staff-name">${s.nama}</span></div></div>
+            <div class="staff-card-left"><div><span class="staff-name">${s.nama}</span></div></div>
             <div class="staff-right"></div>
           </div>`;
           dp += k;
