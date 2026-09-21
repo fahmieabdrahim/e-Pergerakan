@@ -39,6 +39,24 @@
     }
     .plain-icon-btn:hover { color: var(--text-color); }
 
+    /* ANIMASI LOCENG BERDERING */
+    @keyframes bellRingAnimation {
+      0% { transform: rotate(0deg); }
+      10% { transform: rotate(15deg); }
+      20% { transform: rotate(-15deg); }
+      30% { transform: rotate(10deg); }
+      40% { transform: rotate(-10deg); }
+      50% { transform: rotate(5deg); }
+      60% { transform: rotate(-5deg); }
+      70% { transform: rotate(0deg); }
+      100% { transform: rotate(0deg); }
+    }
+    .ringing-bell {
+      animation: bellRingAnimation 1.2s infinite ease-in-out;
+      transform-origin: top center;
+      display: inline-block;
+    }
+
     /* WELCOME SCREEN / BOARDS LIST VIEW */
     #welcomeScreen {
       position: fixed; top: 0; left: 0; right: 0; bottom: 0;
@@ -358,9 +376,43 @@
         <span class="material-symbols-outlined">group</span>
         <span>Manage User</span>
       </button>
+      <button class="clean-menu-item" onclick="bukaSoundSettings()">
+        <span class="material-symbols-outlined">volume_up</span>
+        <span>Sound Settings</span>
+      </button>
       <button class="clean-menu-item" onclick="salinLinkBoard()">
         <span class="material-symbols-outlined">share</span>
         <span>Share Board</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ================= SOUND SETTINGS MODAL ================= -->
+<div id="modalSoundSettings" class="modal" style="z-index: 125;">
+  <div class="modal-content" style="max-width: 380px; background: #ffffff;">
+    <button class="modal-exit-btn" onclick="closeModal('modalSoundSettings')" title="Close">
+      <span class="material-symbols-outlined">close</span>
+    </button>
+    <div class="modal-title-head">Sound Settings</div>
+    
+    <div class="form-group" style="display: flex; align-items: center; justify-content: space-between;">
+      <label style="margin-bottom:0;">Enable Sound Alert</label>
+      <input type="checkbox" id="inputSoundEnabled" style="width: 20px; height: 20px; cursor: pointer;">
+    </div>
+
+    <div class="form-group" style="margin-top: 14px;">
+      <label>Sound Type</label>
+      <select id="inputSoundType">
+        <option value="bell">Loceng (Bell)</option>
+        <option value="beep">Beep</option>
+        <option value="chime">Chime (Dwi-ton)</option>
+      </select>
+    </div>
+
+    <div class="clean-menu-list" style="margin-top: 15px;">
+      <button class="clean-menu-item" style="justify-content: center; font-weight: 600; color:#16a34a;" onclick="simpanSoundSettings()">
+        <span>Simpan</span>
       </button>
     </div>
   </div>
@@ -467,14 +519,14 @@
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; padding-right: 30px;">
       <h3 id="tajukModalMenuProfil" style="margin:0; text-align: left; flex: 1; font-size: 1.15rem;">Name</h3>
       <div id="containerLocengPenyelia" style="display:none; align-items: center; gap: 6px; cursor: pointer; background: #fee2e2; padding: 6px 12px; border-radius: 20px;" onclick="bukaModulSemakan()" title="Pending Approvals">
-        <span class="material-symbols-outlined" style="font-size:1.3rem; color:#dc2626;">notifications</span>
+        <span class="material-symbols-outlined ringing-bell" style="font-size:1.3rem; color:#dc2626;">notifications</span>
         <span id="badgeBilanganMenunggu" style="background: #dc2626; color: white; border-radius: 50%; padding: 1px 6px; font-size: 0.75rem; font-weight: bold;">0</span>
       </div>
     </div>
 
     <div id="containerNotifikasiDitolak" style="display:none; margin-bottom: 16px; background: #fee2e2; border: 1px solid #f87171; border-radius: 8px; padding: 12px; text-align: left;">
       <div style="display: flex; align-items: center; gap: 8px; font-weight: 700; color: #b91c1c; margin-bottom: 4px;">
-        <span class="material-symbols-outlined">notifications_active</span>
+        <span class="material-symbols-outlined ringing-bell">notifications_active</span>
         <span>Application Rejected</span>
       </div>
       <div id="teksSebabDitolak" style="font-size: 0.9rem; color: #7f1d1d;"></div>
@@ -652,6 +704,68 @@
   let renewingBoardId = null;
   let adminPassword = 'admin'; 
 
+  // Web Audio API for alert sound
+  let audioCtx = null;
+  let audioInterval = null;
+
+  function playAlertSound() {
+    if (audioInterval) return;
+    const b = boards.find(x => x.id === activeBoardId);
+    if (b && b.soundEnabled === false) return; // Patuh kepada tetapan board
+
+    const soundType = b ? b.soundType : 'bell';
+
+    try {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      audioInterval = setInterval(() => {
+        if (audioCtx.state === 'suspended') {
+          audioCtx.resume();
+        }
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+
+        if (soundType === 'beep') {
+          osc.type = 'square';
+          osc.frequency.setValueAtTime(800, audioCtx.currentTime);
+          gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.15);
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.start();
+          osc.stop(audioCtx.currentTime + 0.15);
+        } else if (soundType === 'chime') {
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(523.25, audioCtx.currentTime);
+          osc.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.15);
+          gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.4);
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.start();
+          osc.stop(audioCtx.currentTime + 0.4);
+        } else { // default 'bell'
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(1046.50, audioCtx.currentTime);
+          gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.5);
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.start();
+          osc.stop(audioCtx.currentTime + 0.5);
+        }
+      }, 2000);
+    } catch(e) {}
+  }
+
+  function stopAlertSound() {
+    if (audioInterval) {
+      clearInterval(audioInterval);
+      audioInterval = null;
+    }
+  }
+
   function showMsg(message, callback = null, showCancel = false) {
     const modal = document.getElementById('modalCustomMsg');
     const textEl = document.getElementById('customMsgText');
@@ -828,6 +942,8 @@
         d.setDate(d.getDate() + 14);
         b.tarikhFreez = getLocalDateString(d);
       }
+      if (b.soundEnabled === undefined) b.soundEnabled = true;
+      if (!b.soundType) b.soundType = 'bell';
     });
 
     checkAdminStatus();
@@ -902,7 +1018,6 @@
 
     const isAdmin = sessionStorage.getItem('isAdmin') === 'true';
 
-    /* Pengguna biasa hanya lihat tajuk sahaja, panel kawalan (senarai board) disorokkan melainkan admin log masuk */
     if (!isAdmin) {
       container.style.display = 'none';
       container.innerHTML = '';
@@ -926,7 +1041,6 @@
 
       const tarikhFreez = b.tarikhFreez || '-';
       const formattedExpiry = formatExpiryDate(tarikhFreez);
-
       const freezeClickAction = `onclick="bukaRenewBoard('${b.id}', event)"`;
 
       return `
@@ -1009,7 +1123,9 @@
           rekodPergerakan: [], 
           boardNote: '',
           tarikhMula: todayStr,
-          tarikhFreez: freezeStr
+          tarikhFreez: freezeStr,
+          soundEnabled: true,
+          soundType: 'bell'
         });
         await simpanKeLocalStorage(); 
         renderMainBoardsList();
@@ -1040,6 +1156,26 @@
     closeModal('modalTetapanUtama'); 
     closeModal('modalPengurusanStaf');
     openModal('modalEditBoard');
+  }
+
+  function bukaSoundSettings() {
+    closeModal('modalEditBoard');
+    const b = boards.find(x => x.id === activeBoardId);
+    if (!b) return;
+    document.getElementById('inputSoundEnabled').checked = b.soundEnabled !== false;
+    document.getElementById('inputSoundType').value = b.soundType || 'bell';
+    openModal('modalSoundSettings');
+  }
+
+  async function simpanSoundSettings() {
+    const b = boards.find(x => x.id === activeBoardId);
+    if (b) {
+      b.soundEnabled = document.getElementById('inputSoundEnabled').checked;
+      b.soundType = document.getElementById('inputSoundType').value;
+      await simpanKeLocalStorage();
+      showMsg("✅ Sound settings successfully saved!");
+    }
+    closeModal('modalSoundSettings');
   }
 
   async function editHeaderBoard() {
@@ -1277,6 +1413,8 @@
       return getRoleLevel(a.kumpulan) - getRoleLevel(b.kumpulan);
     });
 
+    let hasUnreadAlerts = false;
+
     container.innerHTML = sortedStaf.map((staf, index) => {
       const img = staf.gambar ? `<img src="${staf.gambar}" class="staff-avatar">` : `<span class="avatar-empty"></span>`;
       
@@ -1291,6 +1429,10 @@
 
       const adaDitolak = rekodPergerakan.some(r => r.nama === staf.nama && r.status === 'Ditolak');
       const showBadge = adaMenungguUntukUserIni || adaDitolak;
+
+      if (showBadge) {
+        hasUnreadAlerts = true;
+      }
 
       const currRole = getRoleLevel(staf.kumpulan);
       const nextStaf = sortedStaf[index + 1];
@@ -1310,9 +1452,16 @@
         <span style="font-size: 0.65rem; color: var(--grey-text); max-width: 90px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${staf.jawatan || ''}</span>
       </div>`;
     }).join('');
+
+    if (hasUnreadAlerts) {
+      playAlertSound();
+    } else {
+      stopAlertSound();
+    }
   }
 
   function bukaModulStaf(nama) { 
+    stopAlertSound();
     pemohonAktif = nama; 
     document.getElementById('tajukModalMenuProfil').innerText = pemohonAktif;
     
@@ -1535,6 +1684,7 @@
   }
 
   function bukaModulSemakan() { 
+    stopAlertSound();
     closeModal('modalMenuProfil'); 
     openModal('modalPengesahan'); 
     
@@ -1703,13 +1853,11 @@
         return;
       }
 
-      // Ambil SEMUA permohonan yang lulus untuk hari ini
       const approvedRecords = rekodPergerakan.filter(x => x.nama === s.nama && x.status === 'Lulus' && x.jenis !== 'Hari Bekerja Hibrid (HBH)' && (
         (!x.jenis.includes('Keluar') && !x.jenis.includes('Outing') && tStr >= x.tarikh && tStr <= (x.tarikhAkhir || x.tarikh)) || 
         (x.tarikh === tStr)
       ));
 
-      // Tapis permohonan aktif berdasarkan masa (jika masa tamat telah lepas, ia akan gugur/padam secara live)
       const activeRecords = approvedRecords.filter(r => {
         if (r.masaMula && r.masaTamat) {
           return currentTimeStr >= r.masaMula && currentTimeStr <= r.masaTamat;
@@ -1869,9 +2017,12 @@
         `;
       }).join('');
 
+      let hasEvents = ev.trim() !== '';
+      let dayNumStyle = hasEvents ? 'font-weight:700;' : 'font-weight:400;';
+
       c.innerHTML += `
         <div class="${dayClasses.join(' ')}" onclick="bukaModalDetailHari('${dt}')">
-          <div class="cal-day-num" style="font-weight:700; margin-bottom:4px; text-align:left;">${i}</div>
+          <div class="cal-day-num" style="${dayNumStyle} margin-bottom:4px; text-align:left;">${i}</div>
           <div style="flex:1; overflow-y:auto;">${ev}</div>
         </div>
       `;
@@ -1898,7 +2049,6 @@
 
   window.onload = function() {
     muatTurunDataAwan();
-    // Live update setiap 60 saat (1 minit) untuk menyemak tamat masa secara langsung
     setInterval(() => {
       if (document.getElementById('mainDashboard').style.display === 'flex') {
         renderHariIni();
