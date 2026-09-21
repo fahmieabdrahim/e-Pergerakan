@@ -11,12 +11,12 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg-color: #ffffff;
-      --app-bg: #f8fafc;
+      --bg-color: #f8fafc;
+      --app-bg: #f1f5f9;
       --text-color: #1e293b;
-      --card-border: #e2e8f0;
-      --box-shadow: rgba(0,0,0,0.04);
-      --header-bg: #f1f5f9;
+      --card-border: #cbd5e1;
+      --box-shadow: rgba(0,0,0,0.03);
+      --header-bg: #e2e8f0;
       --primary: #475569;
       --grey-text: #64748b;
     }
@@ -61,13 +61,14 @@
     #welcomeScreen {
       position: fixed; top: 0; left: 0; right: 0; bottom: 0;
       background-color: var(--app-bg);
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      z-index: 50; padding: 24px 16px; overflow-y: auto;
+      display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
+      z-index: 50; padding: 40px 16px; overflow-y: auto;
     }
 
     .top-right-nav { position: absolute; top: 16px; right: 16px; display: flex; gap: 8px; }
-    .welcome-header { width: 100%; max-width: 700px; padding: 20px 10px; text-align: center; }
-    .welcome-header h1 { font-size: 2.5rem; color: #0f172a; margin-bottom: 20px; font-weight: 700; text-align: center; }
+    .welcome-header { width: 100%; max-width: 850px; padding: 20px 10px; text-align: center; }
+    .welcome-header h1 { font-size: 2.5rem; color: #0f172a; margin-bottom: 15px; font-weight: 700; text-align: center; }
+    .welcome-desc { font-size: 1.05rem; color: var(--grey-text); line-height: 1.6; max-width: 700px; margin: 0 auto 25px auto; text-align: center; }
 
     /* MAIN DASHBOARD */
     #mainDashboard {
@@ -84,20 +85,20 @@
 
     /* BOARD NOTE ANNOUNCEMENT / PROMO SECTION */
     .board-note-box {
-      background: #fffbeb;
-      border: 1px solid #fde68a;
+      background: var(--bg-color);
+      border: 1px solid var(--card-border);
       border-radius: 8px;
       padding: 12px 16px;
       margin-bottom: 20px;
-      color: #92400e;
+      color: var(--text-color);
       font-size: 0.95rem;
       display: flex;
       align-items: flex-start;
       gap: 10px;
-      box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+      box-shadow: 0 1px 2px rgba(0,0,0,0.03);
       text-align: left;
     }
-    .board-note-box .material-symbols-outlined { color: #d97706; }
+    .board-note-box .material-symbols-outlined { color: var(--grey-text); }
     .board-note-text { flex: 1; line-height: 1.5; white-space: pre-wrap; font-weight: 600; text-align: left; }
 
     /* STAFF STRIP - Responsive Mobile & Desktop */
@@ -107,9 +108,9 @@
       scrollbar-width: thin; width: 100%; 
     }
     .profile-chip { display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 90px; color: var(--text-color); font-size: 0.8rem; flex-shrink: 0; text-align: center;}
-    .profile-chip .avatar, .staff-avatar { width: 56px; height: 56px; border-radius: 50%; object-fit: cover; display: block; border: 2px solid white; box-shadow: 0 2px 6px rgba(0,0,0,0.06); }
-    .avatar-empty { display: block; border-radius: 50%; width: 56px; height: 56px; background: #e2e8f0; }
-    .profile-photo-wrap { position: relative; display: flex; align-items: center; justify-content: center; border-radius: 50%; width: 62px; height: 62px; background: #e2e8f0; }
+    .profile-chip .avatar, .staff-avatar { width: 56px; height: 56px; border-radius: 50%; object-fit: cover; display: block; border: 2px solid var(--bg-color); box-shadow: 0 2px 6px rgba(0,0,0,0.04); }
+    .avatar-empty { display: block; border-radius: 50%; width: 56px; height: 56px; background: var(--header-bg); }
+    .profile-photo-wrap { position: relative; display: flex; align-items: center; justify-content: center; border-radius: 50%; width: 62px; height: 62px; background: var(--header-bg); }
     
     @media (max-width: 768px) {
       .staff-strip { flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch; }
@@ -125,11 +126,11 @@
     
     .notification-badge {
       position: absolute; top: 0; right: 0; width: 14px; height: 14px; background: #dc2626;
-      border: 2px solid #ffffff; border-radius: 50%; display: none;
+      border: 2px solid var(--bg-color); border-radius: 50%; display: none;
     }
     .profile-photo-wrap.has-notif .notification-badge { display: block; }
 
-    .feedback-item { margin-bottom: 10px; padding: 12px; background: var(--header-bg); border-radius: 8px; font-size: 0.9rem; text-align: left; }
+    .feedback-item { margin-bottom: 10px; padding: 12px; background: var(--bg-color); border: 1px solid var(--card-border); border-radius: 8px; font-size: 0.9rem; text-align: left; }
     
     .view-tabs { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; width: 100%; gap: 10px; }
     .tabs-left { display: flex; gap: 16px; overflow-x: auto; padding-bottom: 4px; align-items: center; }
@@ -139,10 +140,10 @@
     .tab-btn span.material-symbols-outlined { font-size: 1.5rem; color: var(--grey-text); transition: color 0.2s; }
     .tab-btn.active span.material-symbols-outlined { color: var(--text-color); font-weight: bold; }
 
-    .clean-menu-list { display: flex; flex-direction: column; background: #ffffff; border-radius: 12px; border: 1px solid var(--card-border); overflow: hidden; }
+    .clean-menu-list { display: flex; flex-direction: column; background: var(--bg-color); border-radius: 12px; border: 1px solid var(--card-border); overflow: hidden; }
     .clean-menu-item { padding: 14px 18px; background: transparent; border: none; border-bottom: 1px solid var(--card-border); text-align: left; font-size: 0.95rem; font-weight: 500; color: var(--text-color); cursor: pointer; display: flex; align-items: center; gap: 14px; transition: background 0.2s; width: 100%; }
     .clean-menu-item:last-child { border-bottom: none; }
-    .clean-menu-item:hover { background: #f1f5f9; }
+    .clean-menu-item:hover { background: var(--header-bg); }
     .clean-menu-item span.material-symbols-outlined { font-size: 1.3rem; color: var(--grey-text); }
 
     .columns-container { display: grid; grid-template-columns: 1fr; gap: 15px; }
@@ -158,14 +159,14 @@
     .staff-group-header { font-size: 1.05rem; font-weight: 700; color: var(--text-color); margin-bottom: 6px; display: flex; align-items: baseline; gap: 10px; text-align: left; }
     .activity-sub-item { font-size: 0.95rem; padding: 4px 0; margin-bottom: 2px; color: var(--text-color); display: flex; align-items: flex-start; gap: 6px; text-align: left; }
 
-    .staff-card { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--card-border); color: #1e293b; text-align: left; }
+    .staff-card { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--card-border); color: var(--text-color); text-align: left; }
     .staff-card:last-child { border-bottom: none; }
     .staff-card-left { display: flex; align-items: center; gap: 12px; text-align: left; }
     .staff-name { font-weight: 600; font-size: 0.95rem; display: block; text-align: left; }
     .staff-right { font-size: 0.9rem; font-weight: 600; text-align: left; max-width: 55%; word-break: break-word; line-height: 1.35; color: var(--grey-text); }
 
     .mobile-today-box {
-      background: #ffffff !important;
+      background: var(--bg-color) !important;
       border: 1px solid var(--card-border);
       border-radius: 12px;
       padding: 18px 20px;
@@ -177,47 +178,43 @@
       box-shadow: 0 1px 3px var(--box-shadow);
       transition: background 0.2s, border-color 0.2s;
     }
-    .mobile-today-box:hover { background: #f8fafc !important; border-color: #cbd5e1; }
+    .mobile-today-box:hover { background: var(--header-bg) !important; border-color: var(--grey-text); }
 
     .calendar-container { background: transparent; border: none; border-radius: 0; padding: 0; display: flex; flex-direction: column; width: 100%; box-shadow: none; }
     .calendar-header { display: flex; justify-content: space-between; align-items: center; font-size: 1.15rem; font-weight: 700; margin-bottom: 12px; color: var(--text-color); }
     .calendar-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 6px; width: 100%; }
     .cal-day-head { text-align: center; font-weight: 600; font-size: 0.8rem; padding: 6px 2px; background: var(--header-bg); border-radius: 6px; color: var(--grey-text); }
     .cal-day { border: 1px solid var(--card-border); border-radius: 8px; padding: 8px; font-size: 0.8rem; display: flex; flex-direction: column; background: var(--bg-color); min-height: 100px; cursor: pointer; transition: background 0.2s; word-break: break-word; overflow: hidden; box-shadow: 0 1px 2px var(--box-shadow); text-align: left; }
-    .cal-day:hover { background: #f8fafc; }
-    .cal-day.today { border: 2px solid #3b82f6 !important; background-color: #eff6ff !important; }
+    .cal-day:hover { background: var(--header-bg); }
+    .cal-day.today { border: 2px solid var(--grey-text) !important; background-color: var(--header-bg) !important; }
     .cal-day.empty { background: transparent; border-color: transparent; cursor: default; box-shadow: none; }
-    .cal-day.weekend { background-color: #f1f5f9; color: var(--grey-text); opacity: 0.85; }
+    .cal-day.weekend { background-color: var(--header-bg); color: var(--grey-text); opacity: 0.85; }
 
     @media (max-width: 768px) {
       .cal-day > div:not(.cal-day-num) { display: none !important; }
       .cal-day { min-height: 52px !important; align-items: center; justify-content: center; }
     }
 
-    .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.4); align-items: center; justify-content: center; padding: 16px; z-index: 100; backdrop-filter: blur(2px); }
-    .modal-content { position: relative; background: #ffffff; padding: 24px 20px 20px 20px; border-radius: 16px; width: 100%; max-width: 450px; max-height: 85vh; overflow-y: auto; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); color: #0f172a; text-align: left; }
+    .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.3); align-items: center; justify-content: center; padding: 16px; z-index: 100; backdrop-filter: blur(2px); }
+    .modal-content { position: relative; background: var(--bg-color); padding: 24px 20px 20px 20px; border: 1px solid var(--card-border); border-radius: 16px; width: 100%; max-width: 450px; max-height: 85vh; overflow-y: auto; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.08); color: var(--text-color); text-align: left; }
     
     .modal-exit-btn {
       position: absolute; top: 12px; right: 12px; background: transparent; border: none; cursor: pointer; color: var(--grey-text);
       display: inline-flex; align-items: center; justify-content: center; padding: 6px; border-radius: 50%;
       transition: background 0.2s, color 0.2s; z-index: 10;
     }
-    .modal-exit-btn:hover { background: #f1f5f9; color: var(--text-color); }
+    .modal-exit-btn:hover { background: var(--header-bg); color: var(--text-color); }
 
     .modal-title-head { font-size: 1.15rem; font-weight: 700; color: var(--text-color); margin-bottom: 16px; padding-right: 30px; text-align: left; }
 
     .form-group { margin-bottom: 14px; text-align: left; }
-    .form-group label { display: block; font-size: 0.95rem; font-weight: 600; margin-bottom: 6px; color: #334155; text-align: left; }
-    .form-group input[type="text"], .form-group input[type="date"], .form-group input[type="time"], .form-group input[type="file"], .form-group select, .form-group textarea { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; font: inherit; font-size: 0.95rem; background: #ffffff; }
+    .form-group label { display: block; font-size: 0.95rem; font-weight: 600; margin-bottom: 6px; color: var(--text-color); text-align: left; }
+    .form-group input[type="text"], .form-group input[type="date"], .form-group input[type="time"], .form-group input[type="file"], .form-group select, .form-group textarea { width: 100%; padding: 12px; border: 1px solid var(--card-border); border-radius: 8px; font: inherit; font-size: 0.95rem; background: var(--bg-color); color: var(--text-color); }
     
     .checkbox-group-container { display: flex; flex-direction: column; gap: 10px; margin-top: 8px; text-align: left; }
-    .checkbox-item { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border: 1px solid var(--card-border); border-radius: 8px; cursor: pointer; transition: background 0.2s; text-align: left; }
-    .checkbox-item:hover { background: #f8fafc; }
+    .checkbox-item { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border: 1px solid var(--card-border); border-radius: 8px; cursor: pointer; transition: background 0.2s; text-align: left; background: var(--bg-color); }
+    .checkbox-item:hover { background: var(--header-bg); }
     .checkbox-item input[type="checkbox"] { width: 18px; height: 18px; cursor: pointer; }
-
-    .board-list-item { display: flex; justify-content: space-between; align-items: center; padding: 16px 18px; background: #ffffff; border: 1px solid var(--card-border); border-radius: 12px; margin-bottom: 10px; transition: background 0.2s; text-align: left; box-shadow: 0 1px 3px var(--box-shadow); }
-    .board-list-item.clickable { cursor: pointer; }
-    .board-list-item.clickable:hover { background: #f8fafc; }
 
     @media print {
       body * { visibility: hidden; }
@@ -241,6 +238,9 @@
 
   <div class="welcome-header">
     <h1>ePergerakan</h1>
+    <p class="welcome-desc" id="welcomeDescText">
+      <strong>ePergerakan</strong> Platform digital interaktif untuk pengurusan status dan lokasi harian staf. Menggantikan papan putih fizikal dengan sistem kemas kini kendiri yang pantas, mudah diakses oleh semua, dan memastikan maklumat keberadaan pegawai sentiasa dipantau oleh penyelia.
+    </p>
     <!-- Panel kawalan / senarai board disorokkan untuk pengguna biasa dan hanya dipaparkan apabila admin log masuk -->
     <div id="mainBoardsListContainer" style="width: 100%; display: none; flex-direction: column; margin-top: 20px;"></div>
   </div>
@@ -340,7 +340,7 @@
 
 <!-- ================= SETTINGS MENU MODAL (ADMIN ONLY) ================= -->
 <div id="modalTetapanUtama" class="modal">
-  <div class="modal-content" style="max-width: 400px; background: #ffffff; border: 1px solid var(--card-border);">
+  <div class="modal-content" style="max-width: 400px;">
     <button class="modal-exit-btn" onclick="closeModal('modalTetapanUtama')" title="Close">
       <span class="material-symbols-outlined">close</span>
     </button>
@@ -360,7 +360,7 @@
 
 <!-- ================= EDIT BOARD MODAL (BOARD SETTINGS) ================= -->
 <div id="modalEditBoard" class="modal">
-  <div class="modal-content" style="max-width: 400px; background: #ffffff; border: 1px solid var(--card-border);">
+  <div class="modal-content" style="max-width: 400px;">
     <button class="modal-exit-btn" onclick="closeModal('modalEditBoard')" title="Close">
       <span class="material-symbols-outlined">close</span>
     </button>
@@ -380,6 +380,10 @@
         <span class="material-symbols-outlined">volume_up</span>
         <span>Sound Settings</span>
       </button>
+      <button class="clean-menu-item" onclick="bukaThemeSettings()">
+        <span class="material-symbols-outlined">palette</span>
+        <span>Theme Settings</span>
+      </button>
       <button class="clean-menu-item" onclick="salinLinkBoard()">
         <span class="material-symbols-outlined">share</span>
         <span>Share Board</span>
@@ -390,7 +394,7 @@
 
 <!-- ================= SOUND SETTINGS MODAL ================= -->
 <div id="modalSoundSettings" class="modal" style="z-index: 125;">
-  <div class="modal-content" style="max-width: 380px; background: #ffffff;">
+  <div class="modal-content" style="max-width: 380px;">
     <button class="modal-exit-btn" onclick="closeModal('modalSoundSettings')" title="Close">
       <span class="material-symbols-outlined">close</span>
     </button>
@@ -411,7 +415,33 @@
     </div>
 
     <div class="clean-menu-list" style="margin-top: 15px;">
-      <button class="clean-menu-item" style="justify-content: center; font-weight: 600; color:#16a34a;" onclick="simpanSoundSettings()">
+      <button class="clean-menu-item" style="justify-content: center; font-weight: 600;" onclick="simpanSoundSettings()">
+        <span>Simpan</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ================= THEME SETTINGS MODAL ================= -->
+<div id="modalThemeSettings" class="modal" style="z-index: 125;">
+  <div class="modal-content" style="max-width: 380px;">
+    <button class="modal-exit-btn" onclick="closeModal('modalThemeSettings')" title="Close">
+      <span class="material-symbols-outlined">close</span>
+    </button>
+    <div class="modal-title-head">Theme Settings</div>
+    
+    <div class="form-group" style="margin-top: 14px;">
+      <label>Pilih Tema Warna Board</label>
+      <select id="inputBoardTheme">
+        <option value="light-gray">Light Gray (Default)</option>
+        <option value="blue">Classic Blue</option>
+        <option value="emerald">Emerald Green</option>
+        <option value="warm">Warm Beige</option>
+      </select>
+    </div>
+
+    <div class="clean-menu-list" style="margin-top: 15px;">
+      <button class="clean-menu-item" style="justify-content: center; font-weight: 600;" onclick="simpanBoardTheme()">
         <span>Simpan</span>
       </button>
     </div>
@@ -420,7 +450,7 @@
 
 <!-- ================= RENEW BOARD MODAL (ADMIN ONLY) ================= -->
 <div id="modalRenewBoard" class="modal" style="z-index: 130;">
-  <div class="modal-content" style="max-width: 380px; background: #ffffff;">
+  <div class="modal-content" style="max-width: 380px;">
     <button class="modal-exit-btn" onclick="closeModal('modalRenewBoard')" title="Close">
       <span class="material-symbols-outlined">close</span>
     </button>
@@ -432,7 +462,7 @@
     </div>
 
     <div class="clean-menu-list" style="margin-top: 15px;">
-      <button class="clean-menu-item" style="justify-content: center; font-weight: 600; color:#16a34a;" onclick="simpanRenewBoard()">
+      <button class="clean-menu-item" style="justify-content: center; font-weight: 600;" onclick="simpanRenewBoard()">
         <span>Simpan</span>
       </button>
     </div>
@@ -441,7 +471,7 @@
 
 <!-- ================= USER MANAGEMENT MODAL ================= -->
 <div id="modalPengurusanStaf" class="modal">
-  <div class="modal-content" style="max-width: 480px; background: #ffffff;">
+  <div class="modal-content" style="max-width: 480px;">
     <button class="modal-exit-btn" onclick="closeModal('modalPengurusanStaf')" title="Close">
       <span class="material-symbols-outlined">close</span>
     </button>
@@ -460,7 +490,7 @@
 
 <!-- ================= ADD/EDIT USER FORM MODAL ================= -->
 <div id="modalFormStaf" class="modal" style="z-index: 110;">
-  <div class="modal-content" style="max-width: 400px; background: #ffffff;">
+  <div class="modal-content" style="max-width: 400px;">
     <button class="modal-exit-btn" onclick="closeModal('modalFormStaf')" title="Close">
       <span class="material-symbols-outlined">close</span>
     </button>
@@ -498,11 +528,11 @@
     <div class="form-group" style="text-align: left;">
       <label>Profile Picture</label>
       <input type="file" id="stafGambarInput" accept="image/*" onchange="previewGambarStaf(event)">
-      <img id="stafGambarPreview" src="" style="display:none; width:62px; height:62px; border-radius:50%; object-fit:cover; margin:10px 0 0 0; border:2px solid #cbd5e1;">
+      <img id="stafGambarPreview" src="" style="display:none; width:62px; height:62px; border-radius:50%; object-fit:cover; margin:10px 0 0 0; border:2px solid var(--card-border);">
     </div>
 
     <div class="clean-menu-list" style="margin-top: 15px;">
-      <button class="clean-menu-item" style="justify-content: center; font-weight: 600; color:#16a34a;" onclick="simpanStafData()">
+      <button class="clean-menu-item" style="justify-content: center; font-weight: 600;" onclick="simpanStafData()">
         <span>Save</span>
       </button>
     </div>
@@ -511,25 +541,25 @@
 
 <!-- ================= MAIN PROFILE MENU MODAL ================= -->
 <div id="modalMenuProfil" class="modal">
-  <div class="modal-content" style="background: #ffffff; max-width: 440px;">
+  <div class="modal-content" style="max-width: 440px;">
     <button class="modal-exit-btn" onclick="closeModal('modalMenuProfil')" title="Close">
       <span class="material-symbols-outlined">close</span>
     </button>
     
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; padding-right: 30px;">
       <h3 id="tajukModalMenuProfil" style="margin:0; text-align: left; flex: 1; font-size: 1.15rem;">Name</h3>
-      <div id="containerLocengPenyelia" style="display:none; align-items: center; gap: 6px; cursor: pointer; background: #fee2e2; padding: 6px 12px; border-radius: 20px;" onclick="bukaModulSemakan()" title="Pending Approvals">
-        <span class="material-symbols-outlined ringing-bell" style="font-size:1.3rem; color:#dc2626;">notifications</span>
-        <span id="badgeBilanganMenunggu" style="background: #dc2626; color: white; border-radius: 50%; padding: 1px 6px; font-size: 0.75rem; font-weight: bold;">0</span>
+      <div id="containerLocengPenyelia" style="display:none; align-items: center; gap: 6px; cursor: pointer; background: var(--header-bg); padding: 6px 12px; border-radius: 20px;" onclick="bukaModulSemakan()" title="Pending Approvals">
+        <span class="material-symbols-outlined ringing-bell" style="font-size:1.3rem; color:var(--text-color);">notifications</span>
+        <span id="badgeBilanganMenunggu" style="background: var(--text-color); color: var(--bg-color); border-radius: 50%; padding: 1px 6px; font-size: 0.75rem; font-weight: bold;">0</span>
       </div>
     </div>
 
-    <div id="containerNotifikasiDitolak" style="display:none; margin-bottom: 16px; background: #fee2e2; border: 1px solid #f87171; border-radius: 8px; padding: 12px; text-align: left;">
-      <div style="display: flex; align-items: center; gap: 8px; font-weight: 700; color: #b91c1c; margin-bottom: 4px;">
+    <div id="containerNotifikasiDitolak" style="display:none; margin-bottom: 16px; background: var(--header-bg); border: 1px solid var(--card-border); border-radius: 8px; padding: 12px; text-align: left;">
+      <div style="display: flex; align-items: center; gap: 8px; font-weight: 700; color: var(--text-color); margin-bottom: 4px;">
         <span class="material-symbols-outlined ringing-bell">notifications_active</span>
         <span>Application Rejected</span>
       </div>
-      <div id="teksSebabDitolak" style="font-size: 0.9rem; color: #7f1d1d;"></div>
+      <div id="teksSebabDitolak" style="font-size: 0.9rem; color: var(--grey-text);"></div>
     </div>
 
     <div class="clean-menu-list" style="margin-bottom: 16px;">
@@ -557,7 +587,7 @@
 
 <!-- ================= MANAGE BOARD NOTE FORM MODAL ================= -->
 <div id="modalAddNotePopUp" class="modal" style="z-index: 105;">
-  <div class="modal-content" style="background: #ffffff; max-width: 420px;">
+  <div class="modal-content" style="max-width: 420px;">
     <button class="modal-exit-btn" onclick="kembaliKeMenuProfil('modalAddNotePopUp')" title="Close">
       <span class="material-symbols-outlined">close</span>
     </button>
@@ -570,14 +600,14 @@
     </div>
     
     <div class="clean-menu-list" style="margin-top: 15px;">
-      <button class="clean-menu-item" style="justify-content: center; font-weight: 600; color:#16a34a;" onclick="simpanNotaBoard()">Save Note</button>
+      <button class="clean-menu-item" style="justify-content: center; font-weight: 600;" onclick="simpanNotaBoard()">Save Note</button>
     </div>
   </div>
 </div>
 
 <!-- ================= ADD / EDIT ACTIVITY FORM MODAL ================= -->
 <div id="modalAddActivityPopUp" class="modal" style="z-index: 105;">
-  <div class="modal-content" style="background: #ffffff; max-width: 420px;">
+  <div class="modal-content" style="max-width: 420px;">
     <button class="modal-exit-btn" onclick="kembaliKeMenuProfil('modalAddActivityPopUp')" title="Close">
       <span class="material-symbols-outlined">close</span>
     </button>
@@ -610,7 +640,7 @@
 
 <!-- ================= HARI BEKERJA HIBRID (HBH) MODAL ================= -->
 <div id="modalHBHPopUp" class="modal" style="z-index: 105;">
-  <div class="modal-content" style="background: #ffffff; max-width: 400px;">
+  <div class="modal-content" style="max-width: 400px;">
     <button class="modal-exit-btn" onclick="kembaliKeMenuProfil('modalHBHPopUp')" title="Close">
       <span class="material-symbols-outlined">close</span>
     </button>
@@ -635,14 +665,14 @@
     </div>
 
     <div class="clean-menu-list" style="margin-top: 15px;">
-      <button class="clean-menu-item" style="justify-content: center; font-weight: 600; color:#16a34a;" onclick="hantarHBH()">Save</button>
+      <button class="clean-menu-item" style="justify-content: center; font-weight: 600;" onclick="hantarHBH()">Save</button>
     </div>
   </div>
 </div>
 
 <!-- ================= SUPERVISOR APPROVALS MODAL ================= -->
 <div id="modalPengesahan" class="modal" style="z-index: 110;">
-  <div class="modal-content" style="background: #ffffff;">
+  <div class="modal-content">
     <button class="modal-exit-btn" onclick="closeModal('modalPengesahan')" title="Close">
       <span class="material-symbols-outlined">close</span>
     </button>
@@ -656,7 +686,7 @@
 
 <!-- ================= MONTH VIEW DETAIL MODAL ================= -->
 <div id="modalDetailHari" class="modal" style="z-index: 120;">
-  <div class="modal-content" style="max-width: 420px; background: #ffffff;">
+  <div class="modal-content" style="max-width: 420px;">
     <button class="modal-exit-btn" onclick="closeModal('modalDetailHari')" title="Close">
       <span class="material-symbols-outlined">close</span>
     </button>
@@ -669,7 +699,7 @@
 
 <!-- ================= TODAY CATEGORY DETAIL MODAL (MOBILE) ================= -->
 <div id="modalDetailHariIni" class="modal" style="z-index: 120;">
-  <div class="modal-content" style="max-width: 420px; background: #ffffff;">
+  <div class="modal-content" style="max-width: 420px;">
     <button class="modal-exit-btn" onclick="closeModal('modalDetailHariIni')" title="Close">
       <span class="material-symbols-outlined">close</span>
     </button>
@@ -680,11 +710,11 @@
 
 <!-- ================= CUSTOM MESSAGE BOX / MODAL (COMPLIANCE) ================= -->
 <div id="modalCustomMsg" class="modal" style="z-index: 250;">
-  <div class="modal-content" style="max-width: 360px; background: #ffffff; text-align: center; padding: 24px;">
-    <div id="customMsgText" style="margin-bottom: 20px; font-size: 1rem; color: #1e293b; font-weight: 500; text-align: center; line-height: 1.5;"></div>
+  <div class="modal-content" style="max-width: 360px; text-align: center; padding: 24px;">
+    <div id="customMsgText" style="margin-bottom: 20px; font-size: 1rem; color: var(--text-color); font-weight: 500; text-align: center; line-height: 1.5;"></div>
     <div id="customMsgButtons" style="display: flex; gap: 10px; justify-content: center;">
-      <button id="customMsgBtnOk" class="clean-menu-item" style="justify-content: center; background: #2563eb; color: white; border-radius: 8px; padding: 10px 24px; font-weight: 600;">OK</button>
-      <button id="customMsgBtnCancel" class="clean-menu-item" style="display: none; justify-content: center; background: #e2e8f0; color: #1e293b; border-radius: 8px; padding: 10px 24px; font-weight: 600;">Batal</button>
+      <button id="customMsgBtnOk" class="clean-menu-item" style="justify-content: center; background: var(--header-bg); color: var(--text-color); border-radius: 8px; padding: 10px 24px; font-weight: 600;">OK</button>
+      <button id="customMsgBtnCancel" class="clean-menu-item" style="display: none; justify-content: center; background: var(--bg-color); color: var(--text-color); border-radius: 8px; padding: 10px 24px; font-weight: 600;">Batal</button>
     </div>
   </div>
 </div>
@@ -711,7 +741,7 @@
   function playAlertSound() {
     if (audioInterval) return;
     const b = boards.find(x => x.id === activeBoardId);
-    if (b && b.soundEnabled === false) return; // Patuh kepada tetapan board
+    if (b && b.soundEnabled === false) return;
 
     const soundType = b ? b.soundType : 'bell';
 
@@ -745,7 +775,7 @@
           gain.connect(audioCtx.destination);
           osc.start();
           osc.stop(audioCtx.currentTime + 0.4);
-        } else { // default 'bell'
+        } else {
           osc.type = 'sine';
           osc.frequency.setValueAtTime(1046.50, audioCtx.currentTime);
           gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
@@ -794,7 +824,7 @@
     const okBtn = document.getElementById('customMsgBtnOk');
     const cancelBtn = document.getElementById('customMsgBtnCancel');
 
-    textEl.innerHTML = `${message}<br><input type="text" id="customPromptInput" value="${defaultValue}" style="width:100%; padding:10px; margin-top:12px; border:1px solid #cbd5e1; border-radius:8px; font-size:0.95rem;">`;
+    textEl.innerHTML = `${message}<br><input type="text" id="customPromptInput" value="${defaultValue}" style="width:100%; padding:10px; margin-top:12px; border:1px solid var(--card-border); border-radius:8px; font-size:0.95rem; background:var(--bg-color); color:var(--text-color);">`;
     modal.style.display = 'flex';
     cancelBtn.style.display = 'inline-flex';
 
@@ -833,17 +863,52 @@
     const parts = dateStr.split('-');
     if (parts.length !== 3) return dateStr;
     const year = parts[0];
-    const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-    const monthIndex = parseInt(parts[1], 10) - 1;
-    const monthName = monthNames[monthIndex] || parts[1];
+    const month = parts[1];
     const day = parts[2];
-    return `expires on ${day} ${monthName} ${year}`;
+    return `${day}-${month}-${year}`;
   }
 
   function isBoardExpired(b) {
     if (!b.tarikhFreez) return false;
     const today = getLocalDateString();
     return today > b.tarikhFreez;
+  }
+
+  function applyBoardTheme(theme) {
+    const root = document.documentElement;
+    if (theme === 'blue') {
+      root.style.setProperty('--bg-color', '#ffffff');
+      root.style.setProperty('--app-bg', '#f0f9ff');
+      root.style.setProperty('--text-color', '#0f172a');
+      root.style.setProperty('--card-border', '#bae6fd');
+      root.style.setProperty('--header-bg', '#e0f2fe');
+      root.style.setProperty('--primary', '#0284c7');
+      root.style.setProperty('--grey-text', '#0369a1');
+    } else if (theme === 'emerald') {
+      root.style.setProperty('--bg-color', '#ffffff');
+      root.style.setProperty('--app-bg', '#f0fdf4');
+      root.style.setProperty('--text-color', '#064e3b');
+      root.style.setProperty('--card-border', '#a7f3d0');
+      root.style.setProperty('--header-bg', '#d1fae5');
+      root.style.setProperty('--primary', '#059669');
+      root.style.setProperty('--grey-text', '#047857');
+    } else if (theme === 'warm') {
+      root.style.setProperty('--bg-color', '#fffbf5');
+      root.style.setProperty('--app-bg', '#fef3c7');
+      root.style.setProperty('--text-color', '#78350f');
+      root.style.setProperty('--card-border', '#fde68a');
+      root.style.setProperty('--header-bg', '#fef3c7');
+      root.style.setProperty('--primary', '#d97706');
+      root.style.setProperty('--grey-text', '#b45309');
+    } else { // light-gray default
+      root.style.setProperty('--bg-color', '#f8fafc');
+      root.style.setProperty('--app-bg', '#f1f5f9');
+      root.style.setProperty('--text-color', '#1e293b');
+      root.style.setProperty('--card-border', '#cbd5e1');
+      root.style.setProperty('--header-bg', '#e2e8f0');
+      root.style.setProperty('--primary', '#475569');
+      root.style.setProperty('--grey-text', '#64748b');
+    }
   }
 
   function toggleAdminLogin() {
@@ -897,19 +962,22 @@
     const isAdmin = sessionStorage.getItem('isAdmin') === 'true';
     const btnSettings = document.getElementById('btnSettingsMain');
     const adminIcon = document.getElementById('adminLockIcon');
+    const descEl = document.getElementById('welcomeDescText');
 
     if (isAdmin) {
       if(btnSettings) btnSettings.style.display = 'inline-flex';
       if(adminIcon) {
         adminIcon.innerText = 'admin_panel_settings';
-        adminIcon.style.color = '#16a34a'; 
+        adminIcon.style.color = 'var(--text-color)'; 
       }
+      if(descEl) descEl.style.display = 'none';
     } else {
       if(btnSettings) btnSettings.style.display = 'none';
       if(adminIcon) {
         adminIcon.innerText = 'admin_panel_settings';
         adminIcon.style.color = 'var(--grey-text)';
       }
+      if(descEl) descEl.style.display = 'block';
     }
     renderMainBoardsList();
     if (document.getElementById('staffStrip')) {
@@ -944,6 +1012,7 @@
       }
       if (b.soundEnabled === undefined) b.soundEnabled = true;
       if (!b.soundType) b.soundType = 'bell';
+      if (!b.theme) b.theme = 'light-gray';
     });
 
     checkAdminStatus();
@@ -991,6 +1060,7 @@
       activeBoardId = id;
       senaraiStaf = b.senaraiStaf || [];
       rekodPergerakan = b.rekodPergerakan || [];
+      applyBoardTheme(b.theme || 'light-gray');
       
       document.getElementById('welcomeScreen').style.display = 'none';
       document.getElementById('mainDashboard').style.display = 'flex';
@@ -1027,37 +1097,48 @@
     container.style.display = 'flex';
 
     if(boards.length === 0) { 
-      container.innerHTML = '<p style="color:#64748b; font-style:italic; text-align:center; padding:20px;">Tiada rekod board. Sila log masuk admin untuk membina board baru.</p>'; 
+      container.innerHTML = '<p style="color:var(--grey-text); font-style:italic; text-align:center; padding:20px;">Tiada rekod board. Sila log masuk admin untuk membina board baru.</p>'; 
       return; 
     }
 
-    container.innerHTML = boards.map(b => {
-      const userCount = (b.senaraiStaf || []).length;
-      let adminDelete = `
-        <button class="plain-icon-btn" onclick="event.stopPropagation(); padamBoardPantas('${b.id}')" style="color:#dc2626; padding:4px 8px; font-size:0.9rem; font-weight:600;" title="Padam Board">
-          Delete
-        </button>
-      `;
-
-      const tarikhFreez = b.tarikhFreez || '-';
-      const formattedExpiry = formatExpiryDate(tarikhFreez);
-      const freezeClickAction = `onclick="bukaRenewBoard('${b.id}', event)"`;
-
-      return `
-        <div class="board-list-item clickable" onclick="masukKeBoard('${b.id}')">
-          <div style="display:flex; align-items:center; gap:16px;">
-            <strong style="font-size:1.05rem; color: #0f172a; text-transform: uppercase;">${b.name}</strong>
-          </div>
-          <div style="display:flex; align-items:center; gap:16px; flex-wrap:wrap; justify-content:flex-end;">
-            <span style="font-size:0.9rem; color: var(--grey-text); font-weight:500;">${userCount} user</span>
-            <span style="font-size:0.85rem; color: #334155; font-weight:600; background:#f1f5f9; padding:4px 8px; border-radius:6px; cursor:pointer; text-decoration:underline; color:#2563eb;" ${freezeClickAction} title="Klik untuk renew menggunakan kalendar (Admin sahaja)">
-              ${formattedExpiry}
-            </span>
-            ${adminDelete}
-          </div>
-        </div>
-      `;
-    }).join('');
+    container.innerHTML = `
+      <div style="background:var(--bg-color); border:1px solid var(--card-border); border-radius:12px; overflow:hidden; box-shadow:0 1px 3px var(--box-shadow); width:100%;">
+        <table style="width:100%; border-collapse:collapse; text-align:left; font-size:0.95rem;">
+          <thead>
+            <tr style="background:var(--header-bg); border-bottom:1px solid var(--card-border); color:var(--grey-text); font-size:0.85rem; text-transform:uppercase;">
+              <th style="padding:12px 16px; font-weight:600; width:50px; text-align:center;">No.</th>
+              <th style="padding:12px 16px; font-weight:600;">Nama Board</th>
+              <th style="padding:12px 16px; font-weight:600; text-align:center;">User</th>
+              <th style="padding:12px 16px; font-weight:600;">Expires On</th>
+              <th style="padding:12px 16px; font-weight:600; text-align:right;">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${boards.map((b, index) => {
+              const userCount = (b.senaraiStaf || []).length;
+              const formattedExpiry = formatExpiryDate(b.tarikhFreez || '-');
+              return `
+                <tr style="border-bottom:1px solid var(--card-border); cursor:pointer; transition:background 0.2s;" onclick="masukKeBoard('${b.id}')" onmouseover="this.style.background='var(--header-bg)'" onmouseout="this.style.background='transparent'">
+                  <td style="padding:14px 16px; text-align:center; color:var(--grey-text); font-weight:500;">${index + 1}</td>
+                  <td style="padding:14px 16px; font-weight:600; color:var(--text-color); text-transform:uppercase;">${b.name}</td>
+                  <td style="padding:14px 16px; text-align:center; font-weight:500; color:var(--grey-text);">${userCount}</td>
+                  <td style="padding:14px 16px;">
+                    <span style="font-weight:600; color:var(--text-color); background:var(--header-bg); padding:4px 8px; border-radius:6px; cursor:pointer;" onclick="bukaRenewBoard('${b.id}', event)" title="Klik untuk tukar tarikh tamat tempoh">
+                      ${formattedExpiry}
+                    </span>
+                  </td>
+                  <td style="padding:14px 16px; text-align:right;">
+                    <button class="plain-icon-btn" onclick="event.stopPropagation(); padamBoardPantas('${b.id}')" style="color:var(--text-color); font-size:0.9rem; font-weight:600; padding:6px 12px; background:var(--header-bg); border-radius:6px;" title="Padam Board">
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              `;
+            }).join('')}
+          </tbody>
+        </table>
+      </div>
+    `;
   }
 
   function bukaRenewBoard(id, event) {
@@ -1125,7 +1206,8 @@
           tarikhMula: todayStr,
           tarikhFreez: freezeStr,
           soundEnabled: true,
-          soundType: 'bell'
+          soundType: 'bell',
+          theme: 'light-gray'
         });
         await simpanKeLocalStorage(); 
         renderMainBoardsList();
@@ -1176,6 +1258,25 @@
       showMsg("✅ Sound settings successfully saved!");
     }
     closeModal('modalSoundSettings');
+  }
+
+  function bukaThemeSettings() {
+    closeModal('modalEditBoard');
+    const b = boards.find(x => x.id === activeBoardId);
+    if (!b) return;
+    document.getElementById('inputBoardTheme').value = b.theme || 'light-gray';
+    openModal('modalThemeSettings');
+  }
+
+  async function simpanBoardTheme() {
+    const b = boards.find(x => x.id === activeBoardId);
+    if (b) {
+      b.theme = document.getElementById('inputBoardTheme').value;
+      applyBoardTheme(b.theme);
+      await simpanKeLocalStorage();
+      showMsg("✅ Theme successfully saved!");
+    }
+    closeModal('modalThemeSettings');
   }
 
   async function editHeaderBoard() {
@@ -1298,15 +1399,15 @@
 
   function rahJ91ZuNL8Y2px8iYciYeHN8sfSh5eXH8() {
     document.getElementById('senaraiStafContainer').innerHTML = senaraiStaf.map((s, idx) => {
-      const avatarHTML = s.gambar ? `<img src="${s.gambar}" style="width:36px; height:36px; border-radius:50%; object-fit:cover; border:1px solid #cbd5e1;">` : `<span style="width:36px; height:36px; border-radius:50%; background:#e2e8f0; display:inline-block; border:1px solid #cbd5e1;"></span>`;
-      return `<div style="display:flex; justify-content:space-between; align-items:center; padding:10px; background:#f8fafc; border:1px solid #cbd5e1; border-radius:8px; margin-bottom:8px;">
+      const avatarHTML = s.gambar ? `<img src="${s.gambar}" style="width:36px; height:36px; border-radius:50%; object-fit:cover; border:1px solid var(--card-border);">` : `<span style="width:36px; height:36px; border-radius:50%; background:var(--header-bg); display:inline-block; border:1px solid var(--card-border);"></span>`;
+      return `<div style="display:flex; justify-content:space-between; align-items:center; padding:10px; background:var(--bg-color); border:1px solid var(--card-border); border-radius:8px; margin-bottom:8px;">
         <div style="display:flex; align-items:center; gap:10px;">
           ${avatarHTML}
           <div><strong>${s.nama}</strong></div>
         </div>
         <div style="display:flex; gap:6px;">
-          <button class="clean-menu-item" style="padding:4px 8px; border:1px solid #cbd5e1; border-radius:6px;" onclick="bukaFormStafModal(${idx})">Edit</button>
-          <button class="clean-menu-item" style="padding:4px 8px; border:1px solid #cbd5e1; border-radius:6px; color:#dc2626;" onclick="padamStaf(${idx})">Delete</button>
+          <button class="clean-menu-item" style="padding:4px 8px; border:1px solid var(--card-border); border-radius:6px;" onclick="bukaFormStafModal(${idx})">Edit</button>
+          <button class="clean-menu-item" style="padding:4px 8px; border:1px solid var(--card-border); border-radius:6px; color:var(--text-color);" onclick="padamStaf(${idx})">Delete</button>
         </div>
       </div>`;
     }).join('') || '<p>No users found.</p>';
@@ -1499,7 +1600,7 @@
     const boxNotifDitolak = document.getElementById('containerNotifikasiDitolak');
     if (permohonanDitolak.length > 0) {
       boxNotifDitolak.style.display = 'block';
-      document.getElementById('teksSebabDitolak').innerHTML = permohonanDitolak.map(d => `• ${d.catatan}<br><span style="color:#991b1b; font-style:italic;">Reason: ${d.sebabTolak || 'No reason specified'}</span>`).join('<br>');
+      document.getElementById('teksSebabDitolak').innerHTML = permohonanDitolak.map(d => `• ${d.catatan}<br><span style="color:var(--text-color); font-style:italic;">Reason: ${d.sebabTolak || 'No reason specified'}</span>`).join('<br>');
     } else {
       boxNotifDitolak.style.display = 'none';
     }
@@ -1537,24 +1638,24 @@
         tFormat += ` (${formatMasa12Jam(r.masaMula)} - ${formatMasa12Jam(r.masaTamat)})`;
       }
 
-      let badgeStatusStyle = "background:#e2e8f0; color:#334155;";
-      if(r.status === 'Lulus') badgeStatusStyle = "background:#dcfce7; color:#16a34a;";
-      if(r.status === 'Ditolak') badgeStatusStyle = "background:#fee2e2; color:#dc2626;";
-      if(r.status === 'Menunggu') badgeStatusStyle = "background:#fef3c7; color:#d97706;";
+      let badgeStatusStyle = "background:var(--header-bg); color:var(--text-color);";
+      if(r.status === 'Lulus') badgeStatusStyle = "background:var(--header-bg); color:var(--text-color); font-weight:600;";
+      if(r.status === 'Ditolak') badgeStatusStyle = "background:var(--header-bg); color:var(--text-color); font-weight:600;";
+      if(r.status === 'Menunggu') badgeStatusStyle = "background:var(--header-bg); color:var(--text-color); font-weight:600;";
 
       return `
-        <div style="background:#f8fafc; border:1px solid var(--card-border); border-radius:8px; padding:10px; display:flex; flex-direction:column; gap:6px; text-align:left;">
+        <div style="background:var(--bg-color); border:1px solid var(--card-border); border-radius:8px; padding:10px; display:flex; flex-direction:column; gap:6px; text-align:left;">
           <div style="display:flex; justify-content:space-between; align-items:flex-start;">
             <div style="font-size:0.9rem; font-weight:600; color:var(--text-color); text-align:left;">
               <div>${r.jenis}</div>
               <div style="font-weight:400; color:var(--grey-text); margin-top:2px;">${tFormat}</div>
               <div style="margin-top:2px;">Notes: ${r.catatan}</div>
             </div>
-            <span style="font-size:0.75rem; padding:2px 8px; border-radius:12px; font-weight:600; ${badgeStatusStyle}">${r.status}</span>
+            <span style="font-size:0.75rem; padding:2px 8px; border-radius:12px; ${badgeStatusStyle}">${r.status}</span>
           </div>
           <div style="display:flex; justify-content:flex-end; gap:6px; margin-top:4px;">
-            <button onclick="suntingAktiviti(${index})" style="background:transparent; border:1px solid #cbd5e1; border-radius:4px; padding:4px 10px; font-size:0.8rem; cursor:pointer; color:var(--text-color);">Edit</button>
-            <button onclick="padamAktiviti(${index})" style="background:transparent; border:1px solid #f87171; border-radius:4px; padding:4px 10px; font-size:0.8rem; cursor:pointer; color:#dc2626;">Delete</button>
+            <button onclick="suntingAktiviti(${index})" style="background:var(--header-bg); border:1px solid var(--card-border); border-radius:4px; padding:4px 10px; font-size:0.8rem; cursor:pointer; color:var(--text-color);">Edit</button>
+            <button onclick="padamAktiviti(${index})" style="background:var(--header-bg); border:1px solid var(--card-border); border-radius:4px; padding:4px 10px; font-size:0.8rem; cursor:pointer; color:var(--text-color);">Delete</button>
           </div>
         </div>
       `;
@@ -1714,12 +1815,12 @@
           <strong>${r.nama}</strong><br>
           ${r.catatan} ${tFormat}${timePart}<br>
           <div style="margin-top:8px; display:flex; gap:10px;">
-            <button class="clean-menu-item" style="padding:6px 12px; border:1px solid #cbd5e1; border-radius:6px; color:#16a34a; font-weight:600;" onclick="keputusanPenyelia(${originalIdx}, 'Lulus')">Approve</button> 
-            <button class="clean-menu-item" style="padding:6px 12px; border:1px solid #cbd5e1; border-radius:6px; color:#dc2626; font-weight:600;" onclick="tolakPenyeliaPrompt(${originalIdx})">Reject</button>
+            <button class="clean-menu-item" style="padding:6px 12px; border:1px solid var(--card-border); border-radius:6px; color:var(--text-color); font-weight:600;" onclick="keputusanPenyelia(${originalIdx}, 'Lulus')">Approve</button> 
+            <button class="clean-menu-item" style="padding:6px 12px; border:1px solid var(--card-border); border-radius:6px; color:var(--text-color); font-weight:600;" onclick="tolakPenyeliaPrompt(${originalIdx})">Reject</button>
           </div>
         </div>
       `;
-    }).join('') || '<p style="color:#64748b; font-style:italic;">No pending applications.</p>'; 
+    }).join('') || '<p style="color:var(--grey-text); font-style:italic;">No pending applications.</p>'; 
   }
 
   async function tolakPenyeliaPrompt(idx) {
@@ -1922,31 +2023,31 @@
       mobileTodayEl.innerHTML = `
         <div class="mobile-today-box" onclick="bukaDetailKategoriHariIni('Di Pejabat', dataHariIniCache.pejabat, ${cp})">
           <div style="display:flex; align-items:center; gap:12px;">
-            <span class="material-symbols-outlined" style="color:#475569; font-size:1.4rem;">apartment</span>
+            <span class="material-symbols-outlined" style="color:var(--grey-text); font-size:1.4rem;">apartment</span>
             <strong style="font-size:1.05rem; color:var(--text-color);">Di Pejabat</strong>
           </div>
-          <span style="font-size:0.9rem; background:#f1f5f9; padding:6px 14px; border-radius:12px; font-weight:700; color:var(--text-color);">${cp}</span>
+          <span style="font-size:0.9rem; background:var(--header-bg); padding:6px 14px; border-radius:12px; font-weight:700; color:var(--text-color);">${cp}</span>
         </div>
         <div class="mobile-today-box" onclick="bukaDetailKategoriHariIni('Tugas Rasmi / Luar', dataHariIniCache.engagements, ${ce})">
           <div style="display:flex; align-items:center; gap:12px;">
-            <span class="material-symbols-outlined" style="color:#2563eb; font-size:1.4rem;">badge</span>
+            <span class="material-symbols-outlined" style="color:var(--grey-text); font-size:1.4rem;">badge</span>
             <strong style="font-size:1.05rem; color:var(--text-color);">Tugas Rasmi / Luar</strong>
           </div>
-          <span style="font-size:0.9rem; background:#eff6ff; padding:6px 14px; border-radius:12px; font-weight:700; color:#1e40af;">${ce}</span>
+          <span style="font-size:0.9rem; background:var(--header-bg); padding:6px 14px; border-radius:12px; font-weight:700; color:var(--text-color);">${ce}</span>
         </div>
         <div class="mobile-today-box" onclick="bukaDetailKategoriHariIni('HBH', dataHariIniCache.rumah, ${cr})">
           <div style="display:flex; align-items:center; gap:12px;">
-            <span class="material-symbols-outlined" style="color:#16a34a; font-size:1.4rem;">home_work</span>
+            <span class="material-symbols-outlined" style="color:var(--grey-text); font-size:1.4rem;">home_work</span>
             <strong style="font-size:1.05rem; color:var(--text-color);">HBH</strong>
           </div>
-          <span style="font-size:0.9rem; background:#f0fdf4; padding:6px 14px; border-radius:12px; font-weight:700; color:#166534;">${cr}</span>
+          <span style="font-size:0.9rem; background:var(--header-bg); padding:6px 14px; border-radius:12px; font-weight:700; color:var(--text-color);">${cr}</span>
         </div>
         <div class="mobile-today-box" onclick="bukaDetailKategoriHariIni('Lain-lain', dataHariIniCache.lain, ${cl})">
           <div style="display:flex; align-items:center; gap:12px;">
-            <span class="material-symbols-outlined" style="color:#d97706; font-size:1.4rem;">event</span>
+            <span class="material-symbols-outlined" style="color:var(--grey-text); font-size:1.4rem;">event</span>
             <strong style="font-size:1.05rem; color:var(--text-color);">Lain-lain</strong>
           </div>
-          <span style="font-size:0.9rem; background:#fffbeb; padding:6px 14px; border-radius:12px; font-weight:700; color:#92400e;">${cl}</span>
+          <span style="font-size:0.9rem; background:var(--header-bg); padding:6px 14px; border-radius:12px; font-weight:700; color:var(--text-color);">${cl}</span>
         </div>
       `;
     }
@@ -2039,10 +2140,10 @@
     });
     
     document.getElementById('senaraiAktivitiHariTerpilih').innerHTML = ev.length ? ev.map(r => `
-      <div style="padding:8px 0; border-bottom:1px solid #e2e8f0; text-align:left;">
+      <div style="padding:8px 0; border-bottom:1px solid var(--card-border); text-align:left;">
         <strong>${r.nama}</strong>: ${r.catatan}
       </div>
-    `).join('') : '<p style="color:#64748b; font-style:italic;">Tiada aktiviti.</p>';
+    `).join('') : '<p style="color:var(--grey-text); font-style:italic;">Tiada aktiviti.</p>';
     
     openModal('modalDetailHari');
   }
