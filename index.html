@@ -58,6 +58,46 @@
       color: #f59e0b !important;
     }
 
+    /* SATU SLIDER SPEKTRUM WARNA (RAINBOW GRADIENT) */
+    input[type=range].single-rainbow-slider {
+      -webkit-appearance: none;
+      width: 100%;
+      height: 10px;
+      border-radius: 5px;
+      outline: none;
+      cursor: pointer;
+      background: linear-gradient(to right, 
+        #f1f5f9 0%, 
+        #fbcfe8 16%, 
+        #fed7aa 33%, 
+        #fef08a 50%, 
+        #bbf7d0 66%, 
+        #bae6fd 83%, 
+        #e2e8f0 100%
+      );
+    }
+
+    input[type=range].single-rainbow-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--text-color);
+      border: 2px solid #ffffff;
+      cursor: pointer;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+    input[type=range].single-rainbow-slider::-moz-range-thumb {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--text-color);
+      border: 2px solid #ffffff;
+      cursor: pointer;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+
     /* WELCOME SCREEN / BOARDS LIST VIEW */
     #welcomeScreen {
       position: fixed; top: 0; left: 0; right: 0; bottom: 0;
@@ -86,7 +126,7 @@
 
     /* BOARD NOTE ANNOUNCEMENT / PROMO SECTION */
     .board-note-box {
-      background: var(--bg-color);
+      background: rgba(255, 255, 255, 0.7);
       border: 1px solid var(--card-border);
       border-radius: 8px;
       padding: 12px 16px;
@@ -109,9 +149,9 @@
       scrollbar-width: thin; width: 100%; 
     }
     .profile-chip { display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 90px; color: var(--text-color); font-size: 0.8rem; flex-shrink: 0; text-align: center;}
-    .profile-chip .avatar, .staff-avatar { width: 56px; height: 56px; border-radius: 50%; object-fit: cover; display: block; border: 2px solid var(--bg-color); box-shadow: 0 2px 6px rgba(0,0,0,0.04); }
-    .avatar-empty { display: block; border-radius: 50%; width: 56px; height: 56px; background: var(--header-bg); }
-    .profile-photo-wrap { position: relative; display: flex; align-items: center; justify-content: center; border-radius: 50%; width: 62px; height: 62px; background: var(--header-bg); }
+    .profile-chip .avatar, .staff-avatar { width: 56px; height: 56px; border-radius: 50%; object-fit: cover; display: block; border: 2px solid var(--bg-color); box-shadow: 0 2px 6px rgba(0,0,0,0.04); background: #ffffff; }
+    .avatar-empty { display: block; border-radius: 50%; width: 56px; height: 56px; background: #ffffff; border: 2px solid var(--card-border); }
+    .profile-photo-wrap { position: relative; display: flex; align-items: center; justify-content: center; border-radius: 50%; width: 62px; height: 62px; background: #ffffff; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
     
     @media (max-width: 768px) {
       .staff-strip { flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch; }
@@ -131,7 +171,7 @@
     }
     .profile-photo-wrap.has-notif .notification-badge { display: block; }
 
-    .feedback-item { margin-bottom: 10px; padding: 12px; background: var(--bg-color); border: 1px solid var(--card-border); border-radius: 8px; font-size: 0.9rem; text-align: left; }
+    .feedback-item { margin-bottom: 10px; padding: 12px; background: rgba(255, 255, 255, 0.7); border: 1px solid var(--card-border); border-radius: 8px; font-size: 0.9rem; text-align: left; }
     
     .view-tabs { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; width: 100%; gap: 10px; }
     .tabs-left { display: flex; gap: 16px; overflow-x: auto; padding-bottom: 4px; align-items: center; }
@@ -141,16 +181,16 @@
     .tab-btn span.material-symbols-outlined { font-size: 1.5rem; color: var(--grey-text); transition: color 0.2s; }
     .tab-btn.active span.material-symbols-outlined { color: var(--text-color); font-weight: bold; }
 
-    .clean-menu-list { display: flex; flex-direction: column; background: var(--bg-color); border-radius: 12px; border: 1px solid var(--card-border); overflow: hidden; }
+    .clean-menu-list { display: flex; flex-direction: column; background: rgba(255, 255, 255, 0.7); border-radius: 12px; border: 1px solid var(--card-border); overflow: hidden; }
     .clean-menu-item { padding: 14px 18px; background: transparent; border: none; border-bottom: 1px solid var(--card-border); text-align: left; font-size: 0.95rem; font-weight: 500; color: var(--text-color); cursor: pointer; display: flex; align-items: center; gap: 14px; transition: background 0.2s; width: 100%; }
     .clean-menu-item:last-child { border-bottom: none; }
-    .clean-menu-item:hover { background: var(--header-bg); }
+    .clean-menu-item:hover { background: rgba(255, 255, 255, 0.9); }
     .clean-menu-item span.material-symbols-outlined { font-size: 1.3rem; color: var(--grey-text); }
 
     .columns-container { display: grid; grid-template-columns: 1fr; gap: 15px; }
     @media (min-width: 768px) { .columns-container { grid-template-columns: repeat(4, 1fr); } }
 
-    .column { background: var(--bg-color); border: 1px solid var(--card-border); border-radius: 12px; padding: 15px; display: flex; flex-direction: column; max-height: 70vh; box-shadow: 0 2px 4px var(--box-shadow); text-align: left; }
+    .column { background: rgba(255, 255, 255, 0.7); border: 1px solid var(--card-border); border-radius: 12px; padding: 15px; display: flex; flex-direction: column; max-height: 70vh; box-shadow: 0 2px 4px var(--box-shadow); text-align: left; backdrop-filter: blur(4px); }
     .column-scroll { overflow-y: auto; flex: 1; padding-right: 4px; text-align: left; }
     .column-title { font-size: 1.05rem; font-weight: 700; padding-bottom: 10px; margin-bottom: 12px; border-bottom: 1px solid var(--card-border); display: flex; justify-content: space-between; color: var(--text-color); text-align: left; }
 
@@ -169,12 +209,13 @@
     .calendar-container { background: transparent; border: none; border-radius: 0; padding: 0; display: flex; flex-direction: column; width: 100%; box-shadow: none; }
     .calendar-header { display: flex; justify-content: space-between; align-items: center; font-size: 1.15rem; font-weight: 700; margin-bottom: 12px; color: var(--text-color); }
     .calendar-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 6px; width: 100%; }
-    .cal-day-head { text-align: center; font-weight: 600; font-size: 0.8rem; padding: 6px 2px; background: var(--header-bg); border-radius: 6px; color: var(--grey-text); }
-    .cal-day { border: 1px solid var(--card-border); border-radius: 8px; padding: 8px; font-size: 0.8rem; display: flex; flex-direction: column; background: var(--bg-color); min-height: 100px; cursor: pointer; transition: background 0.2s; word-break: break-word; overflow: hidden; box-shadow: 0 1px 2px var(--box-shadow); text-align: left; }
-    .cal-day:hover { background: var(--header-bg); }
-    .cal-day.today { border: 2px solid var(--grey-text) !important; background-color: var(--header-bg) !important; }
-    .cal-day.empty { background: transparent; border-color: transparent; cursor: default; box-shadow: none; }
-    .cal-day.weekend { background-color: var(--header-bg); color: var(--grey-text); opacity: 0.85; }
+    .cal-day-head { text-align: center; font-weight: 600; font-size: 0.8rem; padding: 6px 2px; background: rgba(255, 255, 255, 0.7); border-radius: 6px; color: var(--grey-text); border: 1px solid var(--card-border); }
+    
+    .cal-day { border: 1px solid var(--card-border); border-radius: 8px; padding: 8px; font-size: 0.8rem; display: flex; flex-direction: column; background: rgba(255, 255, 255, 0.7); min-height: 100px; cursor: pointer; transition: background 0.2s; word-break: break-word; overflow: hidden; box-shadow: 0 1px 2px var(--box-shadow); text-align: left; backdrop-filter: blur(4px); }
+    .cal-day:hover { background: rgba(255, 255, 255, 0.9); }
+    .cal-day.today { border: 2px solid var(--text-color) !important; background-color: rgba(255, 255, 255, 0.95) !important; }
+    .cal-day.empty { background: transparent; border-color: transparent; cursor: default; box-shadow: none; backdrop-filter: none; }
+    .cal-day.weekend { background-color: rgba(241, 245, 249, 0.6); color: var(--grey-text); opacity: 0.85; }
 
     @media (max-width: 768px) {
       .cal-day > div:not(.cal-day-num) { display: none !important; }
@@ -182,7 +223,7 @@
     }
 
     .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.3); align-items: center; justify-content: center; padding: 16px; z-index: 100; backdrop-filter: blur(2px); }
-    .modal-content { position: relative; background: var(--bg-color); padding: 24px 20px 20px 20px; border: 1px solid var(--card-border); border-radius: 16px; width: 100%; max-width: 450px; max-height: 85vh; overflow-y: auto; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.08); color: var(--text-color); text-align: left; }
+    .modal-content { position: relative; background: #ffffff; padding: 24px 20px 20px 20px; border: 1px solid var(--card-border); border-radius: 16px; width: 100%; max-width: 450px; max-height: 85vh; overflow-y: auto; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.08); color: var(--text-color); text-align: left; }
     
     .modal-exit-btn {
       position: absolute; top: 12px; right: 12px; background: transparent; border: none; cursor: pointer; color: var(--grey-text);
@@ -195,11 +236,11 @@
 
     .form-group { margin-bottom: 14px; text-align: left; }
     .form-group label { display: block; font-size: 0.95rem; font-weight: 600; margin-bottom: 6px; color: var(--text-color); text-align: left; }
-    .form-group input[type="text"], .form-group input[type="date"], .form-group input[type="time"], .form-group input[type="file"], .form-group select, .form-group textarea { width: 100%; padding: 12px; border: 1px solid var(--card-border); border-radius: 8px; font: inherit; font-size: 0.95rem; background: var(--bg-color); color: var(--text-color); }
+    .form-group input[type="text"], .form-group input[type="date"], .form-group input[type="time"], .form-group input[type="file"], .form-group select, .form-group textarea { width: 100%; padding: 12px; border: 1px solid var(--card-border); border-radius: 8px; font: inherit; font-size: 0.95rem; background: #ffffff; color: var(--text-color); }
     
     .checkbox-group-container { display: flex; flex-direction: column; gap: 10px; margin-top: 8px; text-align: left; }
-    .checkbox-item { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border: 1px solid var(--card-border); border-radius: 8px; cursor: pointer; transition: background 0.2s; text-align: left; background: var(--bg-color); }
-    .checkbox-item:hover { background: var(--header-bg); }
+    .checkbox-item { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border: 1px solid var(--card-border); border-radius: 8px; cursor: pointer; transition: background 0.2s; text-align: left; background: #ffffff; }
+    .checkbox-item:hover { background: rgba(241, 245, 249, 0.7); }
     .checkbox-item input[type="checkbox"] { width: 18px; height: 18px; cursor: pointer; }
 
     @media print {
@@ -404,7 +445,7 @@
   </div>
 </div>
 
-<!-- ================= THEME SETTINGS MODAL ================= -->
+<!-- ================= THEME SETTINGS MODAL (SINGLE RAINBOW SLIDER) ================= -->
 <div id="modalThemeSettings" class="modal" style="z-index: 125;">
   <div class="modal-content" style="max-width: 380px;">
     <button class="modal-exit-btn" onclick="closeModal('modalThemeSettings')" title="Close">
@@ -413,14 +454,12 @@
     <div class="modal-title-head">Theme Settings</div>
     
     <div class="form-group" style="margin-top: 14px;">
-      <label>Pilih Tema Warna Board</label>
-      <select id="inputBoardTheme">
-        <option value="light-gray">Light Gray (Default)</option>
-        <option value="blue">Classic Blue</option>
-        <option value="emerald">Emerald Green</option>
-        <option value="warm">Warm Beige</option>
-      </select>
+      <label>Pilih Warna Tema:</label>
+      <input type="range" id="singleRainbowInput" class="single-rainbow-slider" min="0" max="360" value="0" oninput="updateSingleRainbowPreview()">
     </div>
+
+    <!-- Kotak Pratonton Warna -->
+    <div id="rainbowColorPreview" style="width: 100%; height: 45px; border-radius: 8px; border: 1px solid var(--card-border); margin: 15px 0 14px 0; background: #ffffff;"></div>
 
     <div class="clean-menu-list" style="margin-top: 15px;">
       <button class="clean-menu-item" style="justify-content: center; font-weight: 600;" onclick="simpanBoardTheme()">
@@ -520,13 +559,13 @@
     
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; padding-right: 30px;">
       <h3 id="tajukModalMenuProfil" style="margin:0; text-align: left; flex: 1; font-size: 1.15rem;">Name</h3>
-      <div id="containerLocengPenyelia" style="display:none; align-items: center; gap: 6px; cursor: pointer; background: var(--header-bg); padding: 6px 12px; border-radius: 20px;" onclick="bukaModulSemakan()" title="Pending Approvals">
+      <div id="containerLocengPenyelia" style="display:none; align-items: center; gap: 6px; cursor: pointer; background: rgba(255, 255, 255, 0.7); padding: 6px 12px; border-radius: 20px; border: 1px solid var(--card-border);" onclick="bukaModulSemakan()" title="Pending Approvals">
         <span class="material-symbols-outlined ringing-bell" style="font-size:1.3rem;">notifications</span>
-        <span id="badgeBilanganMenunggu" style="background: var(--text-color); color: var(--bg-color); border-radius: 50%; padding: 1px 6px; font-size: 0.75rem; font-weight: bold;">0</span>
+        <span id="badgeBilanganMenunggu" style="background: var(--text-color); color: #ffffff; border-radius: 50%; padding: 1px 6px; font-size: 0.75rem; font-weight: bold;">0</span>
       </div>
     </div>
 
-    <div id="containerNotifikasiDitolak" style="display:none; margin-bottom: 16px; background: var(--header-bg); border: 1px solid var(--card-border); border-radius: 8px; padding: 12px; text-align: left;">
+    <div id="containerNotifikasiDitolak" style="display:none; margin-bottom: 16px; background: rgba(255, 255, 255, 0.7); border: 1px solid var(--card-border); border-radius: 8px; padding: 12px; text-align: left;">
       <div style="display: flex; align-items: center; gap: 8px; font-weight: 700; color: var(--text-color); margin-bottom: 4px;">
         <span class="material-symbols-outlined ringing-bell">notifications_active</span>
         <span>Application Rejected</span>
@@ -676,8 +715,8 @@
   <div class="modal-content" style="max-width: 360px; text-align: center; padding: 24px;">
     <div id="customMsgText" style="margin-bottom: 20px; font-size: 1rem; color: var(--text-color); font-weight: 500; text-align: center; line-height: 1.5;"></div>
     <div id="customMsgButtons" style="display: flex; gap: 10px; justify-content: center;">
-      <button id="customMsgBtnOk" class="clean-menu-item" style="justify-content: center; background: var(--header-bg); color: var(--text-color); border-radius: 8px; padding: 10px 24px; font-weight: 600;">OK</button>
-      <button id="customMsgBtnCancel" class="clean-menu-item" style="display: none; justify-content: center; background: var(--bg-color); color: var(--text-color); border-radius: 8px; padding: 10px 24px; font-weight: 600;">Batal</button>
+      <button id="customMsgBtnOk" class="clean-menu-item" style="justify-content: center; background: rgba(255, 255, 255, 0.7); color: var(--text-color); border-radius: 8px; padding: 10px 24px; font-weight: 600; border: 1px solid var(--card-border);">OK</button>
+      <button id="customMsgBtnCancel" class="clean-menu-item" style="display: none; justify-content: center; background: #ffffff; color: var(--text-color); border-radius: 8px; padding: 10px 24px; font-weight: 600; border: 1px solid var(--card-border);">Batal</button>
     </div>
   </div>
 </div>
@@ -786,7 +825,7 @@
     const okBtn = document.getElementById('customMsgBtnOk');
     const cancelBtn = document.getElementById('customMsgBtnCancel');
 
-    textEl.innerHTML = `${message}<br><input type="text" id="customPromptInput" value="${defaultValue}" style="width:100%; padding:10px; margin-top:12px; border:1px solid var(--card-border); border-radius:8px; font-size:0.95rem; background:var(--bg-color); color:var(--text-color);">`;
+    textEl.innerHTML = `${message}<br><input type="text" id="customPromptInput" value="${defaultValue}" style="width:100%; padding:10px; margin-top:12px; border:1px solid var(--card-border); border-radius:8px; font-size:0.95rem; background:#ffffff; color:var(--text-color);">`;
     modal.style.display = 'flex';
     cancelBtn.style.display = 'inline-flex';
 
@@ -852,41 +891,25 @@
     return today > b.tarikhFreez;
   }
 
-  function applyBoardTheme(theme) {
+  function applyBoardTheme(themeVal) {
     const root = document.documentElement;
-    if (theme === 'blue') {
-      root.style.setProperty('--bg-color', '#ffffff');
-      root.style.setProperty('--app-bg', '#f0f9ff');
-      root.style.setProperty('--text-color', '#0f172a');
-      root.style.setProperty('--card-border', '#bae6fd');
-      root.style.setProperty('--header-bg', '#e0f2fe');
-      root.style.setProperty('--primary', '#0284c7');
-      root.style.setProperty('--grey-text', '#0369a1');
-    } else if (theme === 'emerald') {
-      root.style.setProperty('--bg-color', '#ffffff');
-      root.style.setProperty('--app-bg', '#f0fdf4');
-      root.style.setProperty('--text-color', '#064e3b');
-      root.style.setProperty('--card-border', '#a7f3d0');
-      root.style.setProperty('--header-bg', '#d1fae5');
-      root.style.setProperty('--primary', '#059669');
-      root.style.setProperty('--grey-text', '#047857');
-    } else if (theme === 'warm') {
-      root.style.setProperty('--bg-color', '#fffbf5');
-      root.style.setProperty('--app-bg', '#fef3c7');
-      root.style.setProperty('--text-color', '#78350f');
-      root.style.setProperty('--card-border', '#fde68a');
-      root.style.setProperty('--header-bg', '#fef3c7');
-      root.style.setProperty('--primary', '#d97706');
-      root.style.setProperty('--grey-text', '#b45309');
-    } else { // light-gray default
-      root.style.setProperty('--bg-color', '#f8fafc');
-      root.style.setProperty('--app-bg', '#f1f5f9');
-      root.style.setProperty('--text-color', '#1e293b');
-      root.style.setProperty('--card-border', '#cbd5e1');
-      root.style.setProperty('--header-bg', '#e2e8f0');
-      root.style.setProperty('--primary', '#475569');
-      root.style.setProperty('--grey-text', '#64748b');
+    let colorCss = '#f1f5f9';
+
+    if (themeVal && (themeVal.startsWith('hsl') || themeVal.startsWith('rgb') || themeVal.startsWith('#'))) {
+      colorCss = themeVal;
+    } else if (themeVal && !isNaN(themeVal)) {
+      colorCss = `hsl(${themeVal}, 60%, 93%)`;
     }
+
+    root.style.setProperty('--app-bg', colorCss);
+    root.style.setProperty('--bg-color', '#ffffff');
+    root.style.setProperty('--header-bg', '#e2e8f0');
+  }
+
+  function updateSingleRainbowPreview() {
+    const hueVal = document.getElementById('singleRainbowInput').value;
+    const hslColor = `hsl(${hueVal}, 60%, 93%)`;
+    document.getElementById('rainbowColorPreview').style.background = hslColor;
   }
 
   function toggleAdminLogin() {
@@ -990,7 +1013,7 @@
       }
       if (b.soundEnabled === undefined) b.soundEnabled = true;
       if (!b.soundType) b.soundType = 'bell';
-      if (!b.theme) b.theme = 'light-gray';
+      if (!b.theme) b.theme = '0';
     });
 
     checkAdminStatus();
@@ -1038,7 +1061,7 @@
       activeBoardId = id;
       senaraiStaf = b.senaraiStaf || [];
       rekodPergerakan = b.rekodPergerakan || [];
-      applyBoardTheme(b.theme || 'light-gray');
+      applyBoardTheme(b.theme || '0');
       
       document.getElementById('welcomeScreen').style.display = 'none';
       document.getElementById('mainDashboard').style.display = 'flex';
@@ -1080,7 +1103,7 @@
     }
 
     container.innerHTML = `
-      <div style="background:var(--bg-color); border:1px solid var(--card-border); border-radius:12px; overflow:hidden; box-shadow:0 1px 3px var(--box-shadow); width:100%;">
+      <div style="background:#ffffff; border:1px solid var(--card-border); border-radius:12px; overflow:hidden; box-shadow:0 1px 3px var(--box-shadow); width:100%;">
         <table style="width:100%; border-collapse:collapse; text-align:left; font-size:0.95rem;">
           <thead>
             <tr style="background:var(--header-bg); border-bottom:1px solid var(--card-border); color:var(--grey-text); font-size:0.85rem; text-transform:uppercase;">
@@ -1185,7 +1208,7 @@
           tarikhFreez: freezeStr,
           soundEnabled: true,
           soundType: 'bell',
-          theme: 'light-gray'
+          theme: '0'
         });
         await simpanKeLocalStorage(); 
         renderMainBoardsList();
@@ -1241,17 +1264,24 @@
     closeModal('modalEditBoard');
     const b = boards.find(x => x.id === activeBoardId);
     if (!b) return;
-    document.getElementById('inputBoardTheme').value = b.theme || 'light-gray';
+    
+    let hueVal = b.theme || '0';
+    if(isNaN(hueVal)) hueVal = '0';
+
+    document.getElementById('singleRainbowInput').value = hueVal;
+    document.getElementById('rainbowColorPreview').style.background = `hsl(${hueVal}, 60%, 93%)`;
+
     openModal('modalThemeSettings');
   }
 
   async function simpanBoardTheme() {
     const b = boards.find(x => x.id === activeBoardId);
     if (b) {
-      b.theme = document.getElementById('inputBoardTheme').value;
-      applyBoardTheme(b.theme);
+      const hueVal = document.getElementById('singleRainbowInput').value;
+      b.theme = hueVal;
+      applyBoardTheme(hueVal);
       await simpanKeLocalStorage();
-      showMsg("✅ Theme successfully saved!");
+      showMsg("✅ Theme color successfully saved!");
     }
     closeModal('modalThemeSettings');
   }
@@ -1377,8 +1407,8 @@
 
   function rahJ91ZuNL8Y2px8iYciYeHN8sfSh5eXH8() {
     document.getElementById('senaraiStafContainer').innerHTML = senaraiStaf.map((s, idx) => {
-      const avatarHTML = s.gambar ? `<img src="${s.gambar}" style="width:36px; height:36px; border-radius:50%; object-fit:cover; border:1px solid var(--card-border);">` : `<span style="width:36px; height:36px; border-radius:50%; background:var(--header-bg); display:inline-block; border:1px solid var(--card-border);"></span>`;
-      return `<div style="display:flex; justify-content:space-between; align-items:center; padding:10px; background:var(--bg-color); border:1px solid var(--card-border); border-radius:8px; margin-bottom:8px;">
+      const avatarHTML = s.gambar ? `<img src="${s.gambar}" style="width:36px; height:36px; border-radius:50%; object-fit:cover; border:1px solid var(--card-border); background:#ffffff;">` : `<span style="width:36px; height:36px; border-radius:50%; background:#ffffff; display:inline-block; border:1px solid var(--card-border);"></span>`;
+      return `<div style="display:flex; justify-content:space-between; align-items:center; padding:10px; background:#ffffff; border:1px solid var(--card-border); border-radius:8px; margin-bottom:8px;">
         <div style="display:flex; align-items:center; gap:10px;">
           ${avatarHTML}
           <div><strong>${s.nama}</strong> ${s.kumpulan || '-'}</div>
@@ -1589,7 +1619,7 @@
       </div>
     `).join('') || '<div style="color:var(--grey-text); font-style:italic; padding:8px;">Tiada</div>';
 
-    // b. Tugas Rasmi / Luar (Hanya nota dan masa jika ada, tiada teks "Sepanjang Hari")
+    // b. Tugas Rasmi / Luar
     document.getElementById('countEngagements').innerText = engagementsArr.length;
     document.getElementById('listEngagements').innerHTML = engagementsArr.map(item => {
       let masaText = '';
@@ -1619,7 +1649,7 @@
       </div>
     `).join('') || '<div style="color:var(--grey-text); font-style:italic; padding:8px;">Tiada</div>';
 
-    // d. Lain-lain (Hanya nota dan masa jika ada)
+    // d. Lain-lain
     document.getElementById('countLain').innerText = lainArr.length;
     document.getElementById('listLain').innerHTML = lainArr.map(item => {
       let masaText = '';
@@ -1723,7 +1753,7 @@
       if(r.status === 'Menunggu') badgeStatusStyle = "background:var(--header-bg); color:var(--text-color); font-weight:600;";
 
       return `
-        <div style="background:var(--bg-color); border:1px solid var(--card-border); border-radius:8px; padding:10px; display:flex; flex-direction:column; gap:6px; text-align:left;">
+        <div style="background:#ffffff; border:1px solid var(--card-border); border-radius:8px; padding:10px; display:flex; flex-direction:column; gap:6px; text-align:left;">
           <div style="display:flex; justify-content:space-between; align-items:flex-start;">
             <div style="font-size:0.9rem; font-weight:600; color:var(--text-color); text-align:left;">
               <div>${r.jenis}</div>
@@ -1829,37 +1859,58 @@
   function bukaPopUpHBH() {
     if (cekDanPaparPopupRenew()) return;
     closeModal('modalMenuProfil');
+    
+    // Reset semua checkbox kepada false terlebih dahulu
     document.querySelectorAll('input[name="hbhDay"]').forEach(cb => cb.checked = false);
+    
+    // Cari rekod HBH sedia ada untuk user ini
+    const hbhRecord = rekodPergerakan.find(r => r.nama === pemohonAktif && r.jenis === 'Hari Bekerja Hibrid (HBH)');
+    if (hbhRecord && hbhRecord.hariHBH) {
+      const hariTersimpan = hbhRecord.hariHBH.split(', ').map(h => h.trim());
+      document.querySelectorAll('input[name="hbhDay"]').forEach(cb => {
+        if (hariTersimpan.includes(cb.value)) {
+          cb.checked = true;
+        }
+      });
+    }
+
     openModal('modalHBHPopUp');
   }
 
   async function hantarHBH() {
     if (cekDanPaparPopupRenew()) return;
     const selectedCheckboxes = document.querySelectorAll('input[name="hbhDay"]:checked');
-    if (selectedCheckboxes.length === 0) { showMsg("Please select at least one day."); return; }
     
-    const hariPilihan = Array.from(selectedCheckboxes).map(cb => cb.value).join(', ');
-    
+    // Buang rekod HBH lama user ini sama ada pengguna pilih hari atau kosongkan (uncheck semua)
     rekodPergerakan = rekodPergerakan.filter(r => !(r.nama === pemohonAktif && r.jenis === 'Hari Bekerja Hibrid (HBH)'));
 
-    const dataBaru = {
-      nama: pemohonAktif,
-      jenis: 'Hari Bekerja Hibrid (HBH)',
-      tarikh: getLocalDateString(),
-      tarikhAkhir: getLocalDateString(),
-      masaMula: '',
-      masaTamat: '',
-      catatan: `HBH: ${hariPilihan}`,
-      hariHBH: hariPilihan,
-      status: 'Lulus',
-      sebabTolak: ''
-    };
+    if (selectedCheckboxes.length > 0) {
+      const hariPilihan = Array.from(selectedCheckboxes).map(cb => cb.value).join(', ');
+      
+      const dataBaru = {
+        nama: pemohonAktif,
+        jenis: 'Hari Bekerja Hibrid (HBH)',
+        tarikh: getLocalDateString(),
+        tarikhAkhir: getLocalDateString(),
+        masaMula: '',
+        masaTamat: '',
+        catatan: `HBH: ${hariPilihan}`,
+        hariHBH: hariPilihan,
+        status: 'Lulus',
+        sebabTolak: ''
+      };
 
-    rekodPergerakan.push(dataBaru);
-    await simpanKeLocalStorage();
-    kemaskiniPaparan();
-    
-    showMsg(`✅ Hybrid Working Days (${hariPilihan}) successfully saved!`);
+      rekodPergerakan.push(dataBaru);
+      await simpanKeLocalStorage();
+      kemaskiniPaparan();
+      showMsg(`✅ Hari Bekerja Hibrid (${hariPilihan}) berjaya disimpan!`);
+    } else {
+      // Jika semua uncheck (kosong), HBH dibuang/dipadam
+      await simpanKeLocalStorage();
+      kemaskiniPaparan();
+      showMsg("✅ Hari Bekerja Hibrid berjaya dibuang.");
+    }
+
     kembaliKeMenuProfil('modalHBHPopUp');
   }
 
@@ -2064,7 +2115,7 @@
     const dayRecords = rekodPergerakan.filter(r => r.status === 'Lulus' && r.jenis !== 'Hari Bekerja Hibrid (HBH)' && r.tarikh <= dateStr && (r.tarikhAkhir ? r.tarikhAkhir >= dateStr : r.tarikh === dateStr));
 
     document.getElementById('senaraiAktivitiHariTerpilih').innerHTML = dayRecords.length === 0 ? '<p style="color:var(--grey-text); font-style:italic;">Tiada aktiviti pada tarikh ini.</p>' : dayRecords.map(r => `
-      <div style="background:var(--bg-color); border:1px solid var(--card-border); border-radius:8px; padding:10px; margin-bottom:8px;">
+      <div style="background:#ffffff; border:1px solid var(--card-border); border-radius:8px; padding:10px; margin-bottom:8px;">
         <strong>${r.nama}</strong>: ${r.catatan}
       </div>
     `).join('');
