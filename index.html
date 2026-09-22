@@ -166,21 +166,6 @@
     .staff-name { font-weight: 600; font-size: 0.95rem; display: block; text-align: left; }
     .staff-right { font-size: 0.9rem; font-weight: 600; text-align: left; max-width: 55%; word-break: break-word; line-height: 1.35; color: var(--grey-text); }
 
-    .mobile-today-box {
-      background: var(--bg-color) !important;
-      border: 1px solid var(--card-border);
-      border-radius: 12px;
-      padding: 18px 20px;
-      margin-bottom: 12px;
-      cursor: pointer;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      box-shadow: 0 1px 3px var(--box-shadow);
-      transition: background 0.2s, border-color 0.2s;
-    }
-    .mobile-today-box:hover { background: var(--header-bg) !important; border-color: var(--grey-text); }
-
     .calendar-container { background: transparent; border: none; border-radius: 0; padding: 0; display: flex; flex-direction: column; width: 100%; box-shadow: none; }
     .calendar-header { display: flex; justify-content: space-between; align-items: center; font-size: 1.15rem; font-weight: 700; margin-bottom: 12px; color: var(--text-color); }
     .calendar-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 6px; width: 100%; }
@@ -242,7 +227,6 @@
     <p class="welcome-desc" id="welcomeDescText">
       <strong>ePergerakan</strong> Platform digital interaktif untuk pengurusan status dan lokasi harian staf. Menggantikan papan putih fizikal dengan sistem kemas kini kendiri yang pantas, mudah diakses oleh semua, dan memastikan maklumat keberadaan pegawai sentiasa dipantau oleh penyelia.
     </p>
-    <!-- Panel kawalan / senarai board disorokkan untuk pengguna biasa dan hanya dipaparkan apabila admin log masuk -->
     <div id="mainBoardsListContainer" style="width: 100%; display: none; flex-direction: column; margin-top: 20px;"></div>
   </div>
 </div>
@@ -310,9 +294,6 @@
       <div class="column-scroll" id="listLain"></div>
     </div>
   </div>
-
-  <!-- MOBILE TODAY VIEW -->
-  <div id="mobileTodayView" style="display: none; flex-direction: column; gap: 10px; width: 100%;"></div>
 
   <div id="viewList" class="list-pergerakan-container" style="display: none;">
     <div id="listPergerakanContent" style="width: 100%;"></div>
@@ -505,24 +486,14 @@
     <div class="form-group">
       <label>Tahap Peranan</label>
       <select id="stafKumpulanInput">
-        <option value="">Standard User</option>
-        <option value="5">Role 5</option>
-        <option value="4">Role 4</option>
-        <option value="3">Role 3</option>
-        <option value="2">Role 2</option>
-        <option value="1">Role 1</option>
+        <option value="">Tiada (Standard)</option>
       </select>
     </div>
 
     <div class="form-group">
       <label>Pegawai Penyelia</label>
       <select id="stafReportToInput">
-        <option value="">None</option>
-        <option value="1">Role 1</option>
-        <option value="2">Role 2</option>
-        <option value="3">Role 3</option>
-        <option value="4">Role 4</option>
-        <option value="5">Role 5</option>
+        <option value="">Tiada</option>
       </select>
     </div>
     
@@ -629,8 +600,8 @@
     <div class="form-group" id="groupTarikhAkhir"><label>End Date</label><input type="date" id="permTarikhAkhir"></div>
     
     <div id="groupMasa" style="display: none; gap: 10px;">
-      <div class="form-group" style="flex:1;"><label>Start Time</label><input type="time" id="permMasaMula" value=""></div>
-      <div class="form-group" style="flex:1;"><label>End Time</label><input type="time" id="permMasaTamat" value=""></div>
+      <div class="form-group" style="flex:1;"><label>Start Time (Optional)</label><input type="time" id="permMasaMula" value=""></div>
+      <div class="form-group" style="flex:1;"><label>End Time (Optional)</label><input type="time" id="permMasaTamat" value=""></div>
     </div>
 
     <div class="form-group"><label>Purpose / Notes</label><input type="text" id="permTujuan" placeholder="e.g. Official / personal business"></div>
@@ -700,17 +671,6 @@
   </div>
 </div>
 
-<!-- ================= TODAY CATEGORY DETAIL MODAL (MOBILE) ================= -->
-<div id="modalDetailHariIni" class="modal" style="z-index: 120;">
-  <div class="modal-content" style="max-width: 420px;">
-    <button class="modal-exit-btn" onclick="closeModal('modalDetailHariIni')" title="Close">
-      <span class="material-symbols-outlined">close</span>
-    </button>
-    <div class="modal-title-head" id="tajukModalHariIni">Senarai</div>
-    <div id="senaraiKategoriHariIniModal" style="max-height: 300px; overflow-y: auto;"></div>
-  </div>
-</div>
-
 <!-- ================= CUSTOM MESSAGE BOX / MODAL (COMPLIANCE) ================= -->
 <div id="modalCustomMsg" class="modal" style="z-index: 250;">
   <div class="modal-content" style="max-width: 360px; text-align: center; padding: 24px;">
@@ -733,7 +693,6 @@
   let pemohonAktif = '';
   let tempGambarB64 = '';
   let currentMonthOffset = 0;
-  let dataHariIniCache = { pejabat: '', engagements: '', rumah: '', lain: '' };
   let renewingBoardId = null;
   let adminPassword = 'admin'; 
 
@@ -848,10 +807,26 @@
     };
   }
 
+  function populateRoleDropdowns() {
+    const kumpulanSelect = document.getElementById('stafKumpulanInput');
+    const reportToSelect = document.getElementById('stafReportToInput');
+    
+    if (kumpulanSelect && reportToSelect) {
+      let kOptions = '<option value="">Tiada (Standard)</option>';
+      let rOptions = '<option value="">Tiada</option>';
+      for (let i = 1; i <= 25; i++) {
+        kOptions += `<option value="${i}">${i}</option>`;
+        rOptions += `<option value="${i}">${i}</option>`;
+      }
+      kumpulanSelect.innerHTML = kOptions;
+      reportToSelect.innerHTML = rOptions;
+    }
+  }
+
   function getRoleLevel(role) {
-    if (!role || role === '') return 6; 
+    if (!role || role === '') return 99; 
     const num = parseInt(role);
-    return isNaN(num) ? 6 : num;
+    return isNaN(num) ? 99 : num;
   }
 
   function getLocalDateString(dateObj = new Date()) {
@@ -1239,7 +1214,6 @@
     if(!b) return;
     document.getElementById('editBoardId').value = b.id;
     closeModal('modalTetapanUtama'); 
-    closeModal('modalPengurusanStaf');
     openModal('modalEditBoard');
   }
 
@@ -1329,6 +1303,7 @@
 
   function bukaFormStafModal(idx) {
     if (cekDanPaparPopupRenew()) return;
+    populateRoleDropdowns();
     document.getElementById('editIndexStaf').value = idx;
     document.getElementById('stafGambarInput').value = "";
     tempGambarB64 = "";
@@ -1406,7 +1381,7 @@
       return `<div style="display:flex; justify-content:space-between; align-items:center; padding:10px; background:var(--bg-color); border:1px solid var(--card-border); border-radius:8px; margin-bottom:8px;">
         <div style="display:flex; align-items:center; gap:10px;">
           ${avatarHTML}
-          <div><strong>${s.nama}</strong></div>
+          <div><strong>${s.nama}</strong> ${s.kumpulan || '-'}</div>
         </div>
         <div style="display:flex; gap:6px;">
           <button class="clean-menu-item" style="padding:4px 8px; border:1px solid var(--card-border); border-radius:6px;" onclick="bukaFormStafModal(${idx})">Edit</button>
@@ -1453,15 +1428,7 @@
     document.getElementById(view==='list'?'btnTabList':view==='bulan'?'btnTabBulan':'btnTabHariIni').classList.add('active');
     document.getElementById('viewList').style.display = view === 'list' ? 'flex' : 'none';
     document.getElementById('viewBulan').style.display = view === 'bulan' ? 'flex' : 'none';
-    
-    const isMobile = window.innerWidth <= 768;
-    if (view === 'hari-ini') {
-      document.getElementById('viewHariIni').style.display = isMobile ? 'none' : 'grid';
-      document.getElementById('mobileTodayView').style.display = isMobile ? 'flex' : 'none';
-    } else {
-      document.getElementById('viewHariIni').style.display = 'none';
-      document.getElementById('mobileTodayView').style.display = 'none';
-    }
+    document.getElementById('viewHariIni').style.display = view === 'hari-ini' ? 'grid' : 'none';
     
     const actionsRow = document.getElementById('plannerActionsRow');
     if (actionsRow) {
@@ -1526,9 +1493,9 @@
       const adaMenungguUntukUserIni = rekodPergerakan.some(r => {
         if (r.status !== 'Menunggu') return false;
         const pemohon = senaraiStaf.find(s => s.nama === r.nama);
-        const reportToLevel = pemohon?.reportTo ? parseInt(pemohon.reportTo) : 0;
-        if(reportToLevel > 0) return myRoleLevel <= reportToLevel; 
-        return myRoleLevel < getRoleLevel(pemohon?.kumpulan);
+        const reportToVal = pemohon?.reportTo ? parseInt(pemohon.reportTo) : 0;
+        if (reportToVal > 0) return myRoleLevel === reportToVal;
+        return false;
       });
 
       const adaDitolak = rekodPergerakan.some(r => r.nama === staf.nama && r.status === 'Ditolak');
@@ -1540,10 +1507,10 @@
 
       const currRole = getRoleLevel(staf.kumpulan);
       const nextStaf = sortedStaf[index + 1];
-      const nextRole = nextStaf ? getRoleLevel(nextStaf.kumpulan) : 6;
+      const nextRole = nextStaf ? getRoleLevel(nextStaf.kumpulan) : 99;
 
       let marginRight = '3px';
-      if (currRole <= 5 && nextRole === 6) {
+      if (currRole <= 25 && nextRole === 99) {
         marginRight = '9px';
       }
 
@@ -1564,6 +1531,115 @@
     }
   }
 
+  function renderHariIni() {
+    const todayStr = getLocalDateString();
+    const daysMalay = ['Ahad', 'Isnin', 'Selasa', 'Rabu', 'Khamis', 'Jumaat', 'Sabtu'];
+    const todayDayName = daysMalay[new Date().getDay()];
+
+    let pejabatArr = [];
+    let engagementsArr = [];
+    let hbhArr = [];
+    let lainArr = [];
+
+    senaraiStaf.forEach(s => {
+      const activeRecords = rekodPergerakan.filter(r => {
+        if (r.nama !== s.nama || r.status !== 'Lulus') return false;
+        if (r.jenis === 'Hari Bekerja Hibrid (HBH)') {
+          return r.hariHBH && r.hariHBH.includes(todayDayName);
+        }
+        const start = r.tarikh;
+        const end = r.tarikhAkhir || r.tarikh;
+        return todayStr >= start && todayStr <= end;
+      });
+
+      const hbhRec = activeRecords.find(r => r.jenis === 'Hari Bekerja Hibrid (HBH)');
+
+      if (hbhRec) {
+        hbhArr.push({ nama: s.nama });
+      } else if (activeRecords.length > 0) {
+        activeRecords.forEach(r => {
+          if (r.jenis.includes('Mesyuarat')) {
+            engagementsArr.push({ 
+              nama: s.nama, 
+              catatan: r.catatan, 
+              masaMula: r.masaMula, 
+              masaTamat: r.masaTamat 
+            });
+          } else if (r.jenis.includes('Cuti') || r.jenis.includes('Keluar')) {
+            lainArr.push({ 
+              nama: s.nama, 
+              catatan: r.catatan,
+              masaMula: r.masaMula,
+              masaTamat: r.masaTamat
+            });
+          }
+        });
+      } else {
+        pejabatArr.push({ nama: s.nama });
+      }
+    });
+
+    // a. Di Pejabat
+    document.getElementById('countPejabat').innerText = pejabatArr.length;
+    document.getElementById('listPejabat').innerHTML = pejabatArr.map(item => `
+      <div class="staff-card">
+        <div class="staff-card-left">
+          <span class="staff-name">${item.nama}</span>
+        </div>
+      </div>
+    `).join('') || '<div style="color:var(--grey-text); font-style:italic; padding:8px;">Tiada</div>';
+
+    // b. Tugas Rasmi / Luar (Hanya nota dan masa jika ada, tiada teks "Sepanjang Hari")
+    document.getElementById('countEngagements').innerText = engagementsArr.length;
+    document.getElementById('listEngagements').innerHTML = engagementsArr.map(item => {
+      let masaText = '';
+      if (item.masaMula && item.masaTamat) {
+        masaText = `<span style="display:block; font-size:0.8rem; color:var(--grey-text);">${formatMasa12Jam(item.masaMula)} - ${formatMasa12Jam(item.masaTamat)}</span>`;
+      }
+      return `
+        <div class="staff-card">
+          <div class="staff-card-left">
+            <span class="staff-name">${item.nama}</span>
+          </div>
+          <div class="staff-right">
+            ${item.catatan}
+            ${masaText}
+          </div>
+        </div>
+      `;
+    }).join('') || '<div style="color:var(--grey-text); font-style:italic; padding:8px;">Tiada</div>';
+
+    // c. HBH
+    document.getElementById('countRumah').innerText = hbhArr.length;
+    document.getElementById('listRumah').innerHTML = hbhArr.map(item => `
+      <div class="staff-card">
+        <div class="staff-card-left">
+          <span class="staff-name">${item.nama}</span>
+        </div>
+      </div>
+    `).join('') || '<div style="color:var(--grey-text); font-style:italic; padding:8px;">Tiada</div>';
+
+    // d. Lain-lain (Hanya nota dan masa jika ada)
+    document.getElementById('countLain').innerText = lainArr.length;
+    document.getElementById('listLain').innerHTML = lainArr.map(item => {
+      let masaText = '';
+      if (item.masaMula && item.masaTamat) {
+        masaText = `<span style="display:block; font-size:0.8rem; color:var(--grey-text);">${formatMasa12Jam(item.masaMula)} - ${formatMasa12Jam(item.masaTamat)}</span>`;
+      }
+      return `
+        <div class="staff-card">
+          <div class="staff-card-left">
+            <span class="staff-name">${item.nama}</span>
+          </div>
+          <div class="staff-right">
+            ${item.catatan}
+            ${masaText}
+          </div>
+        </div>
+      `;
+    }).join('') || '<div style="color:var(--grey-text); font-style:italic; padding:8px;">Tiada</div>';
+  }
+
   function bukaModulStaf(nama) { 
     stopAlertSound();
     pemohonAktif = nama; 
@@ -1574,7 +1650,7 @@
 
     const btnManageNote = document.getElementById('btnMenuManageNote');
     if (btnManageNote) {
-      if (myRoleLevel < 6) {
+      if (myRoleLevel <= 25) {
         btnManageNote.style.display = 'flex';
       } else {
         btnManageNote.style.display = 'none';
@@ -1584,9 +1660,9 @@
     const senaraiMenunggu = rekodPergerakan.filter(r => {
       if (r.status !== 'Menunggu') return false;
       const pemohon = senaraiStaf.find(s => s.nama === r.nama);
-      const reportToLevel = pemohon?.reportTo ? parseInt(pemohon.reportTo) : 0;
-      if(reportToLevel > 0) return myRoleLevel <= reportToLevel;
-      return myRoleLevel < getRoleLevel(pemohon?.kumpulan);
+      const reportToVal = pemohon?.reportTo ? parseInt(pemohon.reportTo) : 0;
+      if (reportToVal > 0) return myRoleLevel === reportToVal;
+      return false;
     });
 
     const containerLoceng = document.getElementById('containerLocengPenyelia');
@@ -1637,7 +1713,7 @@
       if(!r.jenis.includes('Keluar') && r.tarikhAkhir && r.tarikhAkhir !== r.tarikh) {
         tFormat += ` to ${formatTarikhDMY(r.tarikhAkhir)}`;
       }
-      if(r.masaMula && r.masaTamat && (r.jenis.includes('Keluar') || r.jenis.includes('Mesyuarat'))) {
+      if(r.masaMula && r.masaTamat) {
         tFormat += ` (${formatMasa12Jam(r.masaMula)} - ${formatMasa12Jam(r.masaTamat)})`;
       }
 
@@ -1700,10 +1776,9 @@
     document.getElementById('permTujuan').value = '';
     
     const stafObj = senaraiStaf.find(s => s.nama === pemohonAktif);
-    const myRoleLevel = getRoleLevel(stafObj?.kumpulan);
-    const isLeader = myRoleLevel <= 5;
+    const reportToVal = stafObj?.reportTo ? stafObj.reportTo.trim() : '';
 
-    document.getElementById('btnSimpanAtauHantar').innerText = isLeader ? 'Save' : 'Send';
+    document.getElementById('btnSimpanAtauHantar').innerText = reportToVal ? 'Send' : 'Save';
     
     tukarJenisPermohonanForm();
     openModal('modalAddActivityPopUp');
@@ -1724,9 +1799,8 @@
     document.getElementById('permTujuan').value = r.catatan;
     
     const stafObj = senaraiStaf.find(s => s.nama === pemohonAktif);
-    const myRoleLevel = getRoleLevel(stafObj?.kumpulan);
-    const isLeader = myRoleLevel <= 5;
-    document.getElementById('btnSimpanAtauHantar').innerText = isLeader ? 'Save' : 'Send';
+    const reportToVal = stafObj?.reportTo ? stafObj.reportTo.trim() : '';
+    document.getElementById('btnSimpanAtauHantar').innerText = reportToVal ? 'Send' : 'Save';
 
     tukarJenisPermohonanForm();
     openModal('modalAddActivityPopUp');
@@ -1800,9 +1874,9 @@
     const senaraiMenunggu = rekodPergerakan.filter(r => {
       if (r.status !== 'Menunggu') return false;
       const pemohon = senaraiStaf.find(s => s.nama === r.nama);
-      const reportToLevel = pemohon?.reportTo ? parseInt(pemohon.reportTo) : 0;
-      if(reportToLevel > 0) return myRoleLevel <= reportToLevel;
-      return myRoleLevel < getRoleLevel(pemohon?.kumpulan);
+      const reportToVal = pemohon?.reportTo ? parseInt(pemohon.reportTo) : 0;
+      if (reportToVal > 0) return myRoleLevel === reportToVal;
+      return false;
     });
     
     document.getElementById('senaraiPermohonanMenunggu').innerHTML = senaraiMenunggu.map((r) => {
@@ -1813,7 +1887,7 @@
       }
       let timePart = '';
       if (r.masaMula && r.masaTamat) {
-        timePart = ` (${formatMasa12Jam(r.masaMula)} -${formatMasa12Jam(r.masaTamat)})`;
+        timePart = ` (${formatMasa12Jam(r.masaMula)} - ${formatMasa12Jam(r.masaTamat)})`;
       }
       return `
         <div class="feedback-item">
@@ -1855,7 +1929,6 @@
     
     const isCuti = j.includes('Cuti');
     const isKeluar = j.includes('Keluar');
-    const isMesyuarat = j.includes('Mesyuarat');
     
     document.getElementById('groupTarikhAkhir').style.display = isKeluar ? 'none' : 'block';
     document.getElementById('groupMasa').style.display = isCuti ? 'none' : 'flex';
@@ -1881,10 +1954,9 @@
     }
 
     const stafObj = senaraiStaf.find(s => s.nama === pemohonAktif);
-    const myRoleLevel = getRoleLevel(stafObj?.kumpulan);
-    const isLeader = myRoleLevel <= 5;
+    const reportToVal = stafObj?.reportTo ? stafObj.reportTo.trim() : '';
     
-    const statusPermohonan = isLeader ? 'Lulus' : 'Menunggu';
+    const statusPermohonan = reportToVal ? 'Menunggu' : 'Lulus';
 
     const dataBaru = {
       nama: pemohonAktif,
@@ -1907,7 +1979,7 @@
     await simpanKeLocalStorage();
     kemaskiniPaparan();
     
-    showMsg(editIdx === -1 ? (isLeader ? "✅ Activity successfully saved!" : "📤 Application successfully sent for approval.") : "✅ Activity successfully updated!");
+    showMsg(editIdx === -1 ? (reportToVal ? "📤 Application successfully sent for approval." : "✅ Activity successfully saved!") : "✅ Activity successfully updated!");
     kembaliKeMenuProfil('modalAddActivityPopUp');
   }
 
@@ -1921,256 +1993,87 @@
       
       return `<div class="staff-group-card">
         <div class="staff-group-header">${headerHtml}</div>
-        ${ak.length ? ak.map((a,x)=>{
-          let tFormat = formatTarikhDMY(a.tarikh);
-          if(!a.jenis.includes('Keluar') && a.tarikhAkhir && a.tarikhAkhir !== a.tarikh) {
-            tFormat += ` to ${formatTarikhDMY(a.tarikhAkhir)}`;
+        ${ak.length > 0 ? ak.map(item => {
+          let tFormat = formatTarikhDMY(item.tarikh);
+          if(!item.jenis.includes('Keluar') && item.tarikhAkhir && item.tarikhAkhir !== item.tarikh) {
+            tFormat += ` hingga ${formatTarikhDMY(item.tarikhAkhir)}`;
           }
-          if(a.masaMula) {
-            let timeStr = formatMasa12Jam(a.masaMula);
-            if(a.masaTamat) timeStr += ` - ${formatMasa12Jam(a.masaTamat)}`;
-            tFormat += ` (${timeStr})`;
+          if(item.masaMula && item.masaTamat) {
+            tFormat += ` (${formatMasa12Jam(item.masaMula)} -${formatMasa12Jam(item.masaTamat)})`;
           }
-          return `
-            <div class="activity-sub-item">
-              <span><strong>${x+1}.</strong> ${tFormat}&nbsp;&nbsp;${a.catatan}</span>
-            </div>
-          `;
-        }).join('') : '<div class="activity-sub-item" style="color:var(--grey-text); font-style:italic;">No activities.</div>'}
+          return `<div class="activity-sub-item">• <strong>${item.catatan}</strong> (${tFormat})</div>`;
+        }).join('') : '<div style="font-size:0.9rem; color:var(--grey-text); font-style:italic; padding:2px 0;">Tiada aktiviti.</div>'}
       </div>`;
-    }).join('');
-  }
-  
-  function renderHariIni() {
-    let cp=0, ce=0, cr=0, cl=0, dp='', de='', dr='', dl='';
-    const tStr = getLocalDateString();
-    const now = new Date();
-    const currentTimeStr = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
-
-    const dayOfWeek = now.getDay();
-    const isWeekend = (dayOfWeek === 0 || dayOfWeek === 6);
-
-    const namaHariMelayu = ["Ahad", "Isnin", "Selasa", "Rabu", "Khamis", "Jumaat", "Sabtu"];
-    const hariSemasaNama = namaHariMelayu[dayOfWeek];
-
-    senaraiStaf.forEach((s) => {
-      const hbhRec = rekodPergerakan.filter(x => x.nama === s.nama && x.status === 'Lulus' && x.jenis === 'Hari Bekerja Hibrid (HBH)')[0];
-      let isHBHToday = false;
-      if (hbhRec && hbhRec.hariHBH && hbhRec.hariHBH.includes(hariSemasaNama)) {
-        isHBHToday = true;
-      }
-
-      if (isHBHToday) {
-        const k = `<div class="staff-card">
-          <div class="staff-card-left"><div><span class="staff-name">${s.nama}</span></div></div>
-          <div class="staff-right">${hbhRec.catatan}</div>
-        </div>`;
-        dr += k; 
-        cr++;
-        return;
-      }
-
-      const approvedRecords = rekodPergerakan.filter(x => x.nama === s.nama && x.status === 'Lulus' && x.jenis !== 'Hari Bekerja Hibrid (HBH)' && (
-        tStr >= x.tarikh && tStr <= (x.tarikhAkhir || x.tarikh)
-      ));
-
-      const activeRecords = approvedRecords.filter(r => {
-        if (r.masaMula && r.masaTamat) {
-          return currentTimeStr >= r.masaMula && currentTimeStr <= r.masaTamat;
-        } else if (r.masaMula) {
-          return currentTimeStr >= r.masaMula;
-        }
-        return true;
-      });
-
-      if (activeRecords.length > 0) {
-        const engagementRecs = activeRecords.filter(r => r.jenis.includes('Mesyuarat'));
-        const lainRecs = activeRecords.filter(r => !engagementRecs.includes(r));
-
-        if (engagementRecs.length > 0) {
-          let notesHtml = engagementRecs.map(r => {
-            let timeStr = r.masaMula ? `${formatMasa12Jam(r.masaMula)}${r.masaTamat ? '-'+formatMasa12Jam(r.masaTamat) : ''}: ` : '';
-            return `• ${timeStr}${r.catatan}`;
-          }).join('<br>');
-          const k = `<div class="staff-card">
-            <div class="staff-card-left"><div><span class="staff-name">${s.nama}</span></div></div>
-            <div class="staff-right" style="text-align: left;">${notesHtml}</div>
-          </div>`;
-          de += k;
-          ce++;
-        }
-
-        if (lainRecs.length > 0) {
-          let notesHtml = lainRecs.map(r => {
-            let timeStr = r.masaMula ? `${formatMasa12Jam(r.masaMula)}${r.masaTamat ? '-'+formatMasa12Jam(r.masaTamat) : ''}: ` : '';
-            return `• ${timeStr}${r.catatan}`;
-          }).join('<br>');
-          const k = `<div class="staff-card">
-            <div class="staff-card-left"><div><span class="staff-name">${s.nama}</span></div></div>
-            <div class="staff-right" style="text-align: left;">${notesHtml}</div>
-          </div>`;
-          dl += k;
-          cl++;
-        }
-      } else {
-        if (!isWeekend) {
-          const k = `<div class="staff-card">
-            <div class="staff-card-left"><div><span class="staff-name">${s.nama}</span></div></div>
-            <div class="staff-right"></div>
-          </div>`;
-          dp += k;
-          cp++;
-        }
-      }
-    });
-
-    document.getElementById('listPejabat').innerHTML = dp; 
-    document.getElementById('listEngagements').innerHTML = de; 
-    document.getElementById('listRumah').innerHTML = dr; 
-    document.getElementById('listLain').innerHTML = dl;
-    document.getElementById('countPejabat').innerText = cp; 
-    document.getElementById('countEngagements').innerText = ce; 
-    document.getElementById('countRumah').innerText = cr; 
-    document.getElementById('countLain').innerText = cl;
-
-    dataHariIniCache = { pejabat: dp, engagements: de, rumah: dr, lain: dl };
-
-    const mobileTodayEl = document.getElementById('mobileTodayView');
-    if (mobileTodayEl) {
-      mobileTodayEl.innerHTML = `
-        <div class="mobile-today-box" onclick="bukaDetailKategoriHariIni('Di Pejabat', dataHariIniCache.pejabat, ${cp})">
-          <div style="display:flex; align-items:center; gap:12px;">
-            <span class="material-symbols-outlined" style="color:var(--grey-text); font-size:1.4rem;">apartment</span>
-            <strong style="font-size:1.05rem; color:var(--text-color);">Di Pejabat</strong>
-          </div>
-          <span style="font-size:0.9rem; background:var(--header-bg); padding:6px 14px; border-radius:12px; font-weight:700; color:var(--text-color);">${cp}</span>
-        </div>
-        <div class="mobile-today-box" onclick="bukaDetailKategoriHariIni('Tugas Rasmi / Luar', dataHariIniCache.engagements, ${ce})">
-          <div style="display:flex; align-items:center; gap:12px;">
-            <span class="material-symbols-outlined" style="color:var(--grey-text); font-size:1.4rem;">badge</span>
-            <strong style="font-size:1.05rem; color:var(--text-color);">Tugas Rasmi / Luar</strong>
-          </div>
-          <span style="font-size:0.9rem; background:var(--header-bg); padding:6px 14px; border-radius:12px; font-weight:700; color:var(--text-color);">${ce}</span>
-        </div>
-        <div class="mobile-today-box" onclick="bukaDetailKategoriHariIni('HBH', dataHariIniCache.rumah, ${cr})">
-          <div style="display:flex; align-items:center; gap:12px;">
-            <span class="material-symbols-outlined" style="color:var(--grey-text); font-size:1.4rem;">home_work</span>
-            <strong style="font-size:1.05rem; color:var(--text-color);">HBH</strong>
-          </div>
-          <span style="font-size:0.9rem; background:var(--header-bg); padding:6px 14px; border-radius:12px; font-weight:700; color:var(--text-color);">${cr}</span>
-        </div>
-        <div class="mobile-today-box" onclick="bukaDetailKategoriHariIni('Lain-lain', dataHariIniCache.lain, ${cl})">
-          <div style="display:flex; align-items:center; gap:12px;">
-            <span class="material-symbols-outlined" style="color:var(--grey-text); font-size:1.4rem;">event</span>
-            <strong style="font-size:1.05rem; color:var(--text-color);">Lain-lain</strong>
-          </div>
-          <span style="font-size:0.9rem; background:var(--header-bg); padding:6px 14px; border-radius:12px; font-weight:700; color:var(--text-color);">${cl}</span>
-        </div>
-      `;
-    }
-  }
-
-  function bukaDetailKategoriHariIni(tajuk, htmlContent, count) {
-    document.getElementById('tajukModalHariIni').innerText = `${tajuk} (${count})`;
-    document.getElementById('senaraiKategoriHariIniModal').innerHTML = htmlContent || '<p style="color:var(--grey-text); font-style:italic; text-align:center; padding:10px;">Tiada rekod.</p>';
-    openModal('modalDetailHariIni');
-  }
-  
-  function tukarBulan(offset) {
-    currentMonthOffset += offset;
-    renderCalendar();
+    }).join('') || '<p>Tiada rekod.</p>';
   }
 
   function renderCalendar() {
-    const c = document.getElementById('calendarDays'); c.innerHTML = '';
-    const now = new Date();
-    now.setMonth(now.getMonth() + currentMonthOffset);
-    const thn = now.getFullYear(), bln = now.getMonth();
-    
-    const exactToday = new Date();
-    const todayStr = getLocalDateString(exactToday);
+    const date = new Date();
+    date.setMonth(date.getMonth() + currentMonthOffset);
+    const year = date.getFullYear();
+    const month = date.getMonth();
 
-    const bulanMalay = ["Januari","Februari","Mac","April","Mei","Jun","Julai","Ogos","September","Oktober","November","Disember"];
-    document.getElementById('calendarHeaderTitle').innerText = bulanMalay[bln] + " " + thn;
-    
-    let wMula = new Date(thn, bln, 1).getDay(); 
-    
-    for(let i=0; i<wMula; i++) c.innerHTML += `<div class="cal-day empty"></div>`;
-    
-    const totalDays = new Date(thn, bln+1, 0).getDate();
-    for(let i=1; i<=totalDays; i++) {
-      let dt = `${thn}-${String(bln+1).padStart(2,'0')}-${String(i).padStart(2,'0')}`;
-      let isToday = (dt === todayStr);
+    const monthNames = ["Januari", "Februari", "Mac", "April", "Mei", "Jun", "Julai", "Ogos", "September", "Oktober", "November", "Disember"];
+    document.getElementById('calendarHeaderTitle').innerText = `${monthNames[month]} ${year}`;
 
-      let dayOfWeek = new Date(thn, bln, i).getDay();
-      let isWeekend = (dayOfWeek === 0 || dayOfWeek === 6);
+    const firstDayIndex = new Date(year, month, 1).getDay();
+    const totalDays = new Date(year, month + 1, 0).getDate();
 
-      let dayClasses = ['cal-day'];
-      if (isToday) dayClasses.push('today');
-      if (isWeekend) dayClasses.push('weekend');
+    let daysHTML = '';
+    for(let i = 0; i < firstDayIndex; i++) {
+      daysHTML += `<div class="cal-day empty"></div>`;
+    }
 
-      let ev = rekodPergerakan.filter(r => {
-        if (r.status !== 'Lulus') return false;
-        if (r.jenis === 'Hari Bekerja Hibrid (HBH)') return false;
-        
-        let isWithinDate = dt >= r.tarikh && dt <= (r.tarikhAkhir || r.tarikh);
-        if (!isWithinDate) return false;
+    const todayStr = getLocalDateString();
 
-        let isWorkCategory = r.jenis.includes('Mesyuarat');
-        if (isWeekend && !isWorkCategory) {
-          return false;
-        }
+    for(let d = 1; d <= totalDays; d++) {
+      const dayStr = String(d).padStart(2, '0');
+      const monthStr = String(month + 1).padStart(2, '0');
+      const fullDateStr = `${year}-${monthStr}-${dayStr}`;
+      
+      const dateObj = new Date(year, month, d);
+      const dayOfWeek = dateObj.getDay();
+      const isWeekend = (dayOfWeek === 0 || dayOfWeek === 6);
 
-        return true;
-      }).map(r => {
-        let timeInfo = '';
-        if (r.masaMula) {
-          timeInfo = ` (${formatMasa12Jam(r.masaMula)}${r.masaTamat ? '-'+formatMasa12Jam(r.masaTamat) : ''})`;
-        }
-        return `
-          <div style="font-size:0.8rem; color:var(--text-color); margin-bottom:3px; text-align:left; line-height:1.3;">
-            • <strong>${r.nama}</strong>${timeInfo}: ${r.catatan}
-          </div>
-        `;
-      }).join('');
+      const isToday = (fullDateStr === todayStr);
 
-      let hasEvents = ev.trim() !== '';
-      let dayNumStyle = hasEvents ? 'font-weight:700;' : 'font-weight:400;';
+      const dayRecords = rekodPergerakan.filter(r => r.status === 'Lulus' && r.jenis !== 'Hari Bekerja Hibrid (HBH)' && r.tarikh <= fullDateStr && (r.tarikhAkhir ? r.tarikhAkhir >= fullDateStr : r.tarikh === fullDateStr));
 
-      c.innerHTML += `
-        <div class="${dayClasses.join(' ')}" onclick="bukaModalDetailHari('${dt}')">
-          <div class="cal-day-num" style="${dayNumStyle} margin-bottom:4px; text-align:left;">${i}</div>
-          <div style="flex:1; overflow-y:auto;">${ev}</div>
+      const hasNote = dayRecords.length > 0;
+
+      daysHTML += `
+        <div class="cal-day ${isToday ? 'today' : ''} ${isWeekend ? 'weekend' : ''}" onclick="bukaDetailHari('${fullDateStr}')">
+          <div style="font-weight:${hasNote ? '700' : '400'}; margin-bottom:4px;" class="cal-day-num">${d}</div>
+          ${dayRecords.map(r => `<div style="font-size:0.75rem; background:var(--header-bg); border-radius:4px; padding:2px 4px; margin-bottom:2px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:var(--text-color);">${r.nama}:${r.catatan}</div>`).join('')}
         </div>
       `;
     }
+
+    document.getElementById('calendarDays').innerHTML = daysHTML;
   }
 
-  function bukaModalDetailHari(dt) {
-    document.getElementById('tajukModalDetailHari').innerText = `Aktiviti Pada ${formatTarikhDMY(dt)}`;
+  function tukarBulan(direction) {
+    currentMonthOffset += direction;
+    renderCalendar();
+  }
+
+  function bukaDetailHari(dateStr) {
+    const formatted = formatTarikhDMY(dateStr);
+    document.getElementById('tajukModalDetailHari').innerText = `Aktiviti Pada ${formatted}`;
     
-    let ev = rekodPergerakan.filter(r => {
-      if (r.status !== 'Lulus') return false;
-      if (r.jenis === 'Hari Bekerja Hibrid (HBH)') return false;
-      return dt >= r.tarikh && dt <= (r.tarikhAkhir || r.tarikh);
-    });
-    
-    document.getElementById('senaraiAktivitiHariTerpilih').innerHTML = ev.length ? ev.map(r => `
-      <div style="padding:8px 0; border-bottom:1px solid var(--card-border); text-align:left;">
+    const dayRecords = rekodPergerakan.filter(r => r.status === 'Lulus' && r.jenis !== 'Hari Bekerja Hibrid (HBH)' && r.tarikh <= dateStr && (r.tarikhAkhir ? r.tarikhAkhir >= dateStr : r.tarikh === dateStr));
+
+    document.getElementById('senaraiAktivitiHariTerpilih').innerHTML = dayRecords.length === 0 ? '<p style="color:var(--grey-text); font-style:italic;">Tiada aktiviti pada tarikh ini.</p>' : dayRecords.map(r => `
+      <div style="background:var(--bg-color); border:1px solid var(--card-border); border-radius:8px; padding:10px; margin-bottom:8px;">
         <strong>${r.nama}</strong>: ${r.catatan}
       </div>
-    `).join('') : '<p style="color:var(--grey-text); font-style:italic;">Tiada aktiviti.</p>';
-    
+    `).join('');
+
     openModal('modalDetailHari');
   }
 
   window.onload = function() {
     muatTurunDataAwan();
-    setInterval(() => {
-      if (document.getElementById('mainDashboard').style.display === 'flex') {
-        renderHariIni();
-      }
-    }, 60000);
   };
 </script>
 </body>
