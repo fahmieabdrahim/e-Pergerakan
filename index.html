@@ -1514,13 +1514,13 @@
         marginRight = '9px';
       }
 
-      return `<div class="profile-chip" style="margin-right: ${marginRight}; cursor: pointer;" onclick="bukaModulStaf('${staf.nama}')">
+      return `<div class="profile-chip" style="margin-right: ${marginRight}; cursor: pointer; min-width: 110px;" onclick="bukaModulStaf('${staf.nama}')">
         <span class="profile-photo-wrap ${showBadge ? 'has-notif' : ''}">
           ${img}
           <span class="notification-badge"></span>
         </span>
-        <span style="font-weight: 700; max-width: 90px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${staf.nama}</span>
-        <span style="font-size: 0.65rem; color: var(--grey-text); max-width: 90px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${staf.jawatan || ''}</span>
+        <span style="font-weight: 700; text-align: center; word-break: break-word; line-height: 1.2; width: 100%;">${staf.nama}</span>
+        <span style="font-size: 0.65rem; color: var(--grey-text); text-align: center; word-break: break-word; line-height: 1.2; width: 100%;">${staf.jawatan || ''}</span>
       </div>`;
     }).join('');
 
