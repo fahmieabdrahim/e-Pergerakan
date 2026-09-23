@@ -147,16 +147,16 @@
     .board-note-box .material-symbols-outlined { color: var(--grey-text); }
     .board-note-text { flex: 1; line-height: 1.5; white-space: pre-wrap; font-weight: 600; text-align: left; }
 
-    /* STAFF STRIP - Responsive Mobile & Desktop */
+    /* STAFF STRIP - Responsive Mobile & Desktop (DIBESARKAN) */
     .staff-strip { 
       display: flex; align-items: flex-start; justify-content: flex-start; 
-      gap: 6px; margin-bottom: 20px; padding: 6px 4px; 
+      gap: 8px; margin-bottom: 20px; padding: 6px 4px; 
       scrollbar-width: thin; width: 100%; 
     }
-    .profile-chip { display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 90px; color: var(--text-color); font-size: 0.8rem; flex-shrink: 0; text-align: center;}
-    .profile-chip .avatar, .staff-avatar { width: 56px; height: 56px; border-radius: 50%; object-fit: cover; display: block; border: 2px solid var(--bg-color); box-shadow: 0 2px 6px rgba(0,0,0,0.04); background: #ffffff; }
-    .avatar-empty { display: block; border-radius: 50%; width: 56px; height: 56px; background: #ffffff; border: 2px solid var(--card-border); }
-    .profile-photo-wrap { position: relative; display: flex; align-items: center; justify-content: center; border-radius: 50%; width: 62px; height: 62px; background: #ffffff; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+    .profile-chip { display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 100px; color: var(--text-color); font-size: 0.8rem; flex-shrink: 0; text-align: center;}
+    .profile-chip .avatar, .staff-avatar { width: 70px; height: 70px; border-radius: 50%; object-fit: cover; display: block; border: 2px solid var(--bg-color); box-shadow: 0 2px 6px rgba(0,0,0,0.04); background: #ffffff; }
+    .avatar-empty { display: block; border-radius: 50%; width: 70px; height: 70px; background: #ffffff; border: 2px solid var(--card-border); }
+    .profile-photo-wrap { position: relative; display: flex; align-items: center; justify-content: center; border-radius: 50%; width: 76px; height: 76px; background: #ffffff; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
     
     @media (max-width: 768px) {
       .staff-strip { flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch; }
@@ -164,10 +164,10 @@
 
     @media (min-width: 769px) {
       .staff-strip { flex-wrap: wrap; overflow-x: visible; justify-content: center; }
-      .profile-chip .avatar, .staff-avatar { width: 52px; height: 52px; }
-      .avatar-empty { width: 52px; height: 52px; }
-      .profile-photo-wrap { width: 58px; height: 58px; }
-      .profile-chip { min-width: 85px; font-size: 0.75rem; }
+      .profile-chip .avatar, .staff-avatar { width: 66px; height: 66px; }
+      .avatar-empty { width: 66px; height: 66px; }
+      .profile-photo-wrap { width: 72px; height: 72px; }
+      .profile-chip { min-width: 95px; font-size: 0.75rem; }
     }
     
     .notification-badge {
@@ -182,9 +182,11 @@
     .tabs-left { display: flex; gap: 16px; overflow-x: auto; padding-bottom: 4px; align-items: center; }
     .tabs-right { display: flex; gap: 8px; align-items: center; flex-shrink: 0; }
 
+    /* TAB BUTTONS (SAMAKAN DENGAN PLAIN-ICON-BTN, BOLD DIBUANG) */
     .tab-btn { background: transparent; border: none; padding: 6px 8px; cursor: pointer; color: var(--grey-text); transition: color 0.2s; display: flex; align-items: center; justify-content: center; }
     .tab-btn span.material-symbols-outlined { font-size: 1.5rem; color: var(--grey-text); transition: color 0.2s; }
-    .tab-btn.active span.material-symbols-outlined { color: var(--text-color); font-weight: bold; }
+    .tab-btn:hover span.material-symbols-outlined { color: var(--text-color); }
+    .tab-btn.active span.material-symbols-outlined { color: var(--text-color); }
 
     .clean-menu-list { display: flex; flex-direction: column; background: rgba(255, 255, 255, 0.7); border-radius: 12px; border: 1px solid var(--card-border); overflow: hidden; }
     .clean-menu-item { padding: 14px 18px; background: transparent; border: none; border-bottom: 1px solid var(--card-border); text-align: left; font-size: 0.95rem; font-weight: 500; color: var(--text-color); cursor: pointer; display: flex; align-items: center; gap: 14px; transition: background 0.2s; width: 100%; }
@@ -1575,7 +1577,7 @@
           ${img}
           <span class="notification-badge"></span>
         </span>
-        <span style="font-weight: 700; text-align: center; word-break: break-word; line-height: 1.2; width: 100%;">${staf.nama}</span>
+        <span style="font-weight: 700; text-align: center; word-break: break-word; line-height: 1.2; width: 100%; margin-top: 4px;">${staf.nama}</span>
         <span style="font-size: 0.65rem; color: var(--grey-text); text-align: center; word-break: break-word; line-height: 1.2; width: 100%;">${staf.jawatan || ''}</span>
       </div>`;
     }).join('');
@@ -1609,27 +1611,42 @@
       });
 
       const hbhRec = activeRecords.find(r => r.jenis === 'Hari Bekerja Hibrid (HBH)');
+      const specificRecs = activeRecords.filter(r => r.jenis !== 'Hari Bekerja Hibrid (HBH)');
 
-      if (hbhRec) {
-        hbhArr.push({ nama: s.nama });
-      } else if (activeRecords.length > 0) {
-        activeRecords.forEach(r => {
+      // LOGIK KEUTAMAAN:
+      // Jika ada permohonan spesifik (Cuti / Mesyuarat / Keluar Pejabat), utamakan paparan aktiviti tersebut melebihi status HBH
+      if (specificRecs.length > 0) {
+        specificRecs.forEach(r => {
+          // Tambah petunjuk (HBH) jika aktiviti ini bertindih dengan hari HBH pegawai
+          const isHbhOverlap = !!hbhRec;
+          const catatanPenuh = isHbhOverlap ? `${r.catatan} (HBH)` : r.catatan;
+
           if (r.jenis.includes('Mesyuarat')) {
             engagementsArr.push({ 
               nama: s.nama, 
-              catatan: r.catatan, 
+              catatan: catatanPenuh, 
               masaMula: r.masaMula, 
               masaTamat: r.masaTamat 
             });
           } else if (r.jenis.includes('Cuti') || r.jenis.includes('Keluar')) {
             lainArr.push({ 
               nama: s.nama, 
-              catatan: r.catatan,
-              masaMula: r.masaMula,
-              masaTamat: r.masaTamat
+              catatan: catatanPenuh, 
+              masaMula: r.masaMula, 
+              masaTamat: r.masaTamat 
+            });
+          } else {
+            lainArr.push({ 
+              nama: s.nama, 
+              catatan: catatanPenuh, 
+              masaMula: r.masaMula, 
+              masaTamat: r.masaTamat 
             });
           }
         });
+      } else if (hbhRec) {
+        // Jika tiada permohonan Cuti / Mesyuarat / Keluar, papar sebagai HBH biasa
+        hbhArr.push({ nama: s.nama });
       } else {
         pejabatArr.push({ nama: s.nama });
       }
@@ -2121,7 +2138,7 @@
       daysHTML += `
         <div class="cal-day ${isToday ? 'today' : ''} ${isWeekend ? 'weekend' : ''}" onclick="bukaDetailHari('${fullDateStr}')">
           <div style="font-weight:${hasNote ? '700' : '400'}; margin-bottom:4px;" class="cal-day-num">${d}</div>
-          ${dayRecords.map(r => `<div style="font-size:0.75rem; background:var(--header-bg); border-radius:4px; padding:2px 4px; margin-bottom:2px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:var(--text-color);">${r.nama}:${r.catatan}</div>`).join('')}
+          ${dayRecords.map(r => `<div style="font-size:0.75rem; margin-bottom:2px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:var(--text-color);">${r.nama}</div>`).join('')}
         </div>
       `;
     }
