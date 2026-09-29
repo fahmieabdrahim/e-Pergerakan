@@ -465,7 +465,6 @@
       <input type="range" id="singleRainbowInput" class="single-rainbow-slider" min="0" max="360" value="0" oninput="updateSingleRainbowPreview()">
     </div>
 
-    <!-- Kotak Pratonton Warna -->
     <div id="rainbowColorPreview" style="width: 100%; height: 45px; border-radius: 8px; border: 1px solid var(--card-border); margin: 15px 0 14px 0; background: #ffffff;"></div>
 
     <div class="clean-menu-list" style="margin-top: 15px;">
@@ -741,7 +740,6 @@
     measurementId: "G-2W2NN15ECL"
   };
 
-  // Inisialisasi Firebase Realtime Database
   if (!firebase.apps.length) {
     firebase.initializeApp(firebaseConfig);
   }
@@ -757,7 +755,6 @@
   let renewingBoardId = null;
   let adminPassword = 'admin'; 
 
-  // Web Audio API for alert sound
   let audioCtx = null;
   let audioInterval = null;
 
@@ -1008,7 +1005,6 @@
     }
   }
 
-  // ================= FUNGSI MUAT TURUN DATA DARI FIREBASE =================
   async function muatTurunDataAwan() {
     try {
       const snapshot = await db.ref('appData').once('value');
@@ -1047,7 +1043,6 @@
     }
   }
 
-  // ================= FUNGSI SIMPAN DATA KE FIREBASE =================
   async function simpanKeLocalStorage() {
     if(activeBoardId) {
       const bIndex = boards.findIndex(b => b.id === activeBoardId);
@@ -1101,14 +1096,6 @@
 
       try { const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?board=' + id; window.history.pushState({path:newUrl}, '', newUrl); } catch(e) {}
     }
-  }
-
-  function kembaliKeSkrinPutih() {
-    document.getElementById('mainDashboard').style.display = 'none';
-    document.getElementById('welcomeScreen').style.display = 'flex';
-    activeBoardId = null;
-    checkAdminStatus();
-    try { const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname; window.history.pushState({path:newUrl}, '', newUrl); } catch(e) {}
   }
 
   function renderMainBoardsList() {
@@ -1613,11 +1600,8 @@
       const hbhRec = activeRecords.find(r => r.jenis === 'Hari Bekerja Hibrid (HBH)');
       const specificRecs = activeRecords.filter(r => r.jenis !== 'Hari Bekerja Hibrid (HBH)');
 
-      // LOGIK KEUTAMAAN:
-      // Jika ada permohonan spesifik (Cuti / Mesyuarat / Keluar Pejabat), utamakan paparan aktiviti tersebut melebihi status HBH
       if (specificRecs.length > 0) {
         specificRecs.forEach(r => {
-          // Tambah petunjuk (HBH) jika aktiviti ini bertindih dengan hari HBH pegawai
           const isHbhOverlap = !!hbhRec;
           const catatanPenuh = isHbhOverlap ? `${r.catatan} (HBH)` : r.catatan;
 
@@ -1645,14 +1629,12 @@
           }
         });
       } else if (hbhRec) {
-        // Jika tiada permohonan Cuti / Mesyuarat / Keluar, papar sebagai HBH biasa
         hbhArr.push({ nama: s.nama });
       } else {
         pejabatArr.push({ nama: s.nama });
       }
     });
 
-    // a. Di Pejabat
     document.getElementById('countPejabat').innerText = pejabatArr.length;
     document.getElementById('listPejabat').innerHTML = pejabatArr.map(item => `
       <div class="staff-card">
@@ -1662,7 +1644,6 @@
       </div>
     `).join('') || '<div style="color:var(--grey-text); font-style:italic; padding:8px;">Tiada</div>';
 
-    // b. Tugas Rasmi / Luar
     document.getElementById('countEngagements').innerText = engagementsArr.length;
     document.getElementById('listEngagements').innerHTML = engagementsArr.map(item => {
       let masaText = '';
@@ -1682,7 +1663,6 @@
       `;
     }).join('') || '<div style="color:var(--grey-text); font-style:italic; padding:8px;">Tiada</div>';
 
-    // c. HBH
     document.getElementById('countRumah').innerText = hbhArr.length;
     document.getElementById('listRumah').innerHTML = hbhArr.map(item => `
       <div class="staff-card">
@@ -1692,7 +1672,6 @@
       </div>
     `).join('') || '<div style="color:var(--grey-text); font-style:italic; padding:8px;">Tiada</div>';
 
-    // d. Lain-lain
     document.getElementById('countLain').innerText = lainArr.length;
     document.getElementById('listLain').innerHTML = lainArr.map(item => {
       let masaText = '';
@@ -1903,10 +1882,8 @@
     if (cekDanPaparPopupRenew()) return;
     closeModal('modalMenuProfil');
     
-    // Reset semua checkbox kepada false terlebih dahulu
     document.querySelectorAll('input[name="hbhDay"]').forEach(cb => cb.checked = false);
     
-    // Cari rekod HBH sedia ada untuk user ini
     const hbhRecord = rekodPergerakan.find(r => r.nama === pemohonAktif && r.jenis === 'Hari Bekerja Hibrid (HBH)');
     if (hbhRecord && hbhRecord.hariHBH) {
       const hariTersimpan = hbhRecord.hariHBH.split(', ').map(h => h.trim());
@@ -1924,7 +1901,6 @@
     if (cekDanPaparPopupRenew()) return;
     const selectedCheckboxes = document.querySelectorAll('input[name="hbhDay"]:checked');
     
-    // Buang rekod HBH lama user ini sama ada pengguna pilih hari atau kosongkan (uncheck semua)
     rekodPergerakan = rekodPergerakan.filter(r => !(r.nama === pemohonAktif && r.jenis === 'Hari Bekerja Hibrid (HBH)'));
 
     if (selectedCheckboxes.length > 0) {
@@ -1948,7 +1924,6 @@
       kemaskiniPaparan();
       showMsg(`✅ Hari Bekerja Hibrid (${hariPilihan}) berjaya disimpan!`);
     } else {
-      // Jika semua uncheck (kosong), HBH dibuang/dipadam
       await simpanKeLocalStorage();
       kemaskiniPaparan();
       showMsg("✅ Hari Bekerja Hibrid berjaya dibuang.");
@@ -2078,7 +2053,14 @@
   }
 
   function renderListPergerakan() {
-    document.getElementById('listPergerakanContent').innerHTML = senaraiStaf.map((s) => {
+    // Susun senarai staf mengikut siapa yang paling banyak aktiviti (status 'Lulus' & bukan HBH) secara menurun (descending)
+    const sortedStafByActivity = [...senaraiStaf].sort((a, b) => {
+      const countA = rekodPergerakan.filter(r => r.nama === a.nama && r.status === 'Lulus' && r.jenis !== 'Hari Bekerja Hibrid (HBH)').length;
+      const countB = rekodPergerakan.filter(r => r.nama === b.nama && r.status === 'Lulus' && r.jenis !== 'Hari Bekerja Hibrid (HBH)').length;
+      return countB - countA;
+    });
+
+    document.getElementById('listPergerakanContent').innerHTML = sortedStafByActivity.map((s) => {
       const ak = rekodPergerakan.filter(r => r.nama === s.nama && r.status === 'Lulus' && r.jenis !== 'Hari Bekerja Hibrid (HBH)');
       
       let headerHtml = `<div style="display:flex; align-items:baseline; gap:8px; flex-wrap:wrap;">
