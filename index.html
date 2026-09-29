@@ -1631,38 +1631,46 @@
         return currentHM >= r.masaMula && currentHM <= r.masaTamat;
       });
 
-      if (timedActiveRecs.length > 0) {
-        timedActiveRecs.forEach(r => {
-          const isHbhOverlap = !!hbhRec;
-          const catatanPenuh = isHbhOverlap ? `${r.catatan} (HBH)` : r.catatan;
-          
+      // Kategori Cuti & Kebenaran Keluar Pejabat -> Lain-lain
+      const cutiAtauKeluar = timedActiveRecs.filter(r => r.jenis.includes('Cuti') || r.jenis.includes('Keluar'));
+      // Mesyuarat / Kursus / Pameran / Lain-lain -> Tugas Rasmi / Luar
+      const tugasRasmi = timedActiveRecs.filter(r => !r.jenis.includes('Cuti') && !r.jenis.includes('Keluar'));
+
+      if (cutiAtauKeluar.length > 0) {
+        cutiAtauKeluar.forEach(r => {
           let masaText = '';
           if (r.masaMula && r.masaTamat) {
             masaText = ` (${formatMasa12Jam(r.masaMula)} - ${formatMasa12Jam(r.masaTamat)})`;
           }
-
-          if (r.jenis.includes('Mesyuarat / Kursus / Pameran / Lain-lain')) {
-            engagementsArr.push({
-              nama: s.nama,
-              aktivitiHtml: `<div style="margin-bottom: 8px;"><strong>${s.nama}</strong><br>• ${catatanPenuh}${masaText}</div>`
-            });
-          } else {
-            lainArr.push({
-              nama: s.nama,
-              aktivitiHtml: `<div style="margin-bottom: 8px;"><strong>${s.nama}</strong><br>• ${catatanPenuh}${masaText}</div>`
-            });
-          }
+          lainArr.push({
+            nama: s.nama,
+            aktivitiHtml: `<div style="margin-bottom: 8px;"><strong>${s.nama}</strong><br>• ${r.catatan}${masaText}</div>`
+          });
         });
-      } else if (hbhRec) {
-        hbhArr.push({
-          nama: s.nama,
-          aktivitiHtml: `<div style="margin-bottom: 6px;">${s.nama}</div>`
+      } else if (tugasRasmi.length > 0) {
+        tugasRasmi.forEach(r => {
+          let masaText = '';
+          if (r.masaMula && r.masaTamat) {
+            masaText = ` (${formatMasa12Jam(r.masaMula)} - ${formatMasa12Jam(r.masaTamat)})`;
+          }
+          engagementsArr.push({
+            nama: s.nama,
+            aktivitiHtml: `<div style="margin-bottom: 8px;"><strong>${s.nama}</strong><br>• ${r.catatan}${masaText}</div>`
+          });
         });
       } else {
-        pejabatArr.push({
-          nama: s.nama,
-          aktivitiHtml: `<div style="margin-bottom: 6px;">${s.nama}</div>`
-        });
+        // Jika tiada cuti atau tugas rasmi, semak status Pejabat dahulu, kemudian HBH
+        if (hbhRec) {
+          hbhArr.push({
+            nama: s.nama,
+            aktivitiHtml: `<div style="margin-bottom: 6px;">${s.nama}</div>`
+          });
+        } else {
+          pejabatArr.push({
+            nama: s.nama,
+            aktivitiHtml: `<div style="margin-bottom: 6px;">${s.nama}</div>`
+          });
+        }
       }
     });
 
