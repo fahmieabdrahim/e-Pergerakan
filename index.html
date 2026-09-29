@@ -204,7 +204,7 @@
     .list-pergerakan-container { display: flex; flex-direction: column; gap: 12px; background: transparent; border: none; border-radius: 0; padding: 0; box-shadow: none; text-align: left; }
     .staff-group-card { background: rgba(255, 255, 255, 0.7); border: 1px solid var(--card-border); border-radius: 12px; padding: 14px 18px; box-shadow: 0 1px 2px var(--box-shadow); text-align: left; margin-bottom: 12px; backdrop-filter: blur(4px); }
     .staff-group-header { font-size: 1.05rem; font-weight: 700; color: var(--text-color); margin-bottom: 6px; display: flex; align-items: baseline; gap: 10px; text-align: left; }
-    .activity-sub-item { font-size: 0.95rem; padding: 4px 0; color: var(--text-color); display: flex; align-items: flex-start; gap: 6px; text-align: left; }
+    .activity-sub-item { font-size: 0.95rem; padding: 4px 0; color: var(--text-color); text-align: left; }
 
     .calendar-container { background: transparent; border: none; border-radius: 0; padding: 0; display: flex; flex-direction: column; width: 100%; box-shadow: none; }
     .calendar-header { display: flex; justify-content: space-between; align-items: center; font-size: 1.15rem; font-weight: 700; margin-bottom: 12px; color: var(--text-color); }
@@ -1480,7 +1480,7 @@
     const ampm = jam >= 12 ? 'PM' : 'AM';
     jam = jam % 12;
     jam = jam ? jam : 12;
-    return `${String(jam).padStart(2, '0')}:${minitStr}${ampm}`;
+    return `${String(jam).padStart(2, '0')}:${minitStr} ${ampm}`;
   }
 
   function openModal(id) { document.getElementById(id).style.display = 'flex'; }
@@ -1749,8 +1749,10 @@
 
     container.innerHTML = aktivitiUser.map(({r, index}) => {
       let tFormat = formatTarikhDMY(r.tarikh);
-      if(!r.jenis.includes('Keluar') && r.tarikhAkhir && r.tarikhAkhir !== r.tarikh) {
-        tFormat += ` to ${formatTarikhDMY(r.tarikhAkhir)}`;
+      let tAkhir = r.tarikhAkhir || r.tarikh;
+      if(!r.jenis.includes('Keluar') && tAkhir !== r.tarikh) {
+        if (tAkhir < r.tarikh) tAkhir = r.tarikh;
+        tFormat += ` hingga ${formatTarikhDMY(tAkhir)}`;
       }
       if(r.masaMula && r.masaTamat) {
         tFormat += ` (${formatMasa12Jam(r.masaMula)} - ${formatMasa12Jam(r.masaTamat)})`;
@@ -1938,8 +1940,10 @@
     document.getElementById('senaraiPermohonanMenunggu').innerHTML = senaraiMenunggu.map((r) => {
       const originalIdx = rekodPergerakan.indexOf(r);
       let tFormat = formatTarikhDMY(r.tarikh);
-      if(!r.jenis.includes('Keluar') && r.tarikhAkhir && r.tarikhAkhir !== r.tarikh) {
-        tFormat += ` to ${formatTarikhDMY(r.tarikhAkhir)}`;
+      let tAkhir = r.tarikhAkhir || r.tarikh;
+      if(!r.jenis.includes('Keluar') && tAkhir !== r.tarikh) {
+        if (tAkhir < r.tarikh) tAkhir = r.tarikh;
+        tFormat += ` to ${formatTarikhDMY(tAkhir)}`;
       }
       let timePart = '';
       if (r.masaMula && r.masaTamat) {
@@ -2001,6 +2005,12 @@
     if(!t || !c) { showMsg('Please complete the date and notes.'); return; }
 
     const isKeluar = j.includes('Keluar');
+    let tAkhirVal = isKeluar ? t : (document.getElementById('permTarikhAkhir').value || t);
+    
+    if (tAkhirVal < t) {
+      tAkhirVal = t;
+    }
+
     const masaMulaVal = document.getElementById('permMasaMula').value;
     const masaTamatVal = document.getElementById('permMasaTamat').value;
 
@@ -2018,7 +2028,7 @@
       nama: pemohonAktif,
       jenis: j,
       tarikh: t,
-      tarikhAkhir: isKeluar ? t : (document.getElementById('permTarikhAkhir').value || t),
+      tarikhAkhir: tAkhirVal,
       masaMula: masaMulaVal,
       masaTamat: masaTamatVal,
       catatan: c,
@@ -2057,8 +2067,10 @@
         <div class="staff-group-header">${headerHtml}</div>
         ${ak.length > 0 ? ak.map(item => {
           let tFormat = formatTarikhDMY(item.tarikh);
-          if(!item.jenis.includes('Keluar') && item.tarikhAkhir && item.tarikhAkhir !== item.tarikh) {
-            tFormat += ` hingga ${formatTarikhDMY(item.tarikhAkhir)}`;
+          let tAkhir = item.tarikhAkhir || item.tarikh;
+          if(!item.jenis.includes('Keluar') && tAkhir !== item.tarikh) {
+            if (tAkhir < item.tarikh) tAkhir = item.tarikh;
+            tFormat += ` hingga ${formatTarikhDMY(tAkhir)}`;
           }
           if(item.masaMula && item.masaTamat) {
             tFormat += ` (${formatMasa12Jam(item.masaMula)} -${formatMasa12Jam(item.masaTamat)})`;
