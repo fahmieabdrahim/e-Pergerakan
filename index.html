@@ -182,7 +182,7 @@
     .tabs-left { display: flex; gap: 16px; overflow-x: auto; padding-bottom: 4px; align-items: center; }
     .tabs-right { display: flex; gap: 8px; align-items: center; flex-shrink: 0; }
 
-    /* TAB BUTTONS (SAMAKAN DENGAN PLAIN-ICON-BTN, BOLD DIBUANG) */
+    /* TAB BUTTONS */
     .tab-btn { background: transparent; border: none; padding: 6px 8px; cursor: pointer; color: var(--grey-text); transition: color 0.2s; display: flex; align-items: center; justify-content: center; }
     .tab-btn span.material-symbols-outlined { font-size: 1.5rem; color: var(--grey-text); transition: color 0.2s; }
     .tab-btn:hover span.material-symbols-outlined { color: var(--text-color); }
@@ -202,16 +202,9 @@
     .column-title { font-size: 1.05rem; font-weight: 700; padding-bottom: 10px; margin-bottom: 12px; border-bottom: 1px solid var(--card-border); display: flex; justify-content: space-between; color: var(--text-color); text-align: left; }
 
     .list-pergerakan-container { display: flex; flex-direction: column; gap: 12px; background: transparent; border: none; border-radius: 0; padding: 0; box-shadow: none; text-align: left; }
-    .staff-group-card { background: transparent; border: none; border-bottom: 1px solid var(--card-border); border-radius: 0; padding: 12px 0; box-shadow: none; text-align: left; }
-    .staff-group-card:last-child { border-bottom: none; }
+    .staff-group-card { background: rgba(255, 255, 255, 0.7); border: 1px solid var(--card-border); border-radius: 12px; padding: 14px 18px; box-shadow: 0 1px 2px var(--box-shadow); text-align: left; margin-bottom: 12px; backdrop-filter: blur(4px); }
     .staff-group-header { font-size: 1.05rem; font-weight: 700; color: var(--text-color); margin-bottom: 6px; display: flex; align-items: baseline; gap: 10px; text-align: left; }
-    .activity-sub-item { font-size: 0.95rem; padding: 4px 0; margin-bottom: 2px; color: var(--text-color); display: flex; align-items: flex-start; gap: 6px; text-align: left; }
-
-    .staff-card { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--card-border); color: var(--text-color); text-align: left; }
-    .staff-card:last-child { border-bottom: none; }
-    .staff-card-left { display: flex; align-items: center; gap: 12px; text-align: left; }
-    .staff-name { font-weight: 600; font-size: 0.95rem; display: block; text-align: left; }
-    .staff-right { font-size: 0.9rem; font-weight: 600; text-align: left; max-width: 55%; word-break: break-word; line-height: 1.35; color: var(--grey-text); }
+    .activity-sub-item { font-size: 0.95rem; padding: 4px 0; color: var(--text-color); display: flex; align-items: flex-start; gap: 6px; text-align: left; }
 
     .calendar-container { background: transparent; border: none; border-radius: 0; padding: 0; display: flex; flex-direction: column; width: 100%; box-shadow: none; }
     .calendar-header { display: flex; justify-content: space-between; align-items: center; font-size: 1.15rem; font-weight: 700; margin-bottom: 12px; color: var(--text-color); }
@@ -243,7 +236,7 @@
 
     .form-group { margin-bottom: 14px; text-align: left; }
     .form-group label { display: block; font-size: 0.95rem; font-weight: 600; margin-bottom: 6px; color: var(--text-color); text-align: left; }
-    .form-group input[type="text"], .form-group input[type="date"], .form-group input[type="time"], .form-group input[type="file"], .form-group select, .form-group textarea { width: 100%; padding: 12px; border: 1px solid var(--card-border); border-radius: 8px; font: inherit; font-size: 0.95rem; background: #ffffff; color: var(--text-color); }
+    .form-group input[type="text"], .form-group input[type="date"], .form-group input[type="time"], .form-group input[type="password"], .form-group input[type="file"], .form-group select, .form-group textarea { width: 100%; padding: 12px; border: 1px solid var(--card-border); border-radius: 8px; font: inherit; font-size: 0.95rem; background: #ffffff; color: var(--text-color); }
     
     .checkbox-group-container { display: flex; flex-direction: column; gap: 10px; margin-top: 8px; text-align: left; }
     .checkbox-item { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border: 1px solid var(--card-border); border-radius: 8px; cursor: pointer; transition: background 0.2s; text-align: left; background: #ffffff; }
@@ -323,7 +316,7 @@
     <div id="boardNoteText" class="board-note-text"></div>
   </div>
 
-  <!-- DESKTOP TODAY VIEW (Columns) -->
+  <!-- DESKTOP TODAY VIEW (4 Lajur Kekal) -->
   <div id="viewHariIni" class="columns-container" style="display: grid;">
     <div class="column col-pejabat">
       <div class="column-title"><span>Di Pejabat</span><span id="countPejabat">0</span></div>
@@ -838,13 +831,30 @@
     };
   }
 
-  function showPrompt(message, defaultValue = '', callback) {
+  function showPrompt(message, defaultValue = '', callback, isPassword = false) {
     const modal = document.getElementById('modalCustomMsg');
     const textEl = document.getElementById('customMsgText');
     const okBtn = document.getElementById('customMsgBtnOk');
     const cancelBtn = document.getElementById('customMsgBtnCancel');
 
-    textEl.innerHTML = `${message}<br><input type="text" id="customPromptInput" value="${defaultValue}" style="width:100%; padding:10px; margin-top:12px; border:1px solid var(--card-border); border-radius:8px; font-size:0.95rem; background:#ffffff; color:var(--text-color);">`;
+    const inputType = isPassword ? 'password' : 'text';
+    
+    let eyeIconHtml = '';
+    if (isPassword) {
+      eyeIconHtml = `
+        <button type="button" id="togglePasswordBtn" onclick="togglePromptPasswordVisibility()" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: transparent; border: none; cursor: pointer; color: var(--grey-text); display: flex; align-items: center; justify-content: center; padding: 4px;">
+          <span class="material-symbols-outlined" id="promptEyeIcon" style="font-size: 1.2rem;">visibility_off</span>
+        </button>
+      `;
+    }
+
+    textEl.innerHTML = `
+      <div style="margin-bottom: 6px;">${message}</div>
+      <div style="position: relative; width: 100%;">
+        <input type="${inputType}" id="customPromptInput" value="${defaultValue}" style="width:100%; padding:10px ${isPassword ? '40px' : '10px'} 10px 10px; border:1px solid var(--card-border); border-radius:8px; font-size:0.95rem; background:#ffffff; color:var(--text-color);">
+        ${eyeIconHtml}
+      </div>
+    `;
     modal.style.display = 'flex';
     cancelBtn.style.display = 'inline-flex';
 
@@ -863,6 +873,19 @@
       modal.style.display = 'none';
       if(callback) callback(null);
     };
+  }
+
+  function togglePromptPasswordVisibility() {
+    const input = document.getElementById('customPromptInput');
+    const icon = document.getElementById('promptEyeIcon');
+    if (!input || !icon) return;
+    if (input.type === 'password') {
+      input.type = 'text';
+      icon.innerText = 'visibility';
+    } else {
+      input.type = 'password';
+      icon.innerText = 'visibility_off';
+    }
   }
 
   function populateRoleDropdowns() {
@@ -949,7 +972,7 @@
         } else {
           showMsg("Kata laluan salah!");
         }
-      });
+      }, true);
     }
   }
 
@@ -974,8 +997,8 @@
         adminPassword = newPwd.trim();
         simpanKeLocalStorage();
         showMsg("✅ Kata laluan admin berjaya ditukar!");
-      });
-    });
+      }, true);
+    }, true);
   }
 
   function checkAdminStatus() {
@@ -1581,6 +1604,9 @@
     const daysMalay = ['Ahad', 'Isnin', 'Selasa', 'Rabu', 'Khamis', 'Jumaat', 'Sabtu'];
     const todayDayName = daysMalay[new Date().getDay()];
 
+    const nowObj = new Date();
+    const currentHM = String(nowObj.getHours()).padStart(2, '0') + ':' + String(nowObj.getMinutes()).padStart(2, '0');
+
     let pejabatArr = [];
     let engagementsArr = [];
     let hbhArr = [];
@@ -1600,96 +1626,57 @@
       const hbhRec = activeRecords.find(r => r.jenis === 'Hari Bekerja Hibrid (HBH)');
       const specificRecs = activeRecords.filter(r => r.jenis !== 'Hari Bekerja Hibrid (HBH)');
 
-      if (specificRecs.length > 0) {
-        specificRecs.forEach(r => {
+      const timedActiveRecs = specificRecs.filter(r => {
+        if (!r.masaMula || !r.masaTamat) return true;
+        return currentHM >= r.masaMula && currentHM <= r.masaTamat;
+      });
+
+      if (timedActiveRecs.length > 0) {
+        timedActiveRecs.forEach(r => {
           const isHbhOverlap = !!hbhRec;
           const catatanPenuh = isHbhOverlap ? `${r.catatan} (HBH)` : r.catatan;
+          
+          let masaText = '';
+          if (r.masaMula && r.masaTamat) {
+            masaText = ` (${formatMasa12Jam(r.masaMula)} - ${formatMasa12Jam(r.masaTamat)})`;
+          }
 
-          if (r.jenis.includes('Mesyuarat')) {
-            engagementsArr.push({ 
-              nama: s.nama, 
-              catatan: catatanPenuh, 
-              masaMula: r.masaMula, 
-              masaTamat: r.masaTamat 
-            });
-          } else if (r.jenis.includes('Cuti') || r.jenis.includes('Keluar')) {
-            lainArr.push({ 
-              nama: s.nama, 
-              catatan: catatanPenuh, 
-              masaMula: r.masaMula, 
-              masaTamat: r.masaTamat 
+          if (r.jenis.includes('Mesyuarat / Kursus / Pameran / Lain-lain')) {
+            engagementsArr.push({
+              nama: s.nama,
+              aktivitiHtml: `<div style="margin-bottom: 8px;"><strong>${s.nama}</strong><br>• ${catatanPenuh}${masaText}</div>`
             });
           } else {
-            lainArr.push({ 
-              nama: s.nama, 
-              catatan: catatanPenuh, 
-              masaMula: r.masaMula, 
-              masaTamat: r.masaTamat 
+            lainArr.push({
+              nama: s.nama,
+              aktivitiHtml: `<div style="margin-bottom: 8px;"><strong>${s.nama}</strong><br>• ${catatanPenuh}${masaText}</div>`
             });
           }
         });
       } else if (hbhRec) {
-        hbhArr.push({ nama: s.nama });
+        hbhArr.push({
+          nama: s.nama,
+          aktivitiHtml: `<div style="margin-bottom: 6px;">${s.nama}</div>`
+        });
       } else {
-        pejabatArr.push({ nama: s.nama });
+        pejabatArr.push({
+          nama: s.nama,
+          aktivitiHtml: `<div style="margin-bottom: 6px;">${s.nama}</div>`
+        });
       }
     });
 
     document.getElementById('countPejabat').innerText = pejabatArr.length;
-    document.getElementById('listPejabat').innerHTML = pejabatArr.map(item => `
-      <div class="staff-card">
-        <div class="staff-card-left">
-          <span class="staff-name">${item.nama}</span>
-        </div>
-      </div>
-    `).join('') || '<div style="color:var(--grey-text); font-style:italic; padding:8px;">Tiada</div>';
+    document.getElementById('listPejabat').innerHTML = pejabatArr.map(item => item.aktivitiHtml).join('') || '<div style="color:var(--grey-text); font-style:italic; padding:4px 0;">Tiada</div>';
 
     document.getElementById('countEngagements').innerText = engagementsArr.length;
-    document.getElementById('listEngagements').innerHTML = engagementsArr.map(item => {
-      let masaText = '';
-      if (item.masaMula && item.masaTamat) {
-        masaText = `<span style="display:block; font-size:0.8rem; color:var(--grey-text);">${formatMasa12Jam(item.masaMula)} - ${formatMasa12Jam(item.masaTamat)}</span>`;
-      }
-      return `
-        <div class="staff-card">
-          <div class="staff-card-left">
-            <span class="staff-name">${item.nama}</span>
-          </div>
-          <div class="staff-right">
-            ${item.catatan}
-            ${masaText}
-          </div>
-        </div>
-      `;
-    }).join('') || '<div style="color:var(--grey-text); font-style:italic; padding:8px;">Tiada</div>';
+    document.getElementById('listEngagements').innerHTML = engagementsArr.map(item => item.aktivitiHtml).join('') || '<div style="color:var(--grey-text); font-style:italic; padding:4px 0;">Tiada</div>';
 
     document.getElementById('countRumah').innerText = hbhArr.length;
-    document.getElementById('listRumah').innerHTML = hbhArr.map(item => `
-      <div class="staff-card">
-        <div class="staff-card-left">
-          <span class="staff-name">${item.nama}</span>
-        </div>
-      </div>
-    `).join('') || '<div style="color:var(--grey-text); font-style:italic; padding:8px;">Tiada</div>';
+    document.getElementById('listRumah').innerHTML = hbhArr.map(item => item.aktivitiHtml).join('') || '<div style="color:var(--grey-text); font-style:italic; padding:4px 0;">Tiada</div>';
 
     document.getElementById('countLain').innerText = lainArr.length;
-    document.getElementById('listLain').innerHTML = lainArr.map(item => {
-      let masaText = '';
-      if (item.masaMula && item.masaTamat) {
-        masaText = `<span style="display:block; font-size:0.8rem; color:var(--grey-text);">${formatMasa12Jam(item.masaMula)} - ${formatMasa12Jam(item.masaTamat)}</span>`;
-      }
-      return `
-        <div class="staff-card">
-          <div class="staff-card-left">
-            <span class="staff-name">${item.nama}</span>
-          </div>
-          <div class="staff-right">
-            ${item.catatan}
-            ${masaText}
-          </div>
-        </div>
-      `;
-    }).join('') || '<div style="color:var(--grey-text); font-style:italic; padding:8px;">Tiada</div>';
+    document.getElementById('listLain').innerHTML = lainArr.map(item => item.aktivitiHtml).join('') || '<div style="color:var(--grey-text); font-style:italic; padding:4px 0;">Tiada</div>';
   }
 
   function bukaModulStaf(nama) { 
@@ -2053,7 +2040,6 @@
   }
 
   function renderListPergerakan() {
-    // Susun senarai staf mengikut siapa yang paling banyak aktiviti (status 'Lulus' & bukan HBH) secara menurun (descending)
     const sortedStafByActivity = [...senaraiStaf].sort((a, b) => {
       const countA = rekodPergerakan.filter(r => r.nama === a.nama && r.status === 'Lulus' && r.jenis !== 'Hari Bekerja Hibrid (HBH)').length;
       const countB = rekodPergerakan.filter(r => r.nama === b.nama && r.status === 'Lulus' && r.jenis !== 'Hari Bekerja Hibrid (HBH)').length;
