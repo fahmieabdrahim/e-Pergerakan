@@ -325,23 +325,28 @@
     <div id="boardNoteText" class="board-note-text"></div>
   </div>
 
-  <!-- DESKTOP TODAY VIEW (4 Lajur Kekal) -->
-  <div id="viewHariIni" class="columns-container" style="display: grid;">
-    <div class="column col-pejabat">
-      <div class="column-title"><span>Di Pejabat</span><span id="countPejabat">0</span></div>
-      <div class="column-scroll" id="listPejabat"></div>
-    </div>
-    <div class="column col-engagements">
-      <div class="column-title"><span>Tugas Rasmi / Luar</span><span id="countEngagements">0</span></div>
-      <div class="column-scroll" id="listEngagements"></div>
-    </div>
-    <div class="column col-hbh">
-      <div class="column-title"><span>HBH</span><span id="countRumah">0</span></div>
-      <div class="column-scroll" id="listRumah"></div>
-    </div>
-    <div class="column col-urusan">
-      <div class="column-title"><span>Lain-lain</span><span id="countLain">0</span></div>
-      <div class="column-scroll" id="listLain"></div>
+  <!-- DESKTOP TODAY VIEW -->
+  <div id="viewTodayContainer" style="display: flex; flex-direction: column; width: 100%;">
+    <!-- Tajuk Tarikh & Hari untuk Paparan Today -->
+    <div id="todayDateHeader" style="text-align: center; font-size: 1.15rem; font-weight: 700; margin-bottom: 14px; color: var(--text-color);"></div>
+
+    <div id="viewHariIni" class="columns-container" style="display: grid;">
+      <div class="column col-pejabat">
+        <div class="column-title"><span>Di Pejabat</span><span id="countPejabat">0</span></div>
+        <div class="column-scroll" id="listPejabat"></div>
+      </div>
+      <div class="column col-engagements">
+        <div class="column-title"><span>Tugas Rasmi / Luar</span><span id="countEngagements">0</span></div>
+        <div class="column-scroll" id="listEngagements"></div>
+      </div>
+      <div class="column col-hbh">
+        <div class="column-title"><span>HBH</span><span id="countRumah">0</span></div>
+        <div class="column-scroll" id="listRumah"></div>
+      </div>
+      <div class="column col-urusan">
+        <div class="column-title"><span>Lain-lain</span><span id="countLain">0</span></div>
+        <div class="column-scroll" id="listLain"></div>
+      </div>
     </div>
   </div>
 
@@ -1516,9 +1521,9 @@
   function switchView(view) {
     document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
     document.getElementById(view==='list'?'btnTabList':view==='bulan'?'btnTabBulan':'btnTabHariIni').classList.add('active');
+    document.getElementById('viewTodayContainer').style.display = view === 'hari-ini' ? 'flex' : 'none';
     document.getElementById('viewList').style.display = view === 'list' ? 'flex' : 'none';
     document.getElementById('viewBulan').style.display = view === 'bulan' ? 'flex' : 'none';
-    document.getElementById('viewHariIni').style.display = view === 'hari-ini' ? 'grid' : 'none';
     
     // Paparkan butang Print di sebelah kanan sebaris dengan tab HANYA apabila berada di view 'bulan'
     const printActionsRow = document.getElementById('monthPrintActionsRow');
@@ -1640,11 +1645,23 @@
 
   function renderHariIni() {
     const todayStr = getLocalDateString();
+    const now = new Date();
     const daysMalay = ['Ahad', 'Isnin', 'Selasa', 'Rabu', 'Khamis', 'Jumaat', 'Sabtu'];
-    const todayDayName = daysMalay[new Date().getDay()];
+    const monthsMalay = ["Januari", "Februari", "Mac", "April", "Mei", "Jun", "Julai", "Ogos", "September", "Oktober", "November", "Disember"];
+    
+    const dayName = daysMalay[now.getDay()];
+    const dayNum = now.getDate();
+    const monthName = monthsMalay[now.getMonth()];
+    const yearNum = now.getFullYear();
 
-    const nowObj = new Date();
-    const currentHM = String(nowObj.getHours()).padStart(2, '0') + ':' + String(nowObj.getMinutes()).padStart(2, '0');
+    // Paparkan tarikh dan hari di atas paparan Today dengan gaya font bold yang sama seperti tajuk bulan
+    const dateHeaderEl = document.getElementById('todayDateHeader');
+    if (dateHeaderEl) {
+      dateHeaderEl.innerText = `${dayNum} ${monthName} ${yearNum} (${dayName})`;
+    }
+
+    const todayDayName = dayName;
+    const currentHM = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
 
     let pejabatArr = [];
     let engagementsArr = [];
@@ -2155,7 +2172,6 @@
     }).join('') || '<p>Tiada rekod.</p>';
   }
 
-  // Format cetakan khas tanpa kotak (text box), nama bold, dan format masa/tarikh lengkap mengikut contoh anda
   function generatePrintableHtmlForMonth(targetMonthStr) {
     const sortedStafByActivity = getSortedStafByActivityCount(targetMonthStr);
 
