@@ -204,7 +204,7 @@
     .list-pergerakan-container { display: flex; flex-direction: column; gap: 12px; background: transparent; border: none; border-radius: 0; padding: 0; box-shadow: none; text-align: left; }
     .staff-group-card { background: rgba(255, 255, 255, 0.7); border: 1px solid var(--card-border); border-radius: 12px; padding: 14px 18px; box-shadow: 0 1px 2px var(--box-shadow); text-align: left; margin-bottom: 12px; backdrop-filter: blur(4px); }
     .staff-group-header { font-size: 1.05rem; font-weight: 700; color: var(--text-color); margin-bottom: 6px; display: flex; align-items: baseline; gap: 10px; text-align: left; }
-    .activity-sub-item { font-size: 0.95rem; padding: 4px 0; color: var(--text-color); text-align: left; }
+    .activity-sub-item { font-size: 0.95rem; padding: 4px 0; color: var(--text-color); text-align: left; font-weight: 400; }
 
     .calendar-container { background: transparent; border: none; border-radius: 0; padding: 0; display: flex; flex-direction: column; width: 100%; box-shadow: none; }
     .calendar-header { display: flex; justify-content: center; align-items: center; font-size: 1.15rem; font-weight: 700; margin-bottom: 12px; color: var(--text-color); position: relative; }
@@ -352,10 +352,12 @@
 
   <!-- VIEW PLANNER -->
   <div id="viewList" class="list-pergerakan-container" style="display: none;">
+    <!-- Tajuk Planner dengan align center -->
+    <div id="plannerTitleHeader" style="text-align: center; font-size: 1.15rem; font-weight: 700; margin-bottom: 14px; color: var(--text-color); text-transform: uppercase;"></div>
     <div id="listPergerakanContent" style="width: 100%;"></div>
   </div>
 
-  <!-- KONTEN KHAS UNTUK PRINT BULANAN (Tanpa Text Box, Nama Bold) -->
+  <!-- KONTEN KHAS UNTUK PRINT BULANAN (Nama Bold, Body Normal) -->
   <div id="printableReportContainer" style="display: none;">
     <div id="printableReportContent" style="width: 100%; font-family: 'Inter', sans-serif; color: #1e293b; line-height: 1.5;"></div>
   </div>
@@ -1539,18 +1541,62 @@
     kemaskiniPaparan();
   }
 
+  function getMalayMonthName(monthIndex) {
+    const monthsMalay = ["JANUARI", "FEBRUARI", "MAC", "APRIL", "MEI", "JUN", "JULAI", "OGOS", "SEPTEMBER", "OKTOBER", "NOVEMBER", "DISEMBER"];
+    return monthsMalay[monthIndex];
+  }
+
   function copyPlannerContent() {
-    const contentEl = document.getElementById('listPergerakanContent');
-    if (!contentEl) return;
-    const text = contentEl.innerText;
+    const now = new Date();
+    const year = now.getFullYear();
+    const monthIndex = now.getMonth();
+    const monthName = getMalayMonthName(monthIndex);
+    const targetMonthStr = `${year}-${String(monthIndex + 1).padStart(2, '0')}`;
+    const sortedStafByActivity = getSortedStafByActivityCount(targetMonthStr);
+
+    let plainTextOutput = `PERGERAKAN KELUAR ${monthName} ${year}\n\n`;
+
+    plainTextOutput += sortedStafByActivity.map((s) => {
+      const ak = rekodPergerakan.filter(r => {
+        if (r.nama !== s.nama || r.status !== 'Lulus' || r.jenis === 'Hari Bekerja Hibrid (HBH)') return false;
+        if (targetMonthStr) {
+          const startMonth = r.tarikh ? r.tarikh.slice(0, 7) : '';
+          const endMonth = r.tarikhAkhir ? r.tarikhAkhir.slice(0, 7) : startMonth;
+          return targetMonthStr >= startMonth && targetMonthStr <= endMonth;
+        }
+        return true;
+      });
+
+      let lineItems = '';
+      if (ak.length > 0) {
+        lineItems = ak.map(item => {
+          let tFormat = formatTarikhDMY(item.tarikh);
+          let tAkhir = item.tarikhAkhir || item.tarikh;
+          if(!item.jenis.includes('Keluar') && tAkhir !== item.tarikh) {
+            if (tAkhir < item.tarikh) tAkhir = item.tarikh;
+            tFormat += ` hingga ${formatTarikhDMY(tAkhir)}`;
+          }
+          let timePart = '';
+          if(item.masaMula && item.masaTamat) {
+            timePart = ` (${formatMasa12Jam(item.masaMula)} - ${formatMasa12Jam(item.masaTamat)})`;
+          }
+          return `• ${tFormat} - ${item.catatan}${timePart}`;
+        }).join('\n');
+      } else {
+        lineItems = `• Tiada aktiviti.`;
+      }
+
+      return `${s.nama}\n${lineItems}`;
+    }).join('\n\n');
+
     if (navigator.clipboard && window.isSecureContext) {
-      navigator.clipboard.writeText(text).then(() => {
+      navigator.clipboard.writeText(plainTextOutput).then(() => {
         showMsg("✅ Planner content successfully copied!");
       }).catch(err => {
-        showPrompt("Copy planner content:", text, ()=>{});
+        showPrompt("Copy planner content:", plainTextOutput, ()=>{});
       });
     } else {
-      showPrompt("Copy planner content:", text, ()=>{});
+      showPrompt("Copy planner content:", plainTextOutput, ()=>{});
     }
   }
 
@@ -1571,7 +1617,16 @@
     renderHariIni(); 
     if (document.getElementById('viewList').style.display === 'flex') {
       const now = new Date();
-      r9yMnTm4NSzvG9rrwjM2ec8xZgh1cafXH8(`${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`);
+      const year = now.getFullYear();
+      const monthIndex = now.getMonth();
+      const monthName = getMalayMonthName(monthIndex);
+      
+      const plannerTitleEl = document.getElementById('plannerTitleHeader');
+      if (plannerTitleEl) {
+        plannerTitleEl.innerText = `PERGERAKAN KELUAR ${monthName} ${year}`;
+      }
+
+      r9yMnTm4NSzvG9rrwjM2ec8xZgh1cafXH8(`${year}-${String(monthIndex + 1).padStart(2, '0')}`);
     }
     if (document.getElementById('viewBulan').style.display === 'flex') renderCalendar();
   }
@@ -1654,7 +1709,6 @@
     const monthName = monthsMalay[now.getMonth()];
     const yearNum = now.getFullYear();
 
-    // Paparkan tarikh dan hari di atas paparan Today dengan gaya font bold yang sama seperti tajuk bulan
     const dateHeaderEl = document.getElementById('todayDateHeader');
     if (dateHeaderEl) {
       dateHeaderEl.innerText = `${dayNum} ${monthName} ${yearNum} (${dayName})`;
@@ -2163,11 +2217,12 @@
             if (tAkhir < item.tarikh) tAkhir = item.tarikh;
             tFormat += ` hingga ${formatTarikhDMY(tAkhir)}`;
           }
+          let timePart = '';
           if(item.masaMula && item.masaTamat) {
-            tFormat += ` (${formatMasa12Jam(item.masaMula)} -${formatMasa12Jam(item.masaTamat)})`;
+            timePart = ` (${formatMasa12Jam(item.masaMula)} -${formatMasa12Jam(item.masaTamat)})`;
           }
-          return `<div class="activity-sub-item">• <strong>${item.catatan}</strong> (${tFormat})</div>`;
-        }).join('') : '<div style="font-size:0.9rem; color:var(--grey-text); font-style:italic; padding:2px 0;">Tiada aktiviti.</div>'}
+          return `<div class="activity-sub-item">• ${tFormat} - ${item.catatan}${timePart}</div>`;
+        }).join('') : '<div style="font-size:0.9rem; color:var(--grey-text); font-style:italic; padding:2px 0; font-weight:400;">• Tiada aktiviti.</div>'}
       </div>`;
     }).join('') || '<p>Tiada rekod.</p>';
   }
@@ -2195,13 +2250,14 @@
             if (tAkhir < item.tarikh) tAkhir = item.tarikh;
             tFormat += ` hingga ${formatTarikhDMY(tAkhir)}`;
           }
+          let timePart = '';
           if(item.masaMula && item.masaTamat) {
-            tFormat += ` (${formatMasa12Jam(item.masaMula)} -${formatMasa12Jam(item.masaTamat)})`;
+            timePart = ` (${formatMasa12Jam(item.masaMula)} - ${formatMasa12Jam(item.masaTamat)})`;
           }
-          return `<div style="margin-bottom: 4px;">• ${item.catatan} (${tFormat})</div>`;
+          return `<div style="margin-bottom: 4px; font-weight: 400;">• ${tFormat} - ${item.catatan}${timePart}</div>`;
         }).join('');
       } else {
-        activitiesHtml = `<div style="margin-bottom: 4px; font-style: italic; color: #64748b;">Tiada aktiviti.</div>`;
+        activitiesHtml = `<div style="margin-bottom: 4px; font-style: italic; color: #64748b; font-weight: 400;">• Tiada aktiviti.</div>`;
       }
 
       return `
