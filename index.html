@@ -311,7 +311,7 @@
         <span class="material-symbols-outlined">content_copy</span>
       </button>
     </div>
-    <!-- Butang Print diletakkan di sebelah kanan, sebaris dengan tab, dan dipaparkan khusus untuk view bulan -->
+    <!-- Butang Print di sebelah kanan sebaris dengan tab, dipaparkan khusus untuk view bulan -->
     <div class="tabs-right" id="monthPrintActionsRow" style="display: none;">
       <button class="plain-icon-btn" onclick="printMonthPlannerContent()" title="Print Laporan Bulan Ini">
         <span class="material-symbols-outlined">print</span>
@@ -350,9 +350,9 @@
     <div id="listPergerakanContent" style="width: 100%;"></div>
   </div>
 
-  <!-- KONTEN KHAS UNTUK PRINT BULANAN -->
+  <!-- KONTEN KHAS UNTUK PRINT BULANAN (Tanpa Text Box, Nama Bold) -->
   <div id="printableReportContainer" style="display: none;">
-    <div id="printableReportContent" style="width: 100%;"></div>
+    <div id="printableReportContent" style="width: 100%; font-family: 'Inter', sans-serif; color: #1e293b; line-height: 1.5;"></div>
   </div>
 
   <!-- VIEW BULAN -->
@@ -1556,7 +1556,7 @@
     const monthStr = String(date.getMonth() + 1).padStart(2, '0');
     const targetMonth = `${year}-${monthStr}`;
     
-    document.getElementById('printableReportContent').innerHTML = generatePlannerHtmlForMonth(targetMonth);
+    document.getElementById('printableReportContent').innerHTML = generatePrintableHtmlForMonth(targetMonth);
     window.print();
   }
 
@@ -2093,9 +2093,8 @@
     kembaliKeMenuProfil('modalAddActivityPopUp');
   }
 
-  function generatePlannerHtmlForMonth(targetMonthStr) {
-    // Diisih mengikut staf yang mempunyai paling banyak aktiviti (Lulus) di atas
-    const sortedStafByActivity = [...senaraiStaf].sort((a, b) => {
+  function getSortedStafByActivityCount(targetMonthStr) {
+    return [...senaraiStaf].sort((a, b) => {
       const countA = rekodPergerakan.filter(r => {
         if (r.nama !== a.nama || r.status !== 'Lulus' || r.jenis === 'Hari Bekerja Hibrid (HBH)') return false;
         if (targetMonthStr) {
@@ -2118,6 +2117,10 @@
 
       return countB - countA;
     });
+  }
+
+  function generatePlannerHtmlForMonth(targetMonthStr) {
+    const sortedStafByActivity = getSortedStafByActivityCount(targetMonthStr);
 
     return sortedStafByActivity.map((s) => {
       const ak = rekodPergerakan.filter(r => {
@@ -2149,6 +2152,48 @@
           return `<div class="activity-sub-item">• <strong>${item.catatan}</strong> (${tFormat})</div>`;
         }).join('') : '<div style="font-size:0.9rem; color:var(--grey-text); font-style:italic; padding:2px 0;">Tiada aktiviti.</div>'}
       </div>`;
+    }).join('') || '<p>Tiada rekod.</p>';
+  }
+
+  // Format cetakan khas tanpa kotak (text box), nama bold, dan format masa/tarikh lengkap mengikut contoh anda
+  function generatePrintableHtmlForMonth(targetMonthStr) {
+    const sortedStafByActivity = getSortedStafByActivityCount(targetMonthStr);
+
+    return sortedStafByActivity.map((s) => {
+      const ak = rekodPergerakan.filter(r => {
+        if (r.nama !== s.nama || r.status !== 'Lulus' || r.jenis === 'Hari Bekerja Hibrid (HBH)') return false;
+        if (targetMonthStr) {
+          const startMonth = r.tarikh ? r.tarikh.slice(0, 7) : '';
+          const endMonth = r.tarikhAkhir ? r.tarikhAkhir.slice(0, 7) : startMonth;
+          return targetMonthStr >= startMonth && targetMonthStr <= endMonth;
+        }
+        return true;
+      });
+
+      let activitiesHtml = '';
+      if (ak.length > 0) {
+        activitiesHtml = ak.map(item => {
+          let tFormat = formatTarikhDMY(item.tarikh);
+          let tAkhir = item.tarikhAkhir || item.tarikh;
+          if(!item.jenis.includes('Keluar') && tAkhir !== item.tarikh) {
+            if (tAkhir < item.tarikh) tAkhir = item.tarikh;
+            tFormat += ` hingga ${formatTarikhDMY(tAkhir)}`;
+          }
+          if(item.masaMula && item.masaTamat) {
+            tFormat += ` (${formatMasa12Jam(item.masaMula)} -${formatMasa12Jam(item.masaTamat)})`;
+          }
+          return `<div style="margin-bottom: 4px;">• ${item.catatan} (${tFormat})</div>`;
+        }).join('');
+      } else {
+        activitiesHtml = `<div style="margin-bottom: 4px; font-style: italic; color: #64748b;">Tiada aktiviti.</div>`;
+      }
+
+      return `
+        <div style="margin-bottom: 16px; text-align: left;">
+          <div style="font-weight: bold; font-size: 1.1rem; margin-bottom: 4px;">${s.nama}</div>
+          ${activitiesHtml}
+        </div>
+      `;
     }).join('') || '<p>Tiada rekod.</p>';
   }
 
