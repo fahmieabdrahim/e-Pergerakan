@@ -147,7 +147,7 @@
     .board-note-box .material-symbols-outlined { color: var(--grey-text); }
     .board-note-text { flex: 1; line-height: 1.5; white-space: pre-wrap; font-weight: 600; text-align: left; }
 
-    /* STAFF STRIP - Responsive Mobile & Desktop (DIBESARKAN) */
+    /* STAFF STRIP */
     .staff-strip { 
       display: flex; align-items: flex-start; justify-content: flex-start; 
       gap: 8px; margin-bottom: 20px; padding: 6px 4px; 
@@ -207,10 +207,13 @@
     .activity-sub-item { font-size: 0.95rem; padding: 4px 0; color: var(--text-color); text-align: left; }
 
     .calendar-container { background: transparent; border: none; border-radius: 0; padding: 0; display: flex; flex-direction: column; width: 100%; box-shadow: none; }
-    .calendar-header { display: flex; justify-content: space-between; align-items: center; font-size: 1.15rem; font-weight: 700; margin-bottom: 12px; color: var(--text-color); }
+    .calendar-header { display: flex; justify-content: center; align-items: center; font-size: 1.15rem; font-weight: 700; margin-bottom: 12px; color: var(--text-color); position: relative; }
+    .calendar-header-left { position: absolute; left: 0; display: flex; align-items: center; }
+    .calendar-header-right { position: absolute; right: 0; display: flex; align-items: center; }
+    .calendar-header-title { display: flex; align-items: center; justify-content: center; text-align: center; }
+    
     .calendar-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 6px; width: 100%; }
     
-    /* STYLE TEKS SAHAJA UNTUK HARI KALENDAR */
     .cal-day-head { text-align: center; font-weight: 600; font-size: 0.85rem; padding: 6px 2px; color: var(--grey-text); background: transparent; border: none; }
     
     .cal-day { border: 1px solid var(--card-border); border-radius: 8px; padding: 8px; font-size: 0.8rem; display: flex; flex-direction: column; background: rgba(255, 255, 255, 0.7); min-height: 100px; cursor: pointer; transition: background 0.2s; word-break: break-word; overflow: hidden; box-shadow: 0 1px 2px var(--box-shadow); text-align: left; backdrop-filter: blur(4px); }
@@ -247,8 +250,9 @@
 
     @media print {
       body * { visibility: hidden; }
-      #viewList, #viewList * { visibility: visible; }
-      #viewList { position: absolute; left: 0; top: 0; width: 100%; }
+      #printableReportContainer, #printableReportContainer * { visibility: visible; }
+      #printableReportContainer { position: absolute; left: 0; top: 0; width: 100%; display: block !important; }
+      .no-print { display: none !important; }
     }
   </style>
 </head>
@@ -306,7 +310,10 @@
       <button class="plain-icon-btn" onclick="copyPlannerContent()" title="Copy">
         <span class="material-symbols-outlined">content_copy</span>
       </button>
-      <button class="plain-icon-btn" onclick="printPlannerContent()" title="Print">
+    </div>
+    <!-- Butang Print diletakkan di sebelah kanan, sebaris dengan tab, dan dipaparkan khusus untuk view bulan -->
+    <div class="tabs-right" id="monthPrintActionsRow" style="display: none;">
+      <button class="plain-icon-btn" onclick="printMonthPlannerContent()" title="Print Laporan Bulan Ini">
         <span class="material-symbols-outlined">print</span>
       </button>
     </div>
@@ -338,16 +345,29 @@
     </div>
   </div>
 
+  <!-- VIEW PLANNER -->
   <div id="viewList" class="list-pergerakan-container" style="display: none;">
     <div id="listPergerakanContent" style="width: 100%;"></div>
   </div>
 
+  <!-- KONTEN KHAS UNTUK PRINT BULANAN -->
+  <div id="printableReportContainer" style="display: none;">
+    <div id="printableReportContent" style="width: 100%;"></div>
+  </div>
+
+  <!-- VIEW BULAN -->
   <div id="viewBulan" style="display: none; justify-content: center; width: 100%;">
     <div class="calendar-container">
       <div class="calendar-header">
-        <button class="plain-icon-btn" onclick="tukarBulan(-1)"><span class="material-symbols-outlined">chevron_left</span></button>
-        <span id="calendarHeaderTitle"></span>
-        <button class="plain-icon-btn" onclick="tukarBulan(1)"><span class="material-symbols-outlined">chevron_right</span></button>
+        <div class="calendar-header-left">
+          <button class="plain-icon-btn" onclick="tukarBulan(-1)"><span class="material-symbols-outlined">chevron_left</span></button>
+        </div>
+        <div class="calendar-header-title">
+          <span id="calendarHeaderTitle"></span>
+        </div>
+        <div class="calendar-header-right">
+          <button class="plain-icon-btn" onclick="tukarBulan(1)"><span class="material-symbols-outlined">chevron_right</span></button>
+        </div>
       </div>
       <div class="calendar-grid">
         <div class="cal-day-head">Ahd</div>
@@ -447,7 +467,7 @@
   </div>
 </div>
 
-<!-- ================= THEME SETTINGS MODAL (SINGLE RAINBOW SLIDER) ================= -->
+<!-- ================= THEME SETTINGS MODAL ================= -->
 <div id="modalThemeSettings" class="modal" style="z-index: 125;">
   <div class="modal-content" style="max-width: 380px;">
     <button class="modal-exit-btn" onclick="closeModal('modalThemeSettings')" title="Close">
@@ -711,7 +731,7 @@
   </div>
 </div>
 
-<!-- ================= CUSTOM MESSAGE BOX / MODAL (COMPLIANCE) ================= -->
+<!-- ================= CUSTOM MESSAGE BOX / MODAL ================= -->
 <div id="modalCustomMsg" class="modal" style="z-index: 250;">
   <div class="modal-content" style="max-width: 360px; text-align: center; padding: 24px;">
     <div id="customMsgText" style="margin-bottom: 20px; font-size: 1rem; color: var(--text-color); font-weight: 500; text-align: center; line-height: 1.5;"></div>
@@ -1500,10 +1520,17 @@
     document.getElementById('viewBulan').style.display = view === 'bulan' ? 'flex' : 'none';
     document.getElementById('viewHariIni').style.display = view === 'hari-ini' ? 'grid' : 'none';
     
+    // Paparkan butang Print di sebelah kanan sebaris dengan tab HANYA apabila berada di view 'bulan'
+    const printActionsRow = document.getElementById('monthPrintActionsRow');
+    if (printActionsRow) {
+      printActionsRow.style.display = (view === 'bulan') ? 'flex' : 'none';
+    }
+
     const actionsRow = document.getElementById('plannerActionsRow');
     if (actionsRow) {
       actionsRow.style.display = view === 'list' ? 'flex' : 'none';
     }
+    
     kemaskiniPaparan();
   }
 
@@ -1522,7 +1549,14 @@
     }
   }
 
-  function printPlannerContent() {
+  function printMonthPlannerContent() {
+    const date = new Date();
+    date.setMonth(date.getMonth() + currentMonthOffset);
+    const year = date.getFullYear();
+    const monthStr = String(date.getMonth() + 1).padStart(2, '0');
+    const targetMonth = `${year}-${monthStr}`;
+    
+    document.getElementById('printableReportContent').innerHTML = generatePlannerHtmlForMonth(targetMonth);
     window.print();
   }
 
@@ -1530,7 +1564,10 @@
     renderBoardNote();
     renderStaffStrip(); 
     renderHariIni(); 
-    renderListPergerakan();
+    if (document.getElementById('viewList').style.display === 'flex') {
+      const now = new Date();
+      r9yMnTm4NSzvG9rrwjM2ec8xZgh1cafXH8(`${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`);
+    }
     if (document.getElementById('viewBulan').style.display === 'flex') renderCalendar();
   }
 
@@ -1633,9 +1670,7 @@
         return currentHM >= r.masaMula && currentHM <= r.masaTamat;
       });
 
-      // Kategori Cuti & Kebenaran Keluar Pejabat -> Lain-lain
       const cutiAtauKeluar = timedActiveRecs.filter(r => r.jenis.includes('Cuti') || r.jenis.includes('Keluar'));
-      // Mesyuarat / Kursus / Pameran / Lain-lain -> Tugas Rasmi / Luar
       const tugasRasmi = timedActiveRecs.filter(r => !r.jenis.includes('Cuti') && !r.jenis.includes('Keluar'));
 
       if (cutiAtauKeluar.length > 0) {
@@ -2058,15 +2093,42 @@
     kembaliKeMenuProfil('modalAddActivityPopUp');
   }
 
-  function renderListPergerakan() {
+  function generatePlannerHtmlForMonth(targetMonthStr) {
+    // Diisih mengikut staf yang mempunyai paling banyak aktiviti (Lulus) di atas
     const sortedStafByActivity = [...senaraiStaf].sort((a, b) => {
-      const countA = rekodPergerakan.filter(r => r.nama === a.nama && r.status === 'Lulus' && r.jenis !== 'Hari Bekerja Hibrid (HBH)').length;
-      const countB = rekodPergerakan.filter(r => r.nama === b.nama && r.status === 'Lulus' && r.jenis !== 'Hari Bekerja Hibrid (HBH)').length;
+      const countA = rekodPergerakan.filter(r => {
+        if (r.nama !== a.nama || r.status !== 'Lulus' || r.jenis === 'Hari Bekerja Hibrid (HBH)') return false;
+        if (targetMonthStr) {
+          const startMonth = r.tarikh ? r.tarikh.slice(0, 7) : '';
+          const endMonth = r.tarikhAkhir ? r.tarikhAkhir.slice(0, 7) : startMonth;
+          return targetMonthStr >= startMonth && targetMonthStr <= endMonth;
+        }
+        return true;
+      }).length;
+
+      const countB = rekodPergerakan.filter(r => {
+        if (r.nama !== b.nama || r.status !== 'Lulus' || r.jenis === 'Hari Bekerja Hibrid (HBH)') return false;
+        if (targetMonthStr) {
+          const startMonth = r.tarikh ? r.tarikh.slice(0, 7) : '';
+          const endMonth = r.tarikhAkhir ? r.tarikhAkhir.slice(0, 7) : startMonth;
+          return targetMonthStr >= startMonth && targetMonthStr <= endMonth;
+        }
+        return true;
+      }).length;
+
       return countB - countA;
     });
 
-    document.getElementById('listPergerakanContent').innerHTML = sortedStafByActivity.map((s) => {
-      const ak = rekodPergerakan.filter(r => r.nama === s.nama && r.status === 'Lulus' && r.jenis !== 'Hari Bekerja Hibrid (HBH)');
+    return sortedStafByActivity.map((s) => {
+      const ak = rekodPergerakan.filter(r => {
+        if (r.nama !== s.nama || r.status !== 'Lulus' || r.jenis === 'Hari Bekerja Hibrid (HBH)') return false;
+        if (targetMonthStr) {
+          const startMonth = r.tarikh ? r.tarikh.slice(0, 7) : '';
+          const endMonth = r.tarikhAkhir ? r.tarikhAkhir.slice(0, 7) : startMonth;
+          return targetMonthStr >= startMonth && targetMonthStr <= endMonth;
+        }
+        return true;
+      });
       
       let headerHtml = `<div style="display:flex; align-items:baseline; gap:8px; flex-wrap:wrap;">
         <strong style="font-size:1.05rem; color:var(--text-color);">${s.nama}</strong>
@@ -2088,6 +2150,10 @@
         }).join('') : '<div style="font-size:0.9rem; color:var(--grey-text); font-style:italic; padding:2px 0;">Tiada aktiviti.</div>'}
       </div>`;
     }).join('') || '<p>Tiada rekod.</p>';
+  }
+
+  function r9yMnTm4NSzvG9rrwjM2ec8xZgh1cafXH8(targetMonthStr) {
+    document.getElementById('listPergerakanContent').innerHTML = generatePlannerHtmlForMonth(targetMonthStr);
   }
 
   function renderCalendar() {
