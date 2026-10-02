@@ -307,8 +307,8 @@
       </button>
     </div>
     <div class="tabs-right" id="plannerActionsRow" style="display: none;">
-      <button class="plain-icon-btn" onclick="copyPlannerContent()" title="Copy">
-        <span class="material-symbols-outlined">content_copy</span>
+      <button class="plain-icon-btn" onclick="copyPlannerContent()" title="Share ke WhatsApp">
+        <span class="material-symbols-outlined">share</span>
       </button>
     </div>
     <!-- Butang Print di sebelah kanan sebaris dengan tab, dipaparkan khusus untuk view bulan -->
@@ -1554,9 +1554,9 @@
     const targetMonthStr = `${year}-${String(monthIndex + 1).padStart(2, '0')}`;
     const sortedStafByActivity = getSortedStafByActivityCount(targetMonthStr);
 
-    let plainTextOutput = `PERGERAKAN KELUAR ${monthName} ${year}\n\n`;
+    let whatsAppOutput = `*PERGERAKAN KELUAR ${monthName} ${year}*\n\n`;
 
-    plainTextOutput += sortedStafByActivity.map((s) => {
+    whatsAppOutput += sortedStafByActivity.map((s) => {
       const ak = rekodPergerakan.filter(r => {
         if (r.nama !== s.nama || r.status !== 'Lulus' || r.jenis === 'Hari Bekerja Hibrid (HBH)') return false;
         if (targetMonthStr) {
@@ -1586,18 +1586,12 @@
         lineItems = `• Tiada aktiviti.`;
       }
 
-      return `${s.nama}\n${lineItems}`;
+      return `*${s.nama}*\n${lineItems}`;
     }).join('\n\n');
 
-    if (navigator.clipboard && window.isSecureContext) {
-      navigator.clipboard.writeText(plainTextOutput).then(() => {
-        showMsg("✅ Planner content successfully copied!");
-      }).catch(err => {
-        showPrompt("Copy planner content:", plainTextOutput, ()=>{});
-      });
-    } else {
-      showPrompt("Copy planner content:", plainTextOutput, ()=>{});
-    }
+    const encodedMessage = encodeURIComponent(whatsAppOutput);
+    const whatsappUrl = `https://api.whatsapp.com/send?text=${encodedMessage}`;
+    window.open(whatsappUrl, '_blank');
   }
 
   function printMonthPlannerContent() {
