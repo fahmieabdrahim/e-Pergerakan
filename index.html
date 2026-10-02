@@ -206,13 +206,15 @@
     .staff-group-header { font-size: 1.05rem; font-weight: 700; color: var(--text-color); margin-bottom: 6px; display: flex; align-items: baseline; gap: 10px; text-align: left; }
     .activity-sub-item { font-size: 0.95rem; padding: 4px 0; color: var(--text-color); text-align: left; font-weight: 400; }
 
+    /* STRUKTUR GRID KALENDAR */
     .calendar-container { background: transparent; border: none; border-radius: 0; padding: 0; display: flex; flex-direction: column; width: 100%; box-shadow: none; }
     .calendar-header { display: flex; justify-content: center; align-items: center; font-size: 1.15rem; font-weight: 700; margin-bottom: 12px; color: var(--text-color); position: relative; }
     .calendar-header-left { position: absolute; left: 0; display: flex; align-items: center; }
     .calendar-header-right { position: absolute; right: 0; display: flex; align-items: center; }
     .calendar-header-title { display: flex; align-items: center; justify-content: center; text-align: center; }
     
-    .calendar-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 6px; width: 100%; }
+    .calendar-grid-header { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 6px; width: 100%; margin-bottom: 6px; }
+    .calendar-grid-body { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 6px; width: 100%; }
     
     .cal-day-head { text-align: center; font-weight: 600; font-size: 0.85rem; padding: 6px 2px; color: var(--grey-text); background: transparent; border: none; }
     
@@ -311,7 +313,6 @@
         <span class="material-symbols-outlined">share</span>
       </button>
     </div>
-    <!-- Butang Print di sebelah kanan sebaris dengan tab, dipaparkan khusus untuk view bulan -->
     <div class="tabs-right" id="monthPrintActionsRow" style="display: none;">
       <button class="plain-icon-btn" onclick="printMonthPlannerContent()" title="Print Laporan Bulan Ini">
         <span class="material-symbols-outlined">print</span>
@@ -327,7 +328,6 @@
 
   <!-- DESKTOP TODAY VIEW -->
   <div id="viewTodayContainer" style="display: flex; flex-direction: column; width: 100%;">
-    <!-- Tajuk Tarikh & Hari untuk Paparan Today -->
     <div id="todayDateHeader" style="text-align: center; font-size: 1.15rem; font-weight: 700; margin-bottom: 14px; color: var(--text-color);"></div>
 
     <div id="viewHariIni" class="columns-container" style="display: grid;">
@@ -352,12 +352,11 @@
 
   <!-- VIEW PLANNER -->
   <div id="viewList" class="list-pergerakan-container" style="display: none;">
-    <!-- Tajuk Planner dengan align center -->
     <div id="plannerTitleHeader" style="text-align: center; font-size: 1.15rem; font-weight: 700; margin-bottom: 14px; color: var(--text-color); text-transform: uppercase;"></div>
     <div id="listPergerakanContent" style="width: 100%;"></div>
   </div>
 
-  <!-- KONTEN KHAS UNTUK PRINT BULANAN (Nama Bold, Body Normal) -->
+  <!-- KONTEN KHAS UNTUK PRINT BULANAN -->
   <div id="printableReportContainer" style="display: none;">
     <div id="printableReportContent" style="width: 100%; font-family: 'Inter', sans-serif; color: #1e293b; line-height: 1.5;"></div>
   </div>
@@ -376,7 +375,8 @@
           <button class="plain-icon-btn" onclick="tukarBulan(1)"><span class="material-symbols-outlined">chevron_right</span></button>
         </div>
       </div>
-      <div class="calendar-grid">
+      
+      <div class="calendar-grid-header">
         <div class="cal-day-head">Ahd</div>
         <div class="cal-day-head">Isn</div>
         <div class="cal-day-head">Sel</div>
@@ -384,8 +384,8 @@
         <div class="cal-day-head">Kha</div>
         <div class="cal-day-head">Jum</div>
         <div class="cal-day-head">Sab</div>
-        <div id="calendarDays" style="display: contents;"></div>
       </div>
+      <div id="calendarDays" class="calendar-grid-body"></div>
     </div>
   </div>
 </div>
@@ -615,11 +615,16 @@
         <span class="material-symbols-outlined">home_work</span>
         <span>Hari Bekerja Hibrid (HBH)</span>
       </button>
+      <button id="btnMenuPassword" class="clean-menu-item" onclick="bukaModalKataLaluanStaf()">
+        <span class="material-symbols-outlined">lock</span>
+        <span id="teksMenuPassword">Buat Kata Laluan</span>
+      </button>
     </div>
 
     <div id="statusHBHMenuContainer" style="font-size: 0.9rem; font-weight: 600; margin-bottom: 12px; color: var(--text-color); text-align: left;"></div>
 
-    <div style="font-size: 0.95rem; font-weight: 700; margin-bottom: 8px; color: var(--text-color); text-align: left;">My Activities:</div>
+    <!-- TAJUK BAGI "MY ACTIVITIES" DENGAN ID UNTUK KEMAS KINI NAMA BULAN -->
+    <div id="labelMyActivities" style="font-size: 0.95rem; font-weight: 700; margin-bottom: 8px; color: var(--text-color); text-align: left;">My Activities:</div>
     <div id="senaraiAktivitiPeribadiModal" style="max-height: 200px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px;"></div>
   </div>
 </div>
@@ -1437,12 +1442,15 @@
     const nama = document.getElementById('stafNamaInput').value.trim();
     if(!nama) { showMsg('User name is required.'); return; }
     
+    const existingPassword = (idx > -1 && senaraiStaf[idx]) ? (senaraiStaf[idx].password || '') : '';
+
     const objBaru = { 
       nama, 
       jawatan: document.getElementById('stafJawatanInput').value.trim(), 
       kumpulan: document.getElementById('stafKumpulanInput').value, 
       reportTo: document.getElementById('stafReportToInput').value, 
-      gambar: tempGambarB64 
+      gambar: tempGambarB64,
+      password: existingPassword
     };
 
     if(idx === -1) {
@@ -1522,12 +1530,18 @@
 
   function switchView(view) {
     document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-    document.getElementById(view==='list'?'btnTabList':view==='bulan'?'btnTabBulan':'btnTabHariIni').classList.add('active');
-    document.getElementById('viewTodayContainer').style.display = view === 'hari-ini' ? 'flex' : 'none';
-    document.getElementById('viewList').style.display = view === 'list' ? 'flex' : 'none';
-    document.getElementById('viewBulan').style.display = view === 'bulan' ? 'flex' : 'none';
     
-    // Paparkan butang Print di sebelah kanan sebaris dengan tab HANYA apabila berada di view 'bulan'
+    const targetBtn = document.getElementById(view==='list'?'btnTabList':view==='bulan'?'btnTabBulan':'btnTabHariIni');
+    if (targetBtn) targetBtn.classList.add('active');
+    
+    const viewToday = document.getElementById('viewTodayContainer');
+    const viewList = document.getElementById('viewList');
+    const viewBulan = document.getElementById('viewBulan');
+
+    if (viewToday) viewToday.style.display = view === 'hari-ini' ? 'flex' : 'none';
+    if (viewList) viewList.style.display = view === 'list' ? 'flex' : 'none';
+    if (viewBulan) viewBulan.style.display = view === 'bulan' ? 'flex' : 'none';
+    
     const printActionsRow = document.getElementById('monthPrintActionsRow');
     if (printActionsRow) {
       printActionsRow.style.display = (view === 'bulan') ? 'flex' : 'none';
@@ -1538,12 +1552,51 @@
       actionsRow.style.display = view === 'list' ? 'flex' : 'none';
     }
     
-    kemaskiniPaparan();
+    if (view === 'bulan') {
+      renderCalendar();
+    } else {
+      kemaskiniPaparan();
+    }
   }
 
   function getMalayMonthName(monthIndex) {
     const monthsMalay = ["JANUARI", "FEBRUARI", "MAC", "APRIL", "MEI", "JUN", "JULAI", "OGOS", "SEPTEMBER", "OKTOBER", "NOVEMBER", "DISEMBER"];
     return monthsMalay[monthIndex];
+  }
+
+  function isWeekend(dateStr) {
+    if (!dateStr || typeof dateStr !== 'string') return false;
+    const parts = dateStr.split('-');
+    if (parts.length !== 3) return false;
+    const d = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+    const dayOfWeek = d.getDay();
+    return (dayOfWeek === 0 || dayOfWeek === 6);
+  }
+
+  function getAdjustedLeaveDates(startDateStr, endDateStr) {
+    let startD = new Date(startDateStr);
+    let endD = new Date(endDateStr);
+
+    if (isNaN(startD.getTime()) || isNaN(endD.getTime())) {
+      return { start: startDateStr, end: endDateStr };
+    }
+
+    while (startD <= endD && (startD.getDay() === 0 || startD.getDay() === 6)) {
+      startD.setDate(startD.getDate() + 1);
+    }
+
+    while (endD >= startD && (endD.getDay() === 0 || endD.getDay() === 6)) {
+      endD.setDate(endD.getDate() - 1);
+    }
+
+    if (startD > endD) {
+      return null;
+    }
+
+    return {
+      start: getLocalDateString(startD),
+      end: getLocalDateString(endD)
+    };
   }
 
   function copyPlannerContent() {
@@ -1558,7 +1611,7 @@
 
     whatsAppOutput += sortedStafByActivity.map((s) => {
       const ak = rekodPergerakan.filter(r => {
-        if (r.nama !== s.nama || r.status !== 'Lulus' || r.jenis === 'Hari Bekerja Hibrid (HBH)') return false;
+        if (!r || r.nama !== s.nama || r.status !== 'Lulus' || r.jenis === 'Hari Bekerja Hibrid (HBH)') return false;
         if (targetMonthStr) {
           const startMonth = r.tarikh ? r.tarikh.slice(0, 7) : '';
           const endMonth = r.tarikhAkhir ? r.tarikhAkhir.slice(0, 7) : startMonth;
@@ -1570,10 +1623,19 @@
       let lineItems = '';
       if (ak.length > 0) {
         lineItems = ak.map(item => {
-          let tFormat = formatTarikhDMY(item.tarikh);
+          let tMula = item.tarikh;
           let tAkhir = item.tarikhAkhir || item.tarikh;
-          if(!item.jenis.includes('Keluar') && tAkhir !== item.tarikh) {
-            if (tAkhir < item.tarikh) tAkhir = item.tarikh;
+          const jenisText = item.jenis || '';
+
+          if (jenisText.includes('Cuti')) {
+            const adj = getAdjustedLeaveDates(tMula, tAkhir);
+            if (!adj) return null;
+            tMula = adj.start;
+            tAkhir = adj.end;
+          }
+
+          let tFormat = formatTarikhDMY(tMula);
+          if(!jenisText.includes('Keluar') && tAkhir !== tMula) {
             tFormat += ` hingga ${formatTarikhDMY(tAkhir)}`;
           }
           let timePart = '';
@@ -1581,8 +1643,10 @@
             timePart = ` (${formatMasa12Jam(item.masaMula)} - ${formatMasa12Jam(item.masaTamat)})`;
           }
           return `• ${tFormat} - ${item.catatan}${timePart}`;
-        }).join('\n');
-      } else {
+        }).filter(Boolean).join('\n');
+      }
+
+      if (!lineItems) {
         lineItems = `• Tiada aktiviti.`;
       }
 
@@ -1609,7 +1673,9 @@
     renderBoardNote();
     renderStaffStrip(); 
     renderHariIni(); 
-    if (document.getElementById('viewList').style.display === 'flex') {
+    
+    const viewListEl = document.getElementById('viewList');
+    if (viewListEl && viewListEl.style.display === 'flex') {
       const now = new Date();
       const year = now.getFullYear();
       const monthIndex = now.getMonth();
@@ -1622,7 +1688,11 @@
 
       r9yMnTm4NSzvG9rrwjM2ec8xZgh1cafXH8(`${year}-${String(monthIndex + 1).padStart(2, '0')}`);
     }
-    if (document.getElementById('viewBulan').style.display === 'flex') renderCalendar();
+    
+    const viewBulanEl = document.getElementById('viewBulan');
+    if (viewBulanEl && viewBulanEl.style.display === 'flex') {
+      renderCalendar();
+    }
   }
 
   function renderBoardNote() {
@@ -1652,14 +1722,14 @@
       
       const myRoleLevel = getRoleLevel(staf.kumpulan);
       const adaMenungguUntukUserIni = rekodPergerakan.some(r => {
-        if (r.status !== 'Menunggu') return false;
+        if (!r || r.status !== 'Menunggu') return false;
         const pemohon = senaraiStaf.find(s => s.nama === r.nama);
         const reportToVal = pemohon?.reportTo ? parseInt(pemohon.reportTo) : 0;
         if (reportToVal > 0) return myRoleLevel === reportToVal;
         return false;
       });
 
-      const adaDitolak = rekodPergerakan.some(r => r.nama === staf.nama && r.status === 'Ditolak');
+      const adaDitolak = rekodPergerakan.some(r => r && r.nama === staf.nama && r.status === 'Ditolak');
       const showBadge = adaMenungguUntukUserIni || adaDitolak;
 
       if (showBadge) {
@@ -1694,6 +1764,7 @@
 
   function renderHariIni() {
     const todayStr = getLocalDateString();
+    
     const now = new Date();
     const daysMalay = ['Ahad', 'Isnin', 'Selasa', 'Rabu', 'Khamis', 'Jumaat', 'Sabtu'];
     const monthsMalay = ["Januari", "Februari", "Mac", "April", "Mei", "Jun", "Julai", "Ogos", "September", "Oktober", "November", "Disember"];
@@ -1718,12 +1789,23 @@
 
     senaraiStaf.forEach(s => {
       const activeRecords = rekodPergerakan.filter(r => {
-        if (r.nama !== s.nama || r.status !== 'Lulus') return false;
+        if (!r || r.nama !== s.nama || r.status !== 'Lulus') return false;
         if (r.jenis === 'Hari Bekerja Hibrid (HBH)') {
           return r.hariHBH && r.hariHBH.includes(todayDayName);
         }
-        const start = r.tarikh;
-        const end = r.tarikhAkhir || r.tarikh;
+        
+        let start = r.tarikh;
+        let end = r.tarikhAkhir || r.tarikh;
+        const jenisText = r.jenis || '';
+        
+        if (jenisText.includes('Cuti')) {
+          if (isWeekend(todayStr)) return false;
+          const adj = getAdjustedLeaveDates(start, end);
+          if (!adj) return false;
+          start = adj.start;
+          end = adj.end;
+        }
+
         return todayStr >= start && todayStr <= end;
       });
 
@@ -1735,8 +1817,8 @@
         return currentHM >= r.masaMula && currentHM <= r.masaTamat;
       });
 
-      const cutiAtauKeluar = timedActiveRecs.filter(r => r.jenis.includes('Cuti') || r.jenis.includes('Keluar'));
-      const tugasRasmi = timedActiveRecs.filter(r => !r.jenis.includes('Cuti') && !r.jenis.includes('Keluar'));
+      const cutiAtauKeluar = timedActiveRecs.filter(r => (r.jenis || '').includes('Cuti') || (r.jenis || '').includes('Keluar'));
+      const tugasRasmi = timedActiveRecs.filter(r => !(r.jenis || '').includes('Cuti') && !(r.jenis || '').includes('Keluar'));
 
       if (cutiAtauKeluar.length > 0) {
         cutiAtauKeluar.forEach(r => {
@@ -1788,7 +1870,27 @@
     document.getElementById('listLain').innerHTML = lainArr.map(item => item.aktivitiHtml).join('') || '<div style="color:var(--grey-text); font-style:italic; padding:4px 0;">Tiada</div>';
   }
 
-  function bukaModulStaf(nama) { 
+  function bukaModulStaf(nama, bypassPassword = false) { 
+    const stafObj = senaraiStaf.find(s => s.nama === nama);
+    if (!stafObj) return;
+
+    const hasPassword = stafObj.password && stafObj.password.trim() !== '';
+
+    if (hasPassword && !bypassPassword) {
+      showPrompt(`Sila masukkan kata laluan untuk ${nama}:`, "", (pwd) => {
+        if (pwd === null) return;
+        if (pwd !== stafObj.password) {
+          showMsg("❌ Kata laluan salah!");
+          return;
+        }
+        teruskanBukaModulStaf(nama);
+      }, true);
+    } else {
+      teruskanBukaModulStaf(nama);
+    }
+  }
+
+  function teruskanBukaModulStaf(nama) {
     stopAlertSound();
     pemohonAktif = nama; 
     document.getElementById('tajukModalMenuProfil').innerText = pemohonAktif;
@@ -1805,8 +1907,15 @@
       }
     }
 
+    const teksMenuPwd = document.getElementById('teksMenuPassword');
+    if (stafObj && stafObj.password && stafObj.password.trim() !== '') {
+      teksMenuPwd.innerText = 'Tukar Kata Laluan';
+    } else {
+      teksMenuPwd.innerText = 'Buat Kata Laluan';
+    }
+
     const senaraiMenunggu = rekodPergerakan.filter(r => {
-      if (r.status !== 'Menunggu') return false;
+      if (!r || r.status !== 'Menunggu') return false;
       const pemohon = senaraiStaf.find(s => s.nama === r.nama);
       const reportToVal = pemohon?.reportTo ? parseInt(pemohon.reportTo) : 0;
       if (reportToVal > 0) return myRoleLevel === reportToVal;
@@ -1823,7 +1932,7 @@
       containerLoceng.style.display = 'none';
     }
 
-    const permohonanDitolak = rekodPergerakan.filter(r => r.nama === pemohonAktif && r.status === 'Ditolak');
+    const permohonanDitolak = rekodPergerakan.filter(r => r && r.nama === pemohonAktif && r.status === 'Ditolak');
     const boxNotifDitolak = document.getElementById('containerNotifikasiDitolak');
     if (permohonanDitolak.length > 0) {
       boxNotifDitolak.style.display = 'block';
@@ -1832,7 +1941,7 @@
       boxNotifDitolak.style.display = 'none';
     }
 
-    const hbhRecord = rekodPergerakan.find(r => r.nama === pemohonAktif && r.jenis === 'Hari Bekerja Hibrid (HBH)');
+    const hbhRecord = rekodPergerakan.find(r => r && r.nama === pemohonAktif && r.jenis === 'Hari Bekerja Hibrid (HBH)');
     const hbhContainer = document.getElementById('statusHBHMenuContainer');
     if (hbhRecord) {
       hbhContainer.innerText = `HBH: ${hbhRecord.hariHBH || ''}`;
@@ -1846,21 +1955,88 @@
     openModal('modalMenuProfil'); 
   }
 
+  function bukaModalKataLaluanStaf() {
+    const stafObj = senaraiStaf.find(s => s.nama === pemohonAktif);
+    if (!stafObj) return;
+
+    const hasPassword = stafObj.password && stafObj.password.trim() !== '';
+
+    if (hasPassword) {
+      showPrompt("Masukkan kata laluan semasa:", "", (oldPwd) => {
+        if (oldPwd === null) return;
+        if (oldPwd !== stafObj.password) {
+          showMsg("❌ Kata laluan semasa salah!");
+          return;
+        }
+        showPrompt("Masukkan kata laluan baru:", "", async (newPwd) => {
+          if (newPwd === null) return;
+          if (newPwd.trim() === "") {
+            showMsg("Kata laluan tidak boleh kosong!");
+            return;
+          }
+          stafObj.password = newPwd.trim();
+          await simpanKeLocalStorage();
+          showMsg("✅ Kata laluan berjaya ditukar!");
+        }, true);
+      }, true);
+    } else {
+      showPrompt("Cipta kata laluan baru untuk akaun anda:", "", async (newPwd) => {
+        if (newPwd === null) return;
+        if (newPwd.trim() === "") {
+          showMsg("Kata laluan tidak boleh kosong!");
+          return;
+        }
+        stafObj.password = newPwd.trim();
+        await simpanKeLocalStorage();
+        showMsg("✅ Kata laluan berjaya dicipta!");
+        bukaModulStaf(pemohonAktif, true);
+      }, true);
+    }
+  }
+
+  /* FUNGSI KEMAS KINI: TAPIS "MY ACTIVITIES" UNTUK BULAN TERPILIH SAHAJA */
   function renderSenaraiAktivitiPeribadiModal() {
     const container = document.getElementById('senaraiAktivitiPeribadiModal');
     
-    const aktivitiUser = rekodPergerakan.map((r, index) => ({r, index})).filter(item => item.r.nama === pemohonAktif && item.r.jenis !== 'Hari Bekerja Hibrid (HBH)');
+    const date = new Date();
+    date.setMonth(date.getMonth() + currentMonthOffset);
+    const year = date.getFullYear();
+    const monthIndex = date.getMonth();
+    const monthNames = ["Januari", "Februari", "Mac", "April", "Mei", "Jun", "Julai", "Ogos", "September", "Oktober", "November", "Disember"];
+    const targetMonthStr = `${year}-${String(monthIndex + 1).padStart(2, '0')}`;
+
+    const labelEl = document.getElementById('labelMyActivities');
+    if (labelEl) {
+      labelEl.innerText = `My Activities (${monthNames[monthIndex]} ${year}):`;
+    }
+
+    const aktivitiUser = rekodPergerakan.map((r, index) => ({r, index})).filter(item => {
+      if (!item.r || item.r.nama !== pemohonAktif || item.r.jenis === 'Hari Bekerja Hibrid (HBH)') return false;
+      const startMonth = item.r.tarikh ? item.r.tarikh.slice(0, 7) : '';
+      const endMonth = item.r.tarikhAkhir ? item.r.tarikhAkhir.slice(0, 7) : startMonth;
+      return targetMonthStr >= startMonth && targetMonthStr <= endMonth;
+    });
 
     if (aktivitiUser.length === 0) {
-      container.innerHTML = '<div style="font-size:0.9rem; color:var(--grey-text); font-style:italic; padding:6px 0;">No activities recorded.</div>';
+      container.innerHTML = `<div style="font-size:0.9rem; color:var(--grey-text); font-style:italic; padding:6px 0;">Tiada aktiviti direkodkan untuk ${monthNames[monthIndex]} ${year}.</div>`;
       return;
     }
 
     container.innerHTML = aktivitiUser.map(({r, index}) => {
-      let tFormat = formatTarikhDMY(r.tarikh);
+      let tMula = r.tarikh;
       let tAkhir = r.tarikhAkhir || r.tarikh;
-      if(!r.jenis.includes('Keluar') && tAkhir !== r.tarikh) {
-        if (tAkhir < r.tarikh) tAkhir = r.tarikh;
+      const jenisText = r.jenis || '';
+
+      if (jenisText.includes('Cuti')) {
+        const adj = getAdjustedLeaveDates(tMula, tAkhir);
+        if (adj) {
+          tMula = adj.start;
+          tAkhir = adj.end;
+        }
+      }
+
+      let tFormat = formatTarikhDMY(tMula);
+      if(!jenisText.includes('Keluar') && tAkhir !== tMula) {
         tFormat += ` hingga ${formatTarikhDMY(tAkhir)}`;
       }
       if(r.masaMula && r.masaTamat) {
@@ -1982,7 +2158,7 @@
     
     document.querySelectorAll('input[name="hbhDay"]').forEach(cb => cb.checked = false);
     
-    const hbhRecord = rekodPergerakan.find(r => r.nama === pemohonAktif && r.jenis === 'Hari Bekerja Hibrid (HBH)');
+    const hbhRecord = rekodPergerakan.find(r => r && r.nama === pemohonAktif && r.jenis === 'Hari Bekerja Hibrid (HBH)');
     if (hbhRecord && hbhRecord.hariHBH) {
       const hariTersimpan = hbhRecord.hariHBH.split(', ').map(h => h.trim());
       document.querySelectorAll('input[name="hbhDay"]').forEach(cb => {
@@ -1999,7 +2175,7 @@
     if (cekDanPaparPopupRenew()) return;
     const selectedCheckboxes = document.querySelectorAll('input[name="hbhDay"]:checked');
     
-    rekodPergerakan = rekodPergerakan.filter(r => !(r.nama === pemohonAktif && r.jenis === 'Hari Bekerja Hibrid (HBH)'));
+    rekodPergerakan = rekodPergerakan.filter(r => !(r && r.nama === pemohonAktif && r.jenis === 'Hari Bekerja Hibrid (HBH)'));
 
     if (selectedCheckboxes.length > 0) {
       const hariPilihan = Array.from(selectedCheckboxes).map(cb => cb.value).join(', ');
@@ -2039,7 +2215,7 @@
     const myRoleLevel = getRoleLevel(stafObj?.kumpulan);
 
     const senaraiMenunggu = rekodPergerakan.filter(r => {
-      if (r.status !== 'Menunggu') return false;
+      if (!r || r.status !== 'Menunggu') return false;
       const pemohon = senaraiStaf.find(s => s.nama === r.nama);
       const reportToVal = pemohon?.reportTo ? parseInt(pemohon.reportTo) : 0;
       if (reportToVal > 0) return myRoleLevel === reportToVal;
@@ -2050,7 +2226,8 @@
       const originalIdx = rekodPergerakan.indexOf(r);
       let tFormat = formatTarikhDMY(r.tarikh);
       let tAkhir = r.tarikhAkhir || r.tarikh;
-      if(!r.jenis.includes('Keluar') && tAkhir !== r.tarikh) {
+      const jenisText = r.jenis || '';
+      if(!jenisText.includes('Keluar') && tAkhir !== r.tarikh) {
         if (tAkhir < r.tarikh) tAkhir = r.tarikh;
         tFormat += ` to ${formatTarikhDMY(tAkhir)}`;
       }
@@ -2063,24 +2240,32 @@
           <strong>${r.nama}</strong><br>
           ${r.catatan} ${tFormat}${timePart}<br>
           <div style="margin-top:8px; display:flex; gap:10px;">
-            <button class="clean-menu-item" style="padding:6px 12px; border:1px solid var(--card-border); border-radius:6px; color:var(--text-color); font-weight:600;" onclick="keputusanPenyelia(${originalIdx}, 'Lulus')">Approve</button> 
-            <button class="clean-menu-item" style="padding:6px 12px; border:1px solid var(--card-border); border-radius:6px; color:var(--text-color); font-weight:600;" onclick="tolakPenyeliaPrompt(${originalIdx})">Reject</button>
+            <button class="clean-menu-item" style="padding:6px 12px; border:1px solid var(--card-border); border-radius:6px; color:var(--text-color); font-weight:600;" onclick="sahTindakanPenyelia(${originalIdx}, 'Lulus')">Approve</button> 
+            <button class="clean-menu-item" style="padding:6px 12px; border:1px solid var(--card-border); border-radius:6px; color:var(--text-color); font-weight:600;" onclick="sahTindakanPenyelia(${originalIdx}, 'Ditolak')">Reject</button>
           </div>
         </div>
       `;
     }).join('') || '<p style="color:var(--grey-text); font-style:italic;">No pending applications.</p>'; 
   }
 
-  async function tolakPenyeliaPrompt(idx) {
-    showPrompt("State rejection reason:", "", async (sebab) => {
-      if(sebab !== null) {
-        rekodPergerakan[idx].status = 'Ditolak';
-        rekodPergerakan[idx].sebabTolak = sebab.trim() || 'No reason specified';
-        await simpanKeLocalStorage();
-        bukaModulSemakan();
-        kemaskiniPaparan();
-      }
-    });
+  function sahTindakanPenyelia(idx, keputusan) {
+    teruskanKeputusanPenyelia(idx, keputusan);
+  }
+
+  function teruskanKeputusanPenyelia(idx, keputusan) {
+    if (keputusan === 'Ditolak') {
+      showPrompt("State rejection reason:", "", async (sebab) => {
+        if(sebab !== null) {
+          rekodPergerakan[idx].status = 'Ditolak';
+          rekodPergerakan[idx].sebabTolak = sebab.trim() || 'No reason specified';
+          await simpanKeLocalStorage();
+          bukaModulSemakan();
+          kemaskiniPaparan();
+        }
+      });
+    } else {
+      keputusanPenyelia(idx, 'Lulus');
+    }
   }
 
   async function keputusanPenyelia(idx, s) { 
@@ -2161,7 +2346,7 @@
   function getSortedStafByActivityCount(targetMonthStr) {
     return [...senaraiStaf].sort((a, b) => {
       const countA = rekodPergerakan.filter(r => {
-        if (r.nama !== a.nama || r.status !== 'Lulus' || r.jenis === 'Hari Bekerja Hibrid (HBH)') return false;
+        if (!r || r.nama !== a.nama || r.status !== 'Lulus' || r.jenis === 'Hari Bekerja Hibrid (HBH)') return false;
         if (targetMonthStr) {
           const startMonth = r.tarikh ? r.tarikh.slice(0, 7) : '';
           const endMonth = r.tarikhAkhir ? r.tarikhAkhir.slice(0, 7) : startMonth;
@@ -2171,7 +2356,7 @@
       }).length;
 
       const countB = rekodPergerakan.filter(r => {
-        if (r.nama !== b.nama || r.status !== 'Lulus' || r.jenis === 'Hari Bekerja Hibrid (HBH)') return false;
+        if (!r || r.nama !== b.nama || r.status !== 'Lulus' || r.jenis === 'Hari Bekerja Hibrid (HBH)') return false;
         if (targetMonthStr) {
           const startMonth = r.tarikh ? r.tarikh.slice(0, 7) : '';
           const endMonth = r.tarikhAkhir ? r.tarikhAkhir.slice(0, 7) : startMonth;
@@ -2189,7 +2374,7 @@
 
     return sortedStafByActivity.map((s) => {
       const ak = rekodPergerakan.filter(r => {
-        if (r.nama !== s.nama || r.status !== 'Lulus' || r.jenis === 'Hari Bekerja Hibrid (HBH)') return false;
+        if (!r || r.nama !== s.nama || r.status !== 'Lulus' || r.jenis === 'Hari Bekerja Hibrid (HBH)') return false;
         if (targetMonthStr) {
           const startMonth = r.tarikh ? r.tarikh.slice(0, 7) : '';
           const endMonth = r.tarikhAkhir ? r.tarikhAkhir.slice(0, 7) : startMonth;
@@ -2205,10 +2390,19 @@
       return `<div class="staff-group-card">
         <div class="staff-group-header">${headerHtml}</div>
         ${ak.length > 0 ? ak.map(item => {
-          let tFormat = formatTarikhDMY(item.tarikh);
+          let tMula = item.tarikh;
           let tAkhir = item.tarikhAkhir || item.tarikh;
-          if(!item.jenis.includes('Keluar') && tAkhir !== item.tarikh) {
-            if (tAkhir < item.tarikh) tAkhir = item.tarikh;
+          const jenisText = item.jenis || '';
+
+          if (jenisText.includes('Cuti')) {
+            const adj = getAdjustedLeaveDates(tMula, tAkhir);
+            if (!adj) return null;
+            tMula = adj.start;
+            tAkhir = adj.end;
+          }
+
+          let tFormat = formatTarikhDMY(tMula);
+          if(!jenisText.includes('Keluar') && tAkhir !== tMula) {
             tFormat += ` hingga ${formatTarikhDMY(tAkhir)}`;
           }
           let timePart = '';
@@ -2216,7 +2410,7 @@
             timePart = ` (${formatMasa12Jam(item.masaMula)} -${formatMasa12Jam(item.masaTamat)})`;
           }
           return `<div class="activity-sub-item">• ${tFormat} - ${item.catatan}${timePart}</div>`;
-        }).join('') : '<div style="font-size:0.9rem; color:var(--grey-text); font-style:italic; padding:2px 0; font-weight:400;">• Tiada aktiviti.</div>'}
+        }).filter(Boolean).join('') || '<div style="font-size:0.9rem; color:var(--grey-text); font-style:italic; padding:2px 0; font-weight:400;">• Tiada aktiviti.</div>' : '<div style="font-size:0.9rem; color:var(--grey-text); font-style:italic; padding:2px 0; font-weight:400;">• Tiada aktiviti.</div>'}
       </div>`;
     }).join('') || '<p>Tiada rekod.</p>';
   }
@@ -2226,7 +2420,7 @@
 
     return sortedStafByActivity.map((s) => {
       const ak = rekodPergerakan.filter(r => {
-        if (r.nama !== s.nama || r.status !== 'Lulus' || r.jenis === 'Hari Bekerja Hibrid (HBH)') return false;
+        if (!r || r.nama !== s.nama || r.status !== 'Lulus' || r.jenis === 'Hari Bekerja Hibrid (HBH)') return false;
         if (targetMonthStr) {
           const startMonth = r.tarikh ? r.tarikh.slice(0, 7) : '';
           const endMonth = r.tarikhAkhir ? r.tarikhAkhir.slice(0, 7) : startMonth;
@@ -2238,10 +2432,19 @@
       let activitiesHtml = '';
       if (ak.length > 0) {
         activitiesHtml = ak.map(item => {
-          let tFormat = formatTarikhDMY(item.tarikh);
+          let tMula = item.tarikh;
           let tAkhir = item.tarikhAkhir || item.tarikh;
-          if(!item.jenis.includes('Keluar') && tAkhir !== item.tarikh) {
-            if (tAkhir < item.tarikh) tAkhir = item.tarikh;
+          const jenisText = item.jenis || '';
+
+          if (jenisText.includes('Cuti')) {
+            const adj = getAdjustedLeaveDates(tMula, tAkhir);
+            if (!adj) return null;
+            tMula = adj.start;
+            tAkhir = adj.end;
+          }
+
+          let tFormat = formatTarikhDMY(tMula);
+          if(!jenisText.includes('Keluar') && tAkhir !== tMula) {
             tFormat += ` hingga ${formatTarikhDMY(tAkhir)}`;
           }
           let timePart = '';
@@ -2249,8 +2452,10 @@
             timePart = ` (${formatMasa12Jam(item.masaMula)} - ${formatMasa12Jam(item.masaTamat)})`;
           }
           return `<div style="margin-bottom: 4px; font-weight: 400;">• ${tFormat} - ${item.catatan}${timePart}</div>`;
-        }).join('');
-      } else {
+        }).filter(Boolean).join('');
+      } 
+      
+      if (!activitiesHtml) {
         activitiesHtml = `<div style="margin-bottom: 4px; font-style: italic; color: #64748b; font-weight: 400;">• Tiada aktiviti.</div>`;
       }
 
@@ -2268,48 +2473,74 @@
   }
 
   function renderCalendar() {
-    const date = new Date();
-    date.setMonth(date.getMonth() + currentMonthOffset);
-    const year = date.getFullYear();
-    const month = date.getMonth();
+    try {
+      const date = new Date();
+      date.setMonth(date.getMonth() + currentMonthOffset);
+      const year = date.getFullYear();
+      const month = date.getMonth();
 
-    const monthNames = ["Januari", "Februari", "Mac", "April", "Mei", "Jun", "Julai", "Ogos", "September", "Oktober", "November", "Disember"];
-    document.getElementById('calendarHeaderTitle').innerText = `${monthNames[month]} ${year}`;
+      const monthNames = ["Januari", "Februari", "Mac", "April", "Mei", "Jun", "Julai", "Ogos", "September", "Oktober", "November", "Disember"];
+      const titleEl = document.getElementById('calendarHeaderTitle');
+      if (titleEl) {
+        titleEl.innerText = `${monthNames[month]} ${year}`;
+      }
 
-    const firstDayIndex = new Date(year, month, 1).getDay();
-    const totalDays = new Date(year, month + 1, 0).getDate();
+      const firstDayIndex = new Date(year, month, 1).getDay();
+      const totalDays = new Date(year, month + 1, 0).getDate();
 
-    let daysHTML = '';
-    for(let i = 0; i < firstDayIndex; i++) {
-      daysHTML += `<div class="cal-day empty"></div>`;
+      let daysHTML = '';
+      for(let i = 0; i < firstDayIndex; i++) {
+        daysHTML += `<div class="cal-day empty"></div>`;
+      }
+
+      const todayStr = getLocalDateString();
+
+      for(let d = 1; d <= totalDays; d++) {
+        const dayStr = String(d).padStart(2, '0');
+        const monthStr = String(month + 1).padStart(2, '0');
+        const fullDateStr = `${year}-${monthStr}-${dayStr}`;
+        
+        const dateObj = new Date(year, month, d);
+        const dayOfWeek = dateObj.getDay();
+        const isWeekendDay = (dayOfWeek === 0 || dayOfWeek === 6);
+
+        const isToday = (fullDateStr === todayStr);
+
+        const dayRecords = (rekodPergerakan || []).filter(r => {
+          if (!r || r.status !== 'Lulus' || r.jenis === 'Hari Bekerja Hibrid (HBH)') return false;
+          
+          let start = r.tarikh || '';
+          let end = r.tarikhAkhir || r.tarikh || '';
+          const jenisText = r.jenis || '';
+
+          if (jenisText.includes('Cuti')) {
+            if (isWeekendDay) return false;
+            const adj = getAdjustedLeaveDates(start, end);
+            if (!adj) return false;
+            start = adj.start;
+            end = adj.end;
+          }
+
+          return fullDateStr >= start && fullDateStr <= end;
+        });
+
+        const hasNote = dayRecords.length > 0;
+
+        daysHTML += `
+          <div class="cal-day ${isToday ? 'today' : ''} ${isWeekendDay ? 'weekend' : ''}" onclick="bukaDetailHari('${fullDateStr}')">
+            <div style="font-weight:${hasNote ? '700' : '400'}; margin-bottom:4px;" class="cal-day-num">${d}</div>
+            ${dayRecords.map(r => `<div style="font-size:0.75rem; margin-bottom:2px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:var(--text-color);">${r.nama || ''}</div>`).join('')}
+          </div>
+        `;
+      }
+
+      const daysContainer = document.getElementById('calendarDays');
+      if (daysContainer) {
+        daysContainer.innerHTML = daysHTML;
+      }
+    } catch (err) {
+      console.error("Ralat semasa render kalendar:", err);
     }
-
-    const todayStr = getLocalDateString();
-
-    for(let d = 1; d <= totalDays; d++) {
-      const dayStr = String(d).padStart(2, '0');
-      const monthStr = String(month + 1).padStart(2, '0');
-      const fullDateStr = `${year}-${monthStr}-${dayStr}`;
-      
-      const dateObj = new Date(year, month, d);
-      const dayOfWeek = dateObj.getDay();
-      const isWeekend = (dayOfWeek === 0 || dayOfWeek === 6);
-
-      const isToday = (fullDateStr === todayStr);
-
-      const dayRecords = rekodPergerakan.filter(r => r.status === 'Lulus' && r.jenis !== 'Hari Bekerja Hibrid (HBH)' && r.tarikh <= fullDateStr && (r.tarikhAkhir ? r.tarikhAkhir >= fullDateStr : r.tarikh === fullDateStr));
-
-      const hasNote = dayRecords.length > 0;
-
-      daysHTML += `
-        <div class="cal-day ${isToday ? 'today' : ''} ${isWeekend ? 'weekend' : ''}" onclick="bukaDetailHari('${fullDateStr}')">
-          <div style="font-weight:${hasNote ? '700' : '400'}; margin-bottom:4px;" class="cal-day-num">${d}</div>
-          ${dayRecords.map(r => `<div style="font-size:0.75rem; margin-bottom:2px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:var(--text-color);">${r.nama}</div>`).join('')}
-        </div>
-      `;
-    }
-
-    document.getElementById('calendarDays').innerHTML = daysHTML;
   }
 
   function tukarBulan(direction) {
@@ -2321,7 +2552,23 @@
     const formatted = formatTarikhDMY(dateStr);
     document.getElementById('tajukModalDetailHari').innerText = `Aktiviti Pada ${formatted}`;
     
-    const dayRecords = rekodPergerakan.filter(r => r.status === 'Lulus' && r.jenis !== 'Hari Bekerja Hibrid (HBH)' && r.tarikh <= dateStr && (r.tarikhAkhir ? r.tarikhAkhir >= dateStr : r.tarikh === dateStr));
+    const dayRecords = rekodPergerakan.filter(r => {
+      if (!r || r.status !== 'Lulus' || r.jenis === 'Hari Bekerja Hibrid (HBH)') return false;
+      
+      let start = r.tarikh || '';
+      let end = r.tarikhAkhir || r.tarikh || '';
+      const jenisText = r.jenis || '';
+
+      if (jenisText.includes('Cuti')) {
+        if (isWeekend(dateStr)) return false;
+        const adj = getAdjustedLeaveDates(start, end);
+        if (!adj) return false;
+        start = adj.start;
+        end = adj.end;
+      }
+
+      return dateStr >= start && dateStr <= end;
+    });
 
     document.getElementById('senaraiAktivitiHariTerpilih').innerHTML = dayRecords.length === 0 ? '<p style="color:var(--grey-text); font-style:italic;">Tiada aktiviti pada tarikh ini.</p>' : dayRecords.map(r => `
       <div style="background:#ffffff; border:1px solid var(--card-border); border-radius:8px; padding:10px; margin-bottom:8px;">
