@@ -1297,7 +1297,7 @@
   function cekDanPaparPopupRenew() {
     const b = boards.find(x => x.id === activeBoardId);
     if (b && isBoardExpired(b)) {
-      showMsg("⚠️ Board ini telah tamat tempoh.");
+      showMsg("⚠️️ Board ini telah tamat tempoh.");
       return true;
     }
     return false;
@@ -1787,6 +1787,9 @@
     let hbhArr = [];
     let lainArr = [];
 
+    // Semak sama ada hari ini adalah hari cuti hujung minggu (Sabtu / Ahad)
+    const hariCutiHujungMinggu = isWeekend(todayStr);
+
     senaraiStaf.forEach(s => {
       const activeRecords = rekodPergerakan.filter(r => {
         if (!r || r.nama !== s.nama || r.status !== 'Lulus') return false;
@@ -1849,10 +1852,13 @@
             aktivitiHtml: `<div style="margin-bottom: 6px;">${s.nama}</div>`
           });
         } else {
-          pejabatArr.push({
-            nama: s.nama,
-            aktivitiHtml: `<div style="margin-bottom: 6px;">${s.nama}</div>`
-          });
+          // Hanya masukkan staf ke senarai Di Pejabat jika BUKAN hari Sabtu atau Ahad
+          if (!hariCutiHujungMinggu) {
+            pejabatArr.push({
+              nama: s.nama,
+              aktivitiHtml: `<div style="margin-bottom: 6px;">${s.nama}</div>`
+            });
+          }
         }
       }
     });
@@ -1994,7 +2000,6 @@
     }
   }
 
-  /* FUNGSI KEMAS KINI: TAPIS "MY ACTIVITIES" UNTUK BULAN TERPILIH SAHAJA */
   function renderSenaraiAktivitiPeribadiModal() {
     const container = document.getElementById('senaraiAktivitiPeribadiModal');
     
