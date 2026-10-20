@@ -1771,7 +1771,13 @@
         if (cutiRec) {
           statusString = cutiRec.catatan || cutiRec.jenis;
         } else if (hbhRec) {
-          statusString = `HIBRID`;
+          const hbhKehadiranMasa = rekodKehadiran[selectedKehadiranDate]?.[s.nama];
+          if (hbhKehadiranMasa) {
+            const cleanTimeHBH = hbhKehadiranMasa.replace('Hadir ', '');
+            statusString = `HIBRID ${cleanTimeHBH}`;
+          } else {
+            statusString = `HIBRID`;
+          }
         } else if (tugasRec) {
           statusString = `${tugasRec.catatan || tugasRec.jenis}`;
         } else {
@@ -2046,29 +2052,33 @@
       const hData = rekodKehadiran[dateStr]?.[s.nama];
       let statusString = '';
 
-      if (hData) {
+      const activeRecs = rekodPergerakan.filter(r => {
+        if (!r || r.nama !== s.nama || r.status !== 'Lulus') return false;
+        if (r.jenis === 'Hari Bekerja Hibrid (HBH)') {
+          return r.hariHBH && r.hariHBH.includes(dayName);
+        }
+        let start = r.tarikh;
+        let end = r.tarikhAkhir || r.tarikh;
+        if (r.jenis?.includes('Cuti')) {
+          if (isWeekendDay) return false;
+          const adj = getAdjustedLeaveDates(start, end);
+          if (!adj) return false;
+          start = adj.start; end = adj.end;
+        }
+        return dateStr >= start && dateStr <= end;
+      });
+
+      const hbhRec = activeRecs.find(r => r.jenis === 'Hari Bekerja Hibrid (HBH)');
+      const cutiRec = activeRecs.find(r => r.jenis?.includes('Cuti'));
+      const tugasRec = activeRecs.find(r => !r.jenis?.includes('Cuti') && r.jenis !== 'Hari Bekerja Hibrid (HBH)');
+
+      if (hdataUserCheck(hData, hbhRec)) {
+        // Jika HBH dan ada rekod kehadiran masa
+        const cleanTimeHBH = hData.replace('Hadir ', '');
+        statusString = `HIBRID ${cleanTimeHBH}`;
+      } else if (hData) {
         statusString = hData; 
       } else {
-        const activeRecs = rekodPergerakan.filter(r => {
-          if (!r || r.nama !== s.nama || r.status !== 'Lulus') return false;
-          if (r.jenis === 'Hari Bekerja Hibrid (HBH)') {
-            return r.hariHBH && r.hariHBH.includes(dayName);
-          }
-          let start = r.tarikh;
-          let end = r.tarikhAkhir || r.tarikh;
-          if (r.jenis?.includes('Cuti')) {
-            if (isWeekendDay) return false;
-            const adj = getAdjustedLeaveDates(start, end);
-            if (!adj) return false;
-            start = adj.start; end = adj.end;
-          }
-          return dateStr >= start && dateStr <= end;
-        });
-
-        const hbhRec = activeRecs.find(r => r.jenis === 'Hari Bekerja Hibrid (HBH)');
-        const cutiRec = activeRecs.find(r => r.jenis?.includes('Cuti'));
-        const tugasRec = activeRecs.find(r => !r.jenis?.includes('Cuti') && r.jenis !== 'Hari Bekerja Hibrid (HBH)');
-
         if (cutiRec) {
           statusString = cutiRec.catatan || cutiRec.jenis;
         } else if (hbhRec) {
@@ -2087,6 +2097,10 @@
         </div>
       `;
     }).join('') || '<p style="color:var(--grey-text); font-style:italic;">Tiada rekod staf.</p>';
+  }
+
+  function hdataUserCheck(hData, hbhRec) {
+    return hData && hbhRec;
   }
 
   function bukaModulStaf(nama, bypassPassword = false) { 
@@ -2181,8 +2195,6 @@
     const hasPassword = stafObj.password && stafObj.password.trim() !== '';
 
     if (hasPassword) {
-      // Jika sudah ada kata laluan, pilihan adalah "Matikan kata laluan"
-      // Minta kata laluan lama/semasa yang betul untuk mengesahkan pemadaman
       showPrompt("Masukkan kata laluan semasa untuk mematikan kata laluan:", "", async (oldPwd) => {
         if (oldPwd === null) return;
         if (oldPwd !== stafObj.password) {
@@ -2195,7 +2207,6 @@
         bukaModulStaf(pemohonAktif, true);
       }, true);
     } else {
-      // Jika belum ada kata laluan, pilihan adalah "Aktif kata laluan"
       showPrompt("Masukkan kata laluan baru:", "", async (newPwd) => {
         if (newPwd === null) return;
         if (newPwd.trim() === "") {
