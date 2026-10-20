@@ -304,18 +304,41 @@
       <button id="btnTabList" class="tab-btn" onclick="switchView('list')" title="Planner">
         <span class="material-symbols-outlined">&#xe241;</span>
       </button>
-      <button id="btnTabBulan" class="tab-btn" onclick="switchView('bulan')" title="Month">
-        <span class="material-symbols-outlined">&#xebcc;</span>
+      <button id="btnTabKehadiranView" class="tab-btn" onclick="switchView('kehadiran')" title="Kehadiran">
+        <span class="material-symbols-outlined">how_to_reg</span>
       </button>
     </div>
+    
+    <!-- Action buttons untuk Planner (Share & Calendar / Month view toggle) -->
     <div class="tabs-right" id="plannerActionsRow" style="display: none;">
       <button class="plain-icon-btn" onclick="copyPlannerContent()" title="Share ke WhatsApp">
         <span class="material-symbols-outlined">share</span>
       </button>
+      <button class="plain-icon-btn" onclick="switchView('bulan')" title="Papar Month View">
+        <span class="material-symbols-outlined">calendar_month</span>
+      </button>
     </div>
+
+    <!-- Action buttons untuk Kehadiran -->
+    <div class="tabs-right" id="kehadiranActionsRow" style="display: none;">
+      <button class="plain-icon-btn" onclick="copyKehadiranContent()" title="Share ke WhatsApp">
+        <span class="material-symbols-outlined">share</span>
+      </button>
+      <div style="position: relative; display: inline-flex; align-items: center;">
+        <button class="plain-icon-btn" onclick="document.getElementById('hiddenDatePicker').showPicker ? document.getElementById('hiddenDatePicker').showPicker() : document.getElementById('hiddenDatePicker').click();" title="Pilih Tarikh">
+          <span class="material-symbols-outlined">calendar_month</span>
+        </button>
+        <input type="date" id="hiddenDatePicker" style="position: absolute; opacity: 0; pointer-events: none; width: 1px; height: 1px;" onchange="tukarTarikhKehadiranView(this.value)">
+      </div>
+    </div>
+
+    <!-- Action buttons untuk Bulan -->
     <div class="tabs-right" id="monthPrintActionsRow" style="display: none;">
       <button class="plain-icon-btn" onclick="printMonthPlannerContent()" title="Print Laporan Bulan Ini">
         <span class="material-symbols-outlined">print</span>
+      </button>
+      <button class="plain-icon-btn" onclick="switchView('list')" title="Kembali ke Planner">
+        <span class="material-symbols-outlined">&#xe241;</span>
       </button>
     </div>
   </div>
@@ -354,6 +377,12 @@
   <div id="viewList" class="list-pergerakan-container" style="display: none;">
     <div id="plannerTitleHeader" style="text-align: center; font-size: 1.15rem; font-weight: 700; margin-bottom: 14px; color: var(--text-color); text-transform: uppercase;"></div>
     <div id="listPergerakanContent" style="width: 100%;"></div>
+  </div>
+
+  <!-- VIEW KEHADIRAN PLANNER -->
+  <div id="viewKehadiran" class="list-pergerakan-container" style="display: none;">
+    <div id="kehadiranTitleHeader" style="text-align: center; font-size: 1.15rem; font-weight: 700; margin-bottom: 14px; color: var(--text-color); text-transform: uppercase;"></div>
+    <div id="listKehadiranContent" style="width: 100%;"></div>
   </div>
 
   <!-- KONTEN KHAS UNTUK PRINT BULANAN -->
@@ -607,6 +636,10 @@
         <span>Manage Board Note</span>
       </button>
       
+      <button class="clean-menu-item" onclick="bukaPopUpKehadiran()">
+        <span class="material-symbols-outlined">how_to_reg</span>
+        <span>Kehadiran Hari Ini</span>
+      </button>
       <button class="clean-menu-item" onclick="bukaPopUpAddActivity()">
         <span class="material-symbols-outlined">add_task</span>
         <span>Add Activity</span>
@@ -645,6 +678,26 @@
     
     <div class="clean-menu-list" style="margin-top: 15px;">
       <button class="clean-menu-item" style="justify-content: center; font-weight: 600;" onclick="simpanNotaBoard()">Save Note</button>
+    </div>
+  </div>
+</div>
+
+<!-- ================= KEHADIRAN FORM MODAL ================= -->
+<div id="modalKehadiranPopUp" class="modal" style="z-index: 105;">
+  <div class="modal-content" style="max-width: 380px;">
+    <button class="modal-exit-btn" onclick="kembaliKeMenuProfil('modalKehadiranPopUp')" title="Close">
+      <span class="material-symbols-outlined">close</span>
+    </button>
+    
+    <div class="modal-title-head">Kehadiran Hari Ini</div>
+    
+    <div class="form-group">
+      <label>Masa Masuk</label>
+      <input type="time" id="inputMasaKehadiran" value="07:00">
+    </div>
+
+    <div class="clean-menu-list" style="margin-top: 15px;">
+      <button class="clean-menu-item" style="justify-content: center; font-weight: 600;" onclick="simpanKehadiranHariIni()">Simpan Kehadiran</button>
     </div>
   </div>
 </div>
@@ -776,6 +829,8 @@
   let activeBoardId = null;
   let senaraiStaf = [];
   let rekodPergerakan = []; 
+  let rekodKehadiran = {}; 
+  let selectedKehadiranDate = ''; 
   let pemohonAktif = '';
   let tempGambarB64 = '';
   let currentMonthOffset = 0;
@@ -1089,6 +1144,7 @@
       if (b.soundEnabled === undefined) b.soundEnabled = true;
       if (!b.soundType) b.soundType = 'bell';
       if (!b.theme) b.theme = '0';
+      if (!b.rekodKehadiran) b.rekodKehadiran = {};
     });
 
     checkAdminStatus();
@@ -1106,6 +1162,7 @@
       if(bIndex > -1) { 
         boards[bIndex].senaraiStaf = senaraiStaf; 
         boards[bIndex].rekodPergerakan = rekodPergerakan; 
+        boards[bIndex].rekodKehadiran = rekodKehadiran;
       }
     }
     localStorage.setItem('boards', JSON.stringify(boards));
@@ -1141,6 +1198,8 @@
       activeBoardId = id;
       senaraiStaf = b.senaraiStaf || [];
       rekodPergerakan = b.rekodPergerakan || [];
+      rekodKehadiran = b.rekodKehadiran || {};
+      selectedKehadiranDate = getLocalDateString();
       applyBoardTheme(b.theme || '0');
       
       document.getElementById('welcomeScreen').style.display = 'none';
@@ -1275,6 +1334,7 @@
           name: namabaru.trim(), 
           senaraiStaf: [], 
           rekodPergerakan: [], 
+          rekodKehadiran: {},
           boardNote: '',
           tarikhMula: todayStr,
           tarikhFreez: freezeStr,
@@ -1297,7 +1357,7 @@
   function cekDanPaparPopupRenew() {
     const b = boards.find(x => x.id === activeBoardId);
     if (b && isBoardExpired(b)) {
-      showMsg("⚠️️ Board ini telah tamat tempoh.");
+      showMsg("⚠ Board ini telah tamat tempoh.");
       return true;
     }
     return false;
@@ -1500,7 +1560,7 @@
     if (cekDanPaparPopupRenew()) return;
     const id = document.getElementById('editBoardId').value;
     const b = boards.find(x => x.id === id);
-    senaraiStaf = b.senaraiStaf || []; rekodPergerakan = b.rekodPergerakan || [];
+    senaraiStaf = b.senaraiStaf || []; rekodPergerakan = b.rekodPergerakan || []; rekodKehadiran = b.rekodKehadiran || {};
     closeModal('modalEditBoard'); openModal('modalPengurusanStaf'); rahJ91ZuNL8Y2px8iYciYeHN8sfSh5eXH8();
   }
 
@@ -1531,15 +1591,21 @@
   function switchView(view) {
     document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
     
-    const targetBtn = document.getElementById(view==='list'?'btnTabList':view==='bulan'?'btnTabBulan':'btnTabHariIni');
+    let targetBtn = document.getElementById('btnTabHariIni');
+    if (view === 'list') targetBtn = document.getElementById('btnTabList');
+    else if (view === 'kehadiran') targetBtn = document.getElementById('btnTabKehadiranView');
+    else if (view === 'bulan') targetBtn = document.getElementById('btnTabList'); // Kekalkan active state pada Planner apabila view month dibuka
+    
     if (targetBtn) targetBtn.classList.add('active');
     
     const viewToday = document.getElementById('viewTodayContainer');
     const viewList = document.getElementById('viewList');
+    const viewKehadiran = document.getElementById('viewKehadiran');
     const viewBulan = document.getElementById('viewBulan');
 
     if (viewToday) viewToday.style.display = view === 'hari-ini' ? 'flex' : 'none';
     if (viewList) viewList.style.display = view === 'list' ? 'flex' : 'none';
+    if (viewKehadiran) viewKehadiran.style.display = view === 'kehadiran' ? 'flex' : 'none';
     if (viewBulan) viewBulan.style.display = view === 'bulan' ? 'flex' : 'none';
     
     const printActionsRow = document.getElementById('monthPrintActionsRow');
@@ -1550,6 +1616,11 @@
     const actionsRow = document.getElementById('plannerActionsRow');
     if (actionsRow) {
       actionsRow.style.display = view === 'list' ? 'flex' : 'none';
+    }
+
+    const kehadiranActionsRow = document.getElementById('kehadiranActionsRow');
+    if (kehadiranActionsRow) {
+      kehadiranActionsRow.style.display = view === 'kehadiran' ? 'flex' : 'none';
     }
     
     if (view === 'bulan') {
@@ -1658,6 +1729,65 @@
     window.open(whatsappUrl, '_blank');
   }
 
+  function copyKehadiranContent() {
+    if (!selectedKehadiranDate) selectedKehadiranDate = getLocalDateString();
+    const formattedDate = formatTarikhDMY(selectedKehadiranDate);
+    const daysMalay = ['Ahad', 'Isnin', 'Selasa', 'Rabu', 'Khamis', 'Jumaat', 'Sabtu'];
+    const parts = selectedKehadiranDate.split('-');
+    const dObj = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+    const dayName = daysMalay[dObj.getDay()];
+
+    let whatsAppOutput = `*LAPORAN KEHADIRAN STAF - ${formattedDate} (${dayName})*\n\n`;
+
+    const sortedStaf = [...senaraiStaf].sort((a, b) => getRoleLevel(a.kumpulan) - getRoleLevel(b.kumpulan));
+    const isWeekendDay = isWeekend(selectedKehadiranDate);
+
+    whatsAppOutput += sortedStaf.map(s => {
+      const hData = rekodKehadiran[selectedKehadiranDate]?.[s.nama];
+      let statusString = '';
+
+      if (hData) {
+        statusString = hData;
+      } else {
+        const activeRecs = rekodPergerakan.filter(r => {
+          if (!r || r.nama !== s.nama || r.status !== 'Lulus') return false;
+          if (r.jenis === 'Hari Bekerja Hibrid (HBH)') {
+            return r.hariHBH && r.hariHBH.includes(dayName);
+          }
+          let start = r.tarikh;
+          let end = r.tarikhAkhir || r.tarikh;
+          if (r.jenis?.includes('Cuti')) {
+            if (isWeekendDay) return false;
+            const adj = getAdjustedLeaveDates(start, end);
+            if (!adj) return false;
+            start = adj.start; end = adj.end;
+          }
+          return selectedKehadiranDate >= start && selectedKehadiranDate <= end;
+        });
+
+        const hbhRec = activeRecs.find(r => r.jenis === 'Hari Bekerja Hibrid (HBH)');
+        const cutiRec = activeRecs.find(r => r.jenis?.includes('Cuti'));
+        const tugasRec = activeRecs.find(r => !r.jenis?.includes('Cuti') && r.jenis !== 'Hari Bekerja Hibrid (HBH)');
+
+        if (cutiRec) {
+          statusString = cutiRec.catatan || cutiRec.jenis;
+        } else if (hbhRec) {
+          statusString = `HIBRID`;
+        } else if (tugasRec) {
+          statusString = `${tugasRec.catatan || tugasRec.jenis}`;
+        } else {
+          statusString = isWeekendDay ? 'Cuti Hujung Minggu' : 'Belum Rekod Kehadiran';
+        }
+      }
+
+      return `${s.nama}\n- ${statusString}`;
+    }).join('\n\n');
+
+    const encodedMessage = encodeURIComponent(whatsAppOutput);
+    const whatsappUrl = `https://api.whatsapp.com/send?text=${encodedMessage}`;
+    window.open(whatsappUrl, '_blank');
+  }
+
   function printMonthPlannerContent() {
     const date = new Date();
     date.setMonth(date.getMonth() + currentMonthOffset);
@@ -1686,13 +1816,40 @@
         plannerTitleEl.innerText = `PERGERAKAN KELUAR ${monthName} ${year}`;
       }
 
-      r9yMnTm4NSzvG9rrwjM2ec8xZgh1cafXH8(`${year}-${String(monthIndex + 1).padStart(2, '0')}`);
+      rahJ91ZuNL8Y2px8iYciYeHN8sfSh5eXH8(`${year}-${String(monthIndex + 1).padStart(2, '0')}`);
+    }
+
+    const viewKehadiranEl = document.getElementById('viewKehadiran');
+    if (viewKehadiranEl && viewKehadiranEl.style.display === 'flex') {
+      if (!selectedKehadiranDate) selectedKehadiranDate = getLocalDateString();
+      
+      const parts = selectedKehadiranDate.split('-');
+      const dObj = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+      const daysMalay = ['Ahad', 'Isnin', 'Selasa', 'Rabu', 'Khamis', 'Jumaat', 'Sabtu'];
+      const monthsMalay = ["Januari", "Februari", "Mac", "April", "Mei", "Jun", "Julai", "Ogos", "September", "Oktober", "November", "Disember"];
+      
+      const dayName = daysMalay[dObj.getDay()];
+      const dayNum = dObj.getDate();
+      const monthName = monthsMalay[dObj.getMonth()];
+      const yearNum = dObj.getFullYear();
+
+      const kehTitleEl = document.getElementById('kehadiranTitleHeader');
+      if (kehTitleEl) {
+        kehTitleEl.innerText = `KEHADIRAN - ${dayNum} ${monthName} ${yearNum} (${dayName})`;
+      }
+      renderKehadiranPlannerView(selectedKehadiranDate);
     }
     
     const viewBulanEl = document.getElementById('viewBulan');
     if (viewBulanEl && viewBulanEl.style.display === 'flex') {
       renderCalendar();
     }
+  }
+
+  function tukarTarikhKehadiranView(dateVal) {
+    if (!dateVal) return;
+    selectedKehadiranDate = dateVal;
+    kemaskiniPaparan();
   }
 
   function renderBoardNote() {
@@ -1787,7 +1944,6 @@
     let hbhArr = [];
     let lainArr = [];
 
-    // Semak sama ada hari ini adalah hari cuti hujung minggu (Sabtu / Ahad)
     const hariCutiHujungMinggu = isWeekend(todayStr);
 
     senaraiStaf.forEach(s => {
@@ -1852,7 +2008,6 @@
             aktivitiHtml: `<div style="margin-bottom: 6px;">${s.nama}</div>`
           });
         } else {
-          // Hanya masukkan staf ke senarai Di Pejabat jika BUKAN hari Sabtu atau Ahad
           if (!hariCutiHujungMinggu) {
             pejabatArr.push({
               nama: s.nama,
@@ -1874,6 +2029,65 @@
 
     document.getElementById('countLain').innerText = lainArr.length;
     document.getElementById('listLain').innerHTML = lainArr.map(item => item.aktivitiHtml).join('') || '<div style="color:var(--grey-text); font-style:italic; padding:4px 0;">Tiada</div>';
+  }
+
+  function renderKehadiranPlannerView(dateStr) {
+    const container = document.getElementById('listKehadiranContent');
+    if (!container) return;
+
+    const daysMalay = ['Ahad', 'Isnin', 'Selasa', 'Rabu', 'Khamis', 'Jumaat', 'Sabtu'];
+    const parts = dateStr.split('-');
+    const dObj = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+    const dayName = daysMalay[dObj.getDay()];
+    const isWeekendDay = isWeekend(dateStr);
+
+    const sortedStaf = [...senaraiStaf].sort((a, b) => getRoleLevel(a.kumpulan) - getRoleLevel(b.kumpulan));
+
+    container.innerHTML = sortedStaf.map(s => {
+      const hData = rekodKehadiran[dateStr]?.[s.nama];
+      let statusString = '';
+
+      if (hData) {
+        statusString = hData; 
+      } else {
+        const activeRecs = rekodPergerakan.filter(r => {
+          if (!r || r.nama !== s.nama || r.status !== 'Lulus') return false;
+          if (r.jenis === 'Hari Bekerja Hibrid (HBH)') {
+            return r.hariHBH && r.hariHBH.includes(dayName);
+          }
+          let start = r.tarikh;
+          let end = r.tarikhAkhir || r.tarikh;
+          if (r.jenis?.includes('Cuti')) {
+            if (isWeekendDay) return false;
+            const adj = getAdjustedLeaveDates(start, end);
+            if (!adj) return false;
+            start = adj.start; end = adj.end;
+          }
+          return dateStr >= start && dateStr <= end;
+        });
+
+        const hbhRec = activeRecs.find(r => r.jenis === 'Hari Bekerja Hibrid (HBH)');
+        const cutiRec = activeRecs.find(r => r.jenis?.includes('Cuti'));
+        const tugasRec = activeRecs.find(r => !r.jenis?.includes('Cuti') && r.jenis !== 'Hari Bekerja Hibrid (HBH)');
+
+        if (cutiRec) {
+          statusString = cutiRec.catatan || cutiRec.jenis;
+        } else if (hbhRec) {
+          statusString = `HIBRID`;
+        } else if (tugasRec) {
+          statusString = `${tugasRec.catatan || tugasRec.jenis}`;
+        } else {
+          statusString = isWeekendDay ? 'Cuti Hujung Minggu' : 'Belum Rekod Kehadiran';
+        }
+      }
+
+      return `
+        <div class="staff-group-card" style="display: flex; flex-direction: column; gap: 4px; padding: 12px 18px;">
+          <div style="font-weight: 700; color: var(--text-color);">${s.nama}</div>
+          <div style="font-weight: 400; color: var(--grey-text); font-size: 0.95rem;">- ${statusString}</div>
+        </div>
+      `;
+    }).join('') || '<p style="color:var(--grey-text); font-style:italic;">Tiada rekod staf.</p>';
   }
 
   function bukaModulStaf(nama, bypassPassword = false) { 
@@ -2007,7 +2221,7 @@
     date.setMonth(date.getMonth() + currentMonthOffset);
     const year = date.getFullYear();
     const monthIndex = date.getMonth();
-    const monthNames = ["Januari", "Februari", "Mac", "April", "Mei", "Jun", "Julai", "Ogos", "September", "Oktober", "November", "Disember"];
+    const monthNames = ["Januari", "Februari", "Mac", "April", "Mei", "Jun", "JULAI", "Ogos", "September", "Oktober", "November", "Disember"];
     const targetMonthStr = `${year}-${String(monthIndex + 1).padStart(2, '0')}`;
 
     const labelEl = document.getElementById('labelMyActivities');
@@ -2092,6 +2306,36 @@
     await simpanKeLocalStorage();
     kemaskiniPaparan();
     kembaliKeMenuProfil('modalAddNotePopUp');
+  }
+
+  function bukaPopUpKehadiran() {
+    if (cekDanPaparPopupRenew()) return;
+    closeModal('modalMenuProfil');
+    const todayStr = getLocalDateString();
+    if (!rekodKehadiran[todayStr]) rekodKehadiran[todayStr] = {};
+    const currentVal = rekodKehadiran[todayStr][pemohonAktif] || '07:00';
+    const cleanTime = currentVal.replace(/[^0-9:]/g, '') || '07:00';
+    document.getElementById('inputMasaKehadiran').value = cleanTime;
+    openModal('modalKehadiranPopUp');
+  }
+
+  async function simpanKehadiranHariIni() {
+    if (cekDanPaparPopupRenew()) return;
+    const masaInput = document.getElementById('inputMasaKehadiran').value;
+    if (!masaInput) {
+      showMsg("Sila pilih masa masuk.");
+      return;
+    }
+    const todayStr = getLocalDateString();
+    if (!rekodKehadiran[todayStr]) rekodKehadiran[todayStr] = {};
+    
+    const formatted12h = formatMasa12Jam(masaInput);
+    rekodKehadiran[todayStr][pemohonAktif] = `Hadir ${formatted12h}`;
+
+    await simpanKeLocalStorage();
+    kemaskiniPaparan();
+    showMsg(`✅ Kehadiran berjaya direkodkan (${formatted12h})!`);
+    kembaliKeMenuProfil('modalKehadiranPopUp');
   }
 
   function bukaPopUpAddActivity() {
@@ -2473,7 +2717,7 @@
     }).join('') || '<p>Tiada rekod.</p>';
   }
 
-  function r9yMnTm4NSzvG9rrwjM2ec8xZgh1cafXH8(targetMonthStr) {
+  function rahJ91ZuNL8Y2px8iYciYeHN8sfSh5eXH8(targetMonthStr) {
     document.getElementById('listPergerakanContent').innerHTML = generatePlannerHtmlForMonth(targetMonthStr);
   }
 
