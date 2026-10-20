@@ -309,7 +309,7 @@
       </button>
     </div>
     
-    <!-- Action buttons untuk Planner (Share & Calendar / Month view toggle) -->
+    <!-- Action buttons untuk Planner -->
     <div class="tabs-right" id="plannerActionsRow" style="display: none;">
       <button class="plain-icon-btn" onclick="copyPlannerContent()" title="Share ke WhatsApp">
         <span class="material-symbols-outlined">share</span>
@@ -650,13 +650,12 @@
       </button>
       <button id="btnMenuPassword" class="clean-menu-item" onclick="bukaModalKataLaluanStaf()">
         <span class="material-symbols-outlined">lock</span>
-        <span id="teksMenuPassword">Buat Kata Laluan</span>
+        <span id="teksMenuPassword">Aktif kata laluan</span>
       </button>
     </div>
 
     <div id="statusHBHMenuContainer" style="font-size: 0.9rem; font-weight: 600; margin-bottom: 12px; color: var(--text-color); text-align: left;"></div>
 
-    <!-- TAJUK BAGI "MY ACTIVITIES" DENGAN ID UNTUK KEMAS KINI NAMA BULAN -->
     <div id="labelMyActivities" style="font-size: 0.95rem; font-weight: 700; margin-bottom: 8px; color: var(--text-color); text-align: left;">My Activities:</div>
     <div id="senaraiAktivitiPeribadiModal" style="max-height: 200px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px;"></div>
   </div>
@@ -1594,7 +1593,7 @@
     let targetBtn = document.getElementById('btnTabHariIni');
     if (view === 'list') targetBtn = document.getElementById('btnTabList');
     else if (view === 'kehadiran') targetBtn = document.getElementById('btnTabKehadiranView');
-    else if (view === 'bulan') targetBtn = document.getElementById('btnTabList'); // Kekalkan active state pada Planner apabila view month dibuka
+    else if (view === 'bulan') targetBtn = document.getElementById('btnTabList'); 
     
     if (targetBtn) targetBtn.classList.add('active');
     
@@ -2129,9 +2128,9 @@
 
     const teksMenuPwd = document.getElementById('teksMenuPassword');
     if (stafObj && stafObj.password && stafObj.password.trim() !== '') {
-      teksMenuPwd.innerText = 'Tukar Kata Laluan';
+      teksMenuPwd.innerText = 'Matikan kata laluan';
     } else {
-      teksMenuPwd.innerText = 'Buat Kata Laluan';
+      teksMenuPwd.innerText = 'Aktif kata laluan';
     }
 
     const senaraiMenunggu = rekodPergerakan.filter(r => {
@@ -2182,25 +2181,22 @@
     const hasPassword = stafObj.password && stafObj.password.trim() !== '';
 
     if (hasPassword) {
-      showPrompt("Masukkan kata laluan semasa:", "", (oldPwd) => {
+      // Jika sudah ada kata laluan, pilihan adalah "Matikan kata laluan"
+      // Minta kata laluan lama/semasa yang betul untuk mengesahkan pemadaman
+      showPrompt("Masukkan kata laluan semasa untuk mematikan kata laluan:", "", async (oldPwd) => {
         if (oldPwd === null) return;
         if (oldPwd !== stafObj.password) {
           showMsg("❌ Kata laluan semasa salah!");
           return;
         }
-        showPrompt("Masukkan kata laluan baru:", "", async (newPwd) => {
-          if (newPwd === null) return;
-          if (newPwd.trim() === "") {
-            showMsg("Kata laluan tidak boleh kosong!");
-            return;
-          }
-          stafObj.password = newPwd.trim();
-          await simpanKeLocalStorage();
-          showMsg("✅ Kata laluan berjaya ditukar!");
-        }, true);
+        stafObj.password = "";
+        await simpanKeLocalStorage();
+        showMsg("✅ Kata laluan berjaya dimatikan!");
+        bukaModulStaf(pemohonAktif, true);
       }, true);
     } else {
-      showPrompt("Cipta kata laluan baru untuk akaun anda:", "", async (newPwd) => {
+      // Jika belum ada kata laluan, pilihan adalah "Aktif kata laluan"
+      showPrompt("Masukkan kata laluan baru:", "", async (newPwd) => {
         if (newPwd === null) return;
         if (newPwd.trim() === "") {
           showMsg("Kata laluan tidak boleh kosong!");
@@ -2208,7 +2204,7 @@
         }
         stafObj.password = newPwd.trim();
         await simpanKeLocalStorage();
-        showMsg("✅ Kata laluan berjaya dicipta!");
+        showMsg("✅ Kata laluan berjaya diaktifkan!");
         bukaModulStaf(pemohonAktif, true);
       }, true);
     }
@@ -2221,7 +2217,7 @@
     date.setMonth(date.getMonth() + currentMonthOffset);
     const year = date.getFullYear();
     const monthIndex = date.getMonth();
-    const monthNames = ["Januari", "Februari", "Mac", "April", "Mei", "Jun", "JULAI", "Ogos", "September", "Oktober", "November", "Disember"];
+    const monthNames = ["Januari", "Februari", "Mac", "April", "Mei", "Jun", "Julai", "Ogos", "September", "Oktober", "November", "Disember"];
     const targetMonthStr = `${year}-${String(monthIndex + 1).padStart(2, '0')}`;
 
     const labelEl = document.getElementById('labelMyActivities');
