@@ -652,6 +652,10 @@
         <span class="material-symbols-outlined">lock</span>
         <span id="teksMenuPassword">Aktif kata laluan</span>
       </button>
+      <button class="clean-menu-item" style="color: #dc2626;" onclick="padamAkaunSendiri()">
+        <span class="material-symbols-outlined">delete</span>
+        <span>Delete User</span>
+      </button>
     </div>
 
     <div id="statusHBHMenuContainer" style="font-size: 0.9rem; font-weight: 600; margin-bottom: 12px; color: var(--text-color); text-align: left;"></div>
@@ -807,6 +811,22 @@
 </div>
 
 <script>
+  // ================= PERLINDUNGAN KESELAMATAN (BLOCK F12 & INSPECT) =================
+  document.addEventListener('contextmenu', function(e) {
+    e.preventDefault();
+  });
+
+  document.addEventListener('keydown', function(e) {
+    if (
+      e.key === 'F12' || 
+      (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.key === 'J' || e.key === 'j' || e.key === 'C' || e.key === 'c')) ||
+      (e.ctrlKey && (e.key === 'U' || e.key === 'u' || e.key === 'S' || e.key === 's'))
+    ) {
+      e.preventDefault();
+      return false;
+    }
+  });
+
   // ================= CONFIG & INIT FIREBASE =================
   const firebaseConfig = {
     apiKey: "AIzaSyDAab-CPZ2RRFe0rTmnPZ6mXVQd2Z_SCkM",
@@ -1122,14 +1142,17 @@
       if (snapshot.exists()) {
         const result = snapshot.val();
         boards = result.boards || [];
-        adminPassword = result.adminPassword || 'admin';
+        adminPassword = result.adminPassword || localStorage.getItem('adminPassword') || 'admin';
         localStorage.setItem('boards', JSON.stringify(boards));
+        localStorage.setItem('adminPassword', adminPassword);
       } else {
         boards = JSON.parse(localStorage.getItem('boards')) || [];
+        adminPassword = localStorage.getItem('adminPassword') || 'admin';
       }
     } catch (error) {
       console.error("Ralat muat turun data Firebase:", error);
       boards = JSON.parse(localStorage.getItem('boards')) || [];
+      adminPassword = localStorage.getItem('adminPassword') || 'admin';
     }
     
     const todayStr = getLocalDateString();
@@ -1165,6 +1188,7 @@
       }
     }
     localStorage.setItem('boards', JSON.stringify(boards));
+    localStorage.setItem('adminPassword', adminPassword);
     
     try {
       await db.ref('appData').set({ 
@@ -1540,27 +1564,36 @@
   }
 
   function rahJ91ZuNL8Y2px8iYciYeHN8sfSh5eXH8() {
-    document.getElementById('senaraiStafContainer').innerHTML = senaraiStaf.map((s, idx) => {
+    const container = document.getElementById('senaraiStafContainer');
+    if (!container) return;
+
+    container.innerHTML = senaraiStaf.map((s, idx) => {
       const avatarHTML = s.gambar ? `<img src="${s.gambar}" style="width:36px; height:36px; border-radius:50%; object-fit:cover; border:1px solid var(--card-border); background:#ffffff;">` : `<span style="width:36px; height:36px; border-radius:50%; background:#ffffff; display:inline-block; border:1px solid var(--card-border);"></span>`;
       return `<div style="display:flex; justify-content:space-between; align-items:center; padding:10px; background:#ffffff; border:1px solid var(--card-border); border-radius:8px; margin-bottom:8px;">
         <div style="display:flex; align-items:center; gap:10px;">
           ${avatarHTML}
-          <div><strong>${s.nama}</strong> ${s.kumpulan || '-'}</div>
+          <div><strong>${s.nama}</strong><br><span style="font-size:0.8rem; color:var(--grey-text);">${s.jawatan || '-'} (${s.kumpulan ? 'Level ' + s.kumpulan : 'Standard'})</span></div>
         </div>
         <div style="display:flex; gap:6px;">
           <button class="clean-menu-item" style="padding:4px 8px; border:1px solid var(--card-border); border-radius:6px;" onclick="bukaFormStafModal(${idx})">Edit</button>
           <button class="clean-menu-item" style="padding:4px 8px; border:1px solid var(--card-border); border-radius:6px; color:var(--text-color);" onclick="padamStaf(${idx})">Delete</button>
         </div>
       </div>`;
-    }).join('') || '<p>No users found.</p>';
+    }).join('') || '<p style="color:var(--grey-text); font-style:italic; text-align:center; padding:10px;">Tiada user ditemui. Sila tambah user.</p>';
   }
 
   function bukaPanelPengurusanStaf() {
     if (cekDanPaparPopupRenew()) return;
     const id = document.getElementById('editBoardId').value;
     const b = boards.find(x => x.id === id);
-    senaraiStaf = b.senaraiStaf || []; rekodPergerakan = b.rekodPergerakan || []; rekodKehadiran = b.rekodKehadiran || {};
-    closeModal('modalEditBoard'); openModal('modalPengurusanStaf'); rahJ91ZuNL8Y2px8iYciYeHN8sfSh5eXH8();
+    if(b) {
+      senaraiStaf = b.senaraiStaf || []; 
+      rekodPergerakan = b.rekodPergerakan || []; 
+      rekodKehadiran = b.rekodKehadiran || {};
+    }
+    closeModal('modalEditBoard'); 
+    openModal('modalPengurusanStaf'); 
+    rahJ91ZuNL8Y2px8iYciYeHN8sfSh5eXH8();
   }
 
   function formatTarikhDMY(t) { 
@@ -2073,7 +2106,6 @@
       const tugasRec = activeRecs.find(r => !r.jenis?.includes('Cuti') && r.jenis !== 'Hari Bekerja Hibrid (HBH)');
 
       if (hdataUserCheck(hData, hbhRec)) {
-        // Jika HBH dan ada rekod kehadiran masa
         const cleanTimeHBH = hData.replace('Hadir ', '');
         statusString = `HIBRID ${cleanTimeHBH}`;
       } else if (hData) {
@@ -2219,6 +2251,33 @@
         bukaModulStaf(pemohonAktif, true);
       }, true);
     }
+  }
+
+  function padamAkaunSendiri() {
+    if (cekDanPaparPopupRenew()) return;
+    const namaPengguna = pemohonAktif;
+    if (!namaPengguna || !senaraiStaf.some(s => s.nama === namaPengguna)) return;
+
+    showMsg(`Delete your user profile and all your activity records (${namaPengguna})? This cannot be undone.`, async (confirmed) => {
+      if (!confirmed) return;
+
+      const stafIndex = senaraiStaf.findIndex(s => s.nama === namaPengguna);
+      if (stafIndex === -1) return;
+
+      senaraiStaf.splice(stafIndex, 1);
+      rekodPergerakan = rekodPergerakan.filter(r => r.nama !== namaPengguna);
+      Object.values(rekodKehadiran).forEach(rekodTarikh => {
+        if (rekodTarikh && typeof rekodTarikh === 'object') {
+          delete rekodTarikh[namaPengguna];
+        }
+      });
+      pemohonAktif = '';
+      closeModal('modalMenuProfil');
+      await simpanKeLocalStorage();
+      rahJ91ZuNL8Y2px8iYciYeHN8sfSh5eXH8();
+      if (activeBoardId) kemaskiniPaparan();
+      showMsg('Your user profile and activity records have been deleted.');
+    }, true);
   }
 
   function renderSenaraiAktivitiPeribadiModal() {
