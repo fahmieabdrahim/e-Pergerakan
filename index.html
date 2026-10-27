@@ -106,17 +106,42 @@
 
     /* WELCOME SCREEN / BOARDS LIST VIEW */
     #welcomeScreen {
-      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      position: fixed; top: 0; left: 0; right: 0; bottom: 0; height: 100vh; min-height: 100vh; box-sizing: border-box;
       background-color: var(--app-bg);
       display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
-      z-index: 50; padding: 40px 16px; overflow-y: auto;
+      z-index: 50; padding: 15px 16px; overflow-y: auto;
     }
 
     .top-right-nav { position: absolute; top: 16px; right: 16px; display: flex; gap: 8px; }
-    .app-footer { width: 100%; margin-top: auto; padding: 32px 0 4px; color: var(--grey-text); font-size: 0.8rem; text-align: center; }
+    .app-footer { box-sizing: border-box; width: 100%; flex-shrink: 0; margin-top: auto; padding: 16px 16px calc(16px + env(safe-area-inset-bottom, 0px)); color: var(--grey-text); font-size: 0.8rem; text-align: center; }
     .welcome-header { display: flex; flex-direction: column; align-items: center; width: 100%; max-width: 850px; margin-left: auto; margin-right: auto; padding: 20px 10px; text-align: center; }
     .welcome-header h1 { font-size: 2.5rem; color: #0f172a; margin-bottom: 15px; font-weight: 700; text-align: center; }
     .welcome-desc { display: block; width: 100%; max-width: 700px; align-self: center; font-size: 1.05rem; color: var(--grey-text); line-height: 1.6; margin: 0 auto 25px; text-align: center; }
+    .admin-board-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%; margin: 2px 0 16px; }
+    .admin-board-toolbar h2 { margin: 0; color: var(--text-color); font-size: 1.25rem; font-weight: 700; text-align: left; }
+    .admin-board-new-button { display: inline-flex; align-items: center; justify-content: center; gap: 7px; min-height: 40px; padding: 8px 13px; border: 0; border-radius: 6px; background: #087f5b; color: #fff; font: inherit; font-size: 0.9rem; font-weight: 600; cursor: pointer; }
+    .admin-board-new-button .material-symbols-outlined { font-size: 19px; }
+    .admin-board-panel { width: 100%; overflow: hidden; border: 1px solid var(--card-border); border-radius: 8px; background: #fff; box-shadow: 0 1px 3px var(--box-shadow); }
+    .admin-board-table-wrap { width: 100%; overflow-x: auto; }
+    .admin-board-table { width: 100%; min-width: 720px; border-collapse: collapse; font-size: 0.9rem; color: var(--text-color); }
+    .admin-board-table th, .admin-board-table td { padding: 12px 14px; border-bottom: 1px solid var(--card-border); text-align: center; vertical-align: middle; }
+    .admin-board-table th { background: var(--header-bg); color: var(--grey-text); font-size: 0.78rem; font-weight: 700; text-transform: uppercase; }
+    .admin-board-table tbody tr { cursor: pointer; transition: background 0.15s ease; }
+    .admin-board-table tbody tr:hover { background: var(--header-bg); }
+    .admin-board-table tbody tr:last-child td { border-bottom: 0; }
+    .admin-board-table .admin-board-number { color: var(--grey-text); }
+    .admin-board-table .admin-board-name { font-weight: 700; text-transform: uppercase; }
+    .admin-board-admin-button, .admin-board-expiry-button, .admin-board-delete-button { padding: 6px 9px; border: 1px solid var(--card-border); border-radius: 5px; background: #fff; color: var(--text-color); font: inherit; font-size: 0.85rem; cursor: pointer; }
+    .admin-board-delete-button { background: var(--header-bg); }
+    .admin-board-empty { padding: 28px 16px; color: var(--grey-text); font-size: 0.9rem; text-align: center; }
+    @media (max-width: 600px) {
+      .admin-board-toolbar { gap: 8px; }
+      .admin-board-toolbar h2 { font-size: 1.1rem; }
+      .admin-board-new-button { padding: 8px 10px; }
+    }
+    @supports (height: 100dvh) {
+      #welcomeScreen { height: 100dvh; min-height: 100dvh; }
+    }
 
     /* MAIN DASHBOARD */
     #mainDashboard {
@@ -181,6 +206,8 @@
       border: 2px solid var(--bg-color); border-radius: 50%; display: none;
     }
     .profile-photo-wrap.has-notif .notification-badge { display: block; }
+    .board-admin-badge { position: absolute; right: -2px; bottom: -2px; width: 23px; height: 23px; display: flex; align-items: center; justify-content: center; border: 2px solid #fff; border-radius: 50%; background: #087f5b; color: #fff; }
+    .board-admin-badge .material-symbols-outlined { font-size: 15px; }
 
     .feedback-item { margin-bottom: 10px; padding: 12px; background: rgba(255, 255, 255, 0.7); border: 1px solid var(--card-border); border-radius: 8px; font-size: 0.9rem; text-align: left; }
     
@@ -272,13 +299,10 @@
     <button class="plain-icon-btn" onclick="toggleAdminLogin()" id="btnAdminLogin" title="Admin Login">
       <span class="material-symbols-outlined" id="adminLockIcon">admin_panel_settings</span>
     </button>
-    <button class="plain-icon-btn" onclick="openModal('modalTetapanUtama')" id="btnSettingsMain" style="display:none;" title="Settings">
-      <span class="material-symbols-outlined">more_vert</span>
-    </button>
   </div>
 
   <div class="welcome-header">
-    <h1>ePergerakan</h1>
+    <h1 id="welcomeTitleText">ePergerakan</h1>
     <p class="welcome-desc" id="welcomeDescText">
       <strong>ePergerakan</strong> Platform digital interaktif untuk pengurusan status dan lokasi harian staf. Menggantikan papan putih fizikal dengan sistem kemas kini kendiri yang pantas, mudah diakses oleh semua, dan memastikan maklumat keberadaan pegawai sentiasa dipantau oleh penyelia.
     </p>
@@ -290,12 +314,6 @@
 <!-- ================= MAIN DASHBOARD ================= -->
 <div id="mainDashboard">
   <header>
-    <div class="header-action-container">
-      <button class="plain-icon-btn" onclick="bukaTetapanDalamBoard()" title="Board Settings">
-        <span class="material-symbols-outlined">more_vert</span>
-      </button>
-    </div>
-
     <div class="header-title-container">
       <h1 id="appTitle">ePergerakan</h1>
     </div>
@@ -427,18 +445,23 @@
   <footer class="app-footer">© 2026 ePergerakan · Sistem Pengurusan Pergerakan dan Kehadiran Staf</footer>
 </div>
 
-<!-- ================= SETTINGS MENU MODAL (ADMIN ONLY) ================= -->
-<div id="modalTetapanUtama" class="modal">
+<div id="modalPilihAdminBoard" class="modal">
   <div class="modal-content" style="max-width: 400px;">
-    <button class="modal-exit-btn" onclick="closeModal('modalTetapanUtama')" title="Close">
+    <button class="modal-exit-btn" onclick="closeModal('modalPilihAdminBoard')" title="Close">
       <span class="material-symbols-outlined">close</span>
     </button>
-    <div class="modal-title-head">Admin Settings</div>
-    <div class="clean-menu-list">
-      <button class="clean-menu-item" onclick="ciptaBoardBaru(); closeModal('modalTetapanUtama');">
-        <span class="material-symbols-outlined">add_circle</span>
-        <span>New Board</span>
-      </button>
+    <div class="modal-title-head">Pilih Admin Board</div>
+    <input type="hidden" id="adminBoardIdInput">
+    <div class="form-group">
+      <label>Pengguna board</label>
+      <select id="adminBoardUserSelect"></select>
+    </div>
+    <button id="btnLengkapkanPenggunaAdminBoard" class="clean-menu-item" style="display:none; margin-bottom:12px;" onclick="lengkapkanPenggunaAdminBoard()">
+      <span class="material-symbols-outlined">group_add</span>
+      <span>Tambah atau lengkapkan pengguna dahulu</span>
+    </button>
+    <div class="clean-menu-list" style="margin-top: 15px;">
+      <button class="clean-menu-item" style="justify-content:center; font-weight:600;" onclick="simpanAdminBoard()">Simpan Admin Board</button>
     </div>
   </div>
 </div>
@@ -456,6 +479,10 @@
       <button class="clean-menu-item" onclick="editHeaderBoard()">
         <span class="material-symbols-outlined">edit</span>
         <span>Edit Header</span>
+      </button>
+      <button class="clean-menu-item" onclick="bukaPopUpAddNote()">
+        <span class="material-symbols-outlined">campaign</span>
+        <span>Manage Board Note</span>
       </button>
       <button class="clean-menu-item" onclick="bukaPanelPengurusanStaf()">
         <span class="material-symbols-outlined">group</span>
@@ -640,11 +667,10 @@
     </div>
 
     <div class="clean-menu-list" style="margin-bottom: 16px;">
-      <button id="btnMenuManageNote" class="clean-menu-item" onclick="bukaPopUpAddNote()">
-        <span class="material-symbols-outlined">campaign</span>
-        <span>Manage Board Note</span>
+      <button id="btnMenuBoardSettings" class="clean-menu-item" style="display:none;" onclick="bukaTetapanAdminBoard()">
+        <span class="material-symbols-outlined">admin_panel_settings</span>
+        <span>Board Admin Settings</span>
       </button>
-      
       <button class="clean-menu-item" onclick="bukaPopUpKehadiran()">
         <span class="material-symbols-outlined">punch_clock</span>
         <span>Kehadiran Hari Ini</span>
@@ -656,10 +682,6 @@
       <button class="clean-menu-item" onclick="bukaPopUpHBH()">
         <span class="material-symbols-outlined">home_work</span>
         <span>Hari Bekerja Hibrid (HBH)</span>
-      </button>
-      <button class="clean-menu-item" style="color: #dc2626;" onclick="padamAkaunSendiri()">
-        <span class="material-symbols-outlined">delete</span>
-        <span>Delete User</span>
       </button>
     </div>
 
@@ -673,7 +695,7 @@
 <!-- ================= MANAGE BOARD NOTE FORM MODAL ================= -->
 <div id="modalAddNotePopUp" class="modal" style="z-index: 105;">
   <div class="modal-content" style="max-width: 420px;">
-    <button class="modal-exit-btn" onclick="kembaliKeMenuProfil('modalAddNotePopUp')" title="Close">
+    <button class="modal-exit-btn" onclick="kembaliKeTetapanAdminBoard()" title="Close">
       <span class="material-symbols-outlined">close</span>
     </button>
     
@@ -1175,7 +1197,7 @@
     rekodPergerakan = [];
     rekodKehadiran = {};
     pemohonAktif = '';
-    document.getElementById('welcomeScreen').style.display = 'block';
+    document.getElementById('welcomeScreen').style.display = 'flex';
     document.getElementById('mainDashboard').style.display = 'none';
     sessionStorage.removeItem('isAdmin');
     checkAdminStatus();
@@ -1388,7 +1410,7 @@
       }
       return;
     }
-    const isAdmin = sessionStorage.getItem('isAdmin') === 'true';
+    const isAdmin = !!(firebaseUser && firebaseUser.emailVerified && firebaseUser.uid === ADMIN_UID && sessionStorage.getItem('isAdmin') === 'true');
     if (isAdmin) {
       showMsg("Adakah anda pasti untuk log keluar dari mod Admin?", (confirmed) => {
         if (confirmed) {
@@ -1402,27 +1424,33 @@
     }
   }
 
+  function isAdminBoardSession(board = boards.find(item => item.id === activeBoardId)) {
+    const adminEmail = (board?.adminEmail || '').trim().toLowerCase();
+    return !!(firebaseUser && firebaseUser.emailVerified && adminEmail && firebaseUser.email.trim().toLowerCase() === adminEmail);
+  }
+
+  function bolehUrusBoard(board = boards.find(item => item.id === activeBoardId)) {
+    return isAdminBoardSession(board) || !!(board && !board.adminEmail && firebaseUser && firebaseUser.emailVerified && firebaseUser.uid === ADMIN_UID);
+  }
+
   function checkAdminStatus() {
     const isAdminUid = !!(firebaseUser && firebaseUser.emailVerified && firebaseUser.uid === ADMIN_UID);
     const isAdmin = isAdminUid && sessionStorage.getItem('isAdmin') === 'true';
-    const btnSettings = document.getElementById('btnSettingsMain');
     const btnAdminLogin = document.getElementById('btnAdminLogin');
-    const boardSettings = document.querySelector('#mainDashboard .header-action-container');
     const adminIcon = document.getElementById('adminLockIcon');
+    const welcomeTitle = document.getElementById('welcomeTitleText');
     const descEl = document.getElementById('welcomeDescText');
 
     if (btnAdminLogin) btnAdminLogin.style.display = 'inline-flex';
-    if (boardSettings) boardSettings.style.display = isAdmin ? 'flex' : 'none';
-
     if (isAdmin) {
-      if(btnSettings) btnSettings.style.display = 'inline-flex';
+      if (welcomeTitle) welcomeTitle.style.display = 'none';
       if(adminIcon) {
         adminIcon.innerText = 'admin_panel_settings';
         adminIcon.style.color = 'var(--text-color)'; 
       }
       if(descEl) descEl.style.display = 'none';
     } else {
-      if(btnSettings) btnSettings.style.display = 'none';
+      if (welcomeTitle) welcomeTitle.style.display = 'block';
       if(adminIcon) {
         adminIcon.innerText = 'admin_panel_settings';
         adminIcon.style.color = 'var(--grey-text)';
@@ -1436,7 +1464,7 @@
   }
 
   function binaDataAwam() {
-    return boards.map(board => ({
+    return boards.map(({ adminEmail, ...board }) => ({
       ...board,
       senaraiStaf: (board.senaraiStaf || []).map(({ email, ...staf }) => staf)
     }));
@@ -1459,17 +1487,6 @@
       if (error.code === 'PERMISSION_DENIED' && !awam) throw error;
       boards = JSON.parse(localStorage.getItem(awam ? 'publicBoards' : 'boards')) || [];
       showMsg(awam ? 'Data board awam tidak dapat dimuatkan. Semak Firebase Rules dan sambungan internet.' : 'Firebase tidak dapat dicapai. Salinan setempat dimuatkan; perubahan mungkin tidak disegerakkan.');
-    }
-
-    if (!awam && firebaseUser && firebaseUser.uid === ADMIN_UID) {
-      try {
-        await Promise.all([
-          db.ref('adminData/adminPassword').remove(),
-          db.ref('appData/adminPassword').remove()
-        ]);
-      } catch (error) {
-        console.warn('Tidak dapat membersihkan data kata laluan Admin lama:', error);
-      }
     }
 
     const todayStr = getLocalDateString();
@@ -1567,8 +1584,6 @@
       document.getElementById('appTitle').innerText = b.name || 'ePergerakan';
       
       kemaskiniPaparan();
-      closeModal('modalTetapanUtama');
-
       try { const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?board=' + id; window.history.pushState({path:newUrl}, '', newUrl); } catch(e) {}
     }
   }
@@ -1577,7 +1592,7 @@
     const container = document.getElementById('mainBoardsListContainer');
     if(!container) return;
 
-    const isAdmin = sessionStorage.getItem('isAdmin') === 'true';
+    const isAdmin = !!(firebaseUser && firebaseUser.emailVerified && firebaseUser.uid === ADMIN_UID && sessionStorage.getItem('isAdmin') === 'true');
 
     if (!isAdmin) {
       container.style.display = 'none';
@@ -1586,48 +1601,87 @@
     }
 
     container.style.display = 'flex';
+    const boardRows = boards.map((b, index) => {
+      const userCount = (b.senaraiStaf || []).length;
+      const formattedExpiry = formatExpiryDate(b.tarikhFreez || '-');
+      const adminStaff = (b.senaraiStaf || []).find(staf => (staf.email || '').trim().toLowerCase() === (b.adminEmail || '').trim().toLowerCase());
+      const adminName = b.adminNama || adminStaff?.nama || 'Belum ditetapkan';
+      return `
+        <tr onclick="masukKeBoard('${b.id}')">
+          <td class="admin-board-number">${index + 1}</td>
+          <td class="admin-board-name">${b.name}</td>
+          <td><button class="admin-board-admin-button" onclick="bukaPilihAdminBoard('${b.id}', event)" title="Tukar Admin Board">${adminName}</button></td>
+          <td>${userCount}</td>
+          <td><button class="admin-board-expiry-button" onclick="bukaRenewBoard('${b.id}', event)" title="Tukar tarikh tamat tempoh">${formattedExpiry}</button></td>
+          <td><button class="admin-board-delete-button" onclick="event.stopPropagation(); padamBoardPantas('${b.id}')" title="Padam Board">Delete</button></td>
+        </tr>`;
+    }).join('');
 
-    if(boards.length === 0) { 
-      container.innerHTML = '<p style="color:var(--grey-text); font-style:italic; text-align:center; padding:20px;">Tiada rekod board. Sila log masuk admin untuk membina board baru.</p>'; 
-      return; 
-    }
+    const boardContent = boards.length
+      ? `<div class="admin-board-table-wrap"><table class="admin-board-table">
+          <thead><tr><th>No.</th><th>Nama Board</th><th>Admin</th><th>User</th><th>Expires On</th><th>Actions</th></tr></thead>
+          <tbody>${boardRows}</tbody>
+        </table></div>`
+      : '<div class="admin-board-empty">Belum ada board. Pilih New Board untuk bermula.</div>';
 
     container.innerHTML = `
-      <div style="background:#ffffff; border:1px solid var(--card-border); border-radius:12px; overflow:hidden; box-shadow:0 1px 3px var(--box-shadow); width:100%;">
-        <table style="width:100%; border-collapse:collapse; text-align:left; font-size:0.95rem;">
-          <thead>
-            <tr style="background:var(--header-bg); border-bottom:1px solid var(--card-border); color:var(--grey-text); font-size:0.85rem; text-transform:uppercase;">
-              <th style="padding:12px 16px; font-weight:600; width:50px; text-align:center;">No.</th>
-              <th style="padding:12px 16px; font-weight:600;">Nama Board</th>
-              <th style="padding:12px 16px; font-weight:600; text-align:center;">User</th>
-              <th style="padding:12px 16px; font-weight:600;">Expires On</th>
-              <th style="padding:12px 16px; font-weight:600; text-align:right;">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${boards.map((b, index) => {
-              const userCount = (b.senaraiStaf || []).length;
-              const formattedExpiry = formatExpiryDate(b.tarikhFreez || '-');
-              return `
-                <tr style="border-bottom:1px solid var(--card-border); cursor:pointer; transition:background 0.2s;" onclick="masukKeBoard('${b.id}')" onmouseover="this.style.background='var(--header-bg)'" onmouseout="this.style.background='transparent'">
-                  <td style="padding:14px 16px; text-align:center; color:var(--grey-text); font-weight:500;">${index + 1}</td>
-                  <td style="padding:14px 16px; font-weight:600; color:var(--text-color); text-transform:uppercase;">${b.name}</td>
-                  <td style="padding:14px 16px; text-align:center; font-weight:500; color:var(--grey-text);">${userCount}</td>
-                  <td style="padding:14px 16px;">
-                    <span style="font-weight:600; color:var(--text-color); background:var(--header-bg); padding:4px 8px; border-radius:6px; cursor:pointer;" onclick="bukaRenewBoard('${b.id}', event)" title="Klik untuk tukar tarikh tamat tempoh">
-                      ${formattedExpiry}
-                    </span>
-                  </td>
-                  <td style="padding:14px 16px; text-align:right;">
-                    <button class="plain-icon-btn" onclick="event.stopPropagation(); padamBoardPantas('${b.id}')" style="color:var(--text-color); font-size:0.9rem; font-weight:600; padding:6px 12px; background:var(--header-bg); border-radius:6px;" title="Padam Board">
-                      Delete
-                    </button>
-                  </td>
-                </tr>`;
-            }).join('')}
-          </tbody>
-        </table>
-      </div>`;
+      <div class="admin-board-toolbar">
+        <h2>Senarai Board</h2>
+        <button class="admin-board-new-button" onclick="ciptaBoardBaru()"><span class="material-symbols-outlined">add</span>New Board</button>
+      </div>
+      <div class="admin-board-panel">${boardContent}</div>`;
+  }
+
+  function bukaPilihAdminBoard(boardId, event) {
+    if (event) event.stopPropagation();
+    if (!firebaseUser || !firebaseUser.emailVerified || firebaseUser.uid !== ADMIN_UID) return;
+    const board = boards.find(item => item.id === boardId);
+    if (!board) return;
+
+    const select = document.getElementById('adminBoardUserSelect');
+    select.replaceChildren(new Option('Pilih pengguna', ''));
+    const availableStaff = (board.senaraiStaf || []).filter(staf => staf.email);
+    availableStaff.forEach(staf => {
+      const option = new Option(`${staf.nama} (${staf.email})`, staf.email);
+      select.add(option);
+    });
+    document.getElementById('btnLengkapkanPenggunaAdminBoard').style.display = availableStaff.length ? 'none' : 'flex';
+    select.value = board.adminEmail || '';
+    document.getElementById('adminBoardIdInput').value = boardId;
+    openModal('modalPilihAdminBoard');
+  }
+
+  async function simpanAdminBoard() {
+    if (!firebaseUser || !firebaseUser.emailVerified || firebaseUser.uid !== ADMIN_UID) return;
+    const boardId = document.getElementById('adminBoardIdInput').value;
+    const board = boards.find(item => item.id === boardId);
+    const email = document.getElementById('adminBoardUserSelect').value;
+    const staff = board?.senaraiStaf?.find(item => (item.email || '').trim().toLowerCase() === email.trim().toLowerCase());
+    if (!staff) {
+      showMsg('Pilih pengguna board yang mempunyai email akaun Firebase.');
+      return;
+    }
+    board.adminEmail = staff.email.trim().toLowerCase();
+    board.adminNama = staff.nama;
+    await simpanKeLocalStorage();
+    renderMainBoardsList();
+    closeModal('modalPilihAdminBoard');
+  }
+
+  function lengkapkanPenggunaAdminBoard() {
+    if (!firebaseUser || !firebaseUser.emailVerified || firebaseUser.uid !== ADMIN_UID) return;
+    const boardId = document.getElementById('adminBoardIdInput').value;
+    const board = boards.find(item => item.id === boardId);
+    if (!board || board.adminEmail) return;
+
+    closeModal('modalPilihAdminBoard');
+    masukKeBoard(boardId);
+    openModal('modalPengurusanStaf');
+    if ((board.senaraiStaf || []).length === 0) {
+      bukaFormStafModal(-1);
+    } else {
+      renderSenaraiStaf();
+    }
   }
 
   function bukaRenewBoard(id, event) {
@@ -1662,7 +1716,7 @@
   }
 
   async function padamBoardPantas(id) {
-    const isAdmin = sessionStorage.getItem('isAdmin') === 'true';
+    const isAdmin = !!(firebaseUser && firebaseUser.emailVerified && firebaseUser.uid === ADMIN_UID && sessionStorage.getItem('isAdmin') === 'true');
     if (!isAdmin) return;
     const bIndex = boards.findIndex(x => x.id === id);
     if(bIndex > -1) {
@@ -1677,7 +1731,7 @@
   }
 
   function ciptaBoardBaru() {
-    const isAdmin = sessionStorage.getItem('isAdmin') === 'true';
+    const isAdmin = !!(firebaseUser && firebaseUser.emailVerified && firebaseUser.uid === ADMIN_UID && sessionStorage.getItem('isAdmin') === 'true');
     if (!isAdmin) return;
     showPrompt("Enter Board Name (e.g., Board1):", "", async (namabaru) => {
       if(namabaru && namabaru.trim() !== "") {
@@ -1689,6 +1743,8 @@
         boards.push({ 
           id: 'board_' + Date.now(), 
           name: namabaru.trim(), 
+          adminEmail: '',
+          adminNama: '',
           senaraiStaf: [], 
           rekodPergerakan: [], 
           rekodKehadiran: {},
@@ -1699,16 +1755,28 @@
           soundType: 'bell',
           theme: '0'
         });
-        await simpanKeLocalStorage(); 
+        const newBoardId = boards[boards.length - 1].id;
+        await simpanKeLocalStorage();
         renderMainBoardsList();
+        masukKeBoard(newBoardId);
+        openModal('modalPengurusanStaf');
+        bukaFormStafModal(-1);
       }
     });
   }
 
   function bukaTetapanDalamBoard() {
-    if (activeBoardId) {
-      bukaEditBoard(activeBoardId);
+    bukaTetapanAdminBoard();
+  }
+
+  function bukaTetapanAdminBoard() {
+    if (!isAdminBoardSession()) {
+      showMsg('Tetapan board hanya boleh dibuka oleh Admin Board.');
+      return;
     }
+    document.getElementById('editBoardId').value = activeBoardId;
+    closeModal('modalMenuProfil');
+    openModal('modalEditBoard');
   }
 
   function cekDanPaparPopupRenew() {
@@ -1721,15 +1789,19 @@
   }
 
   function bukaEditBoard(id) {
+    if (!bolehUrusBoard(boards.find(item => item.id === id))) {
+      showMsg('Tetapan board hanya boleh dibuka oleh Admin Board.');
+      return;
+    }
     if (cekDanPaparPopupRenew()) return;
     const b = boards.find(x => x.id === id);
     if(!b) return;
     document.getElementById('editBoardId').value = b.id;
-    closeModal('modalTetapanUtama'); 
     openModal('modalEditBoard');
   }
 
   function bukaSoundSettings() {
+    if (!isAdminBoardSession()) return;
     closeModal('modalEditBoard');
     const b = boards.find(x => x.id === activeBoardId);
     if (!b) return;
@@ -1739,6 +1811,7 @@
   }
 
   async function simpanSoundSettings() {
+    if (!isAdminBoardSession()) return;
     const b = boards.find(x => x.id === activeBoardId);
     if (b) {
       b.soundEnabled = document.getElementById('inputSoundEnabled').checked;
@@ -1750,6 +1823,7 @@
   }
 
   function bukaThemeSettings() {
+    if (!isAdminBoardSession()) return;
     closeModal('modalEditBoard');
     const b = boards.find(x => x.id === activeBoardId);
     if (!b) return;
@@ -1764,6 +1838,7 @@
   }
 
   async function simpanBoardTheme() {
+    if (!isAdminBoardSession()) return;
     const b = boards.find(x => x.id === activeBoardId);
     if (b) {
       const hueVal = document.getElementById('singleRainbowInput').value;
@@ -1776,6 +1851,10 @@
   }
 
   async function editHeaderBoard() {
+    if (!isAdminBoardSession()) {
+      showMsg('Hanya Admin Board boleh mengubah tetapan board.');
+      return;
+    }
     if (cekDanPaparPopupRenew()) return;
     const id = document.getElementById('editBoardId').value;
     const b = boards.find(x => x.id === id);
@@ -1821,6 +1900,10 @@
   }
 
   function bukaFormStafModal(idx) {
+    if (!bolehUrusBoard()) {
+      showMsg('Hanya Admin Board boleh menambah atau mengubah pengguna.');
+      return;
+    }
     if (cekDanPaparPopupRenew()) return;
     populateRoleDropdowns();
     document.getElementById('editIndexStaf').value = idx;
@@ -1852,10 +1935,16 @@
         document.getElementById('stafGambarPreview').src = "";
       }
     } 
+    const activeBoard = boards.find(board => board.id === activeBoardId);
+    document.getElementById('tajukFormStafModal').innerText = !activeBoard?.adminEmail && idx === -1 ? 'Create Board Admin' : idx === -1 ? 'User Information' : 'Edit User';
     openModal('modalFormStaf');
   }
 
   async function simpanStafData() {
+    if (!bolehUrusBoard()) {
+      showMsg('Hanya Admin Board boleh menyimpan perubahan pengguna.');
+      return;
+    }
     if (cekDanPaparPopupRenew()) return;
     const idx = parseInt(document.getElementById('editIndexStaf').value);
     const nama = document.getElementById('stafNamaInput').value.trim();
@@ -1876,43 +1965,69 @@
       gambar: tempGambarB64
     };
 
+    const activeBoard = boards.find(board => board.id === activeBoardId);
+    const settingInitialAdmin = !!(activeBoard && !activeBoard.adminEmail && idx === -1);
     if(idx === -1) {
       senaraiStaf.push(objBaru);
+      if (settingInitialAdmin) {
+        activeBoard.adminEmail = email;
+        activeBoard.adminNama = nama;
+      }
     } else {
       const namaLama = senaraiStaf[idx].nama;
+      const emailLama = (senaraiStaf[idx].email || '').trim().toLowerCase();
       if(namaLama !== nama) rekodPergerakan.forEach(r => { if(r.nama === namaLama) r.nama = nama; });
       senaraiStaf[idx] = objBaru;
+      if (activeBoard?.adminEmail === emailLama) {
+        activeBoard.adminEmail = email;
+        activeBoard.adminNama = nama;
+      }
     }
     await simpanKeLocalStorage(); 
     closeModal('modalFormStaf'); 
-    rahJ91ZuNL8Y2px8iYciYeHN8sfSh5eXH8(); 
+    renderSenaraiStaf();
     if(activeBoardId) kemaskiniPaparan();
+    if (settingInitialAdmin) {
+      closeModal('modalPengurusanStaf');
+      renderMainBoardsList();
+      showMsg(`Admin Board ${nama} telah ditetapkan. Akaun Firebase dengan email ini diperlukan untuk mengurus board.`);
+    }
   }
 
   async function padamStaf(idx) {
+    if (!bolehUrusBoard()) {
+      showMsg('Hanya Admin Board boleh memadam pengguna.');
+      return;
+    }
     if (cekDanPaparPopupRenew()) return;
+    const activeBoard = boards.find(board => board.id === activeBoardId);
+    if ((senaraiStaf[idx]?.email || '').trim().toLowerCase() === (activeBoard?.adminEmail || '').trim().toLowerCase()) {
+      showMsg('Tetapkan Admin Board baharu dari halaman Admin sebelum memadam pengguna ini.');
+      return;
+    }
     showMsg(`Delete user ${senaraiStaf[idx].nama}?`, async (confirmed) => {
       if(confirmed) {
         const nm = senaraiStaf[idx].nama; 
         senaraiStaf.splice(idx, 1); 
         rekodPergerakan = rekodPergerakan.filter(r => r.nama !== nm);
         await simpanKeLocalStorage(); 
-        rahJ91ZuNL8Y2px8iYciYeHN8sfSh5eXH8(); 
+        renderSenaraiStaf();
         if(activeBoardId) kemaskiniPaparan();
       }
     }, true);
   }
 
-  function rahJ91ZuNL8Y2px8iYciYeHN8sfSh5eXH8() {
+  function renderSenaraiStaf() {
     const container = document.getElementById('senaraiStafContainer');
     if (!container) return;
 
     container.innerHTML = senaraiStaf.map((s, idx) => {
       const avatarHTML = s.gambar ? `<img src="${s.gambar}" style="width:36px; height:36px; border-radius:50%; object-fit:cover; border:1px solid var(--card-border); background:#ffffff;">` : `<span style="width:36px; height:36px; border-radius:50%; background:#ffffff; display:inline-block; border:1px solid var(--card-border);"></span>`;
+      const supervisor = senaraiStaf.find(staf => s.reportTo && String(staf.kumpulan) === String(s.reportTo));
       return `<div style="display:flex; justify-content:space-between; align-items:center; padding:10px; background:#ffffff; border:1px solid var(--card-border); border-radius:8px; margin-bottom:8px;">
         <div style="display:flex; align-items:center; gap:10px;">
           ${avatarHTML}
-          <div><strong>${s.nama}</strong><br><span style="font-size:0.8rem; color:var(--grey-text);">${s.email || 'Email belum ditetapkan'}<br>${s.jawatan || '-'} (${s.kumpulan ? 'Level ' + s.kumpulan : 'Standard'})</span></div>
+          <div><strong>${s.nama}</strong><br><span style="font-size:0.8rem; color:var(--grey-text);">${s.email || 'Email belum ditetapkan'}<br>${s.jawatan || '-'} (${s.kumpulan ? 'Level ' + s.kumpulan : 'Standard'})<br>Penyelia: ${supervisor?.nama || (s.reportTo ? 'Tahap ' + s.reportTo : 'Tiada')}</span></div>
         </div>
         <div style="display:flex; gap:6px;">
           <button class="clean-menu-item" style="padding:4px 8px; border:1px solid var(--card-border); border-radius:6px;" onclick="bukaFormStafModal(${idx})">Edit</button>
@@ -1923,6 +2038,10 @@
   }
 
   function bukaPanelPengurusanStaf() {
+    if (!bolehUrusBoard()) {
+      showMsg('Senarai pengguna hanya boleh diurus oleh Admin Board.');
+      return;
+    }
     if (cekDanPaparPopupRenew()) return;
     const id = document.getElementById('editBoardId').value;
     const b = boards.find(x => x.id === id);
@@ -1933,7 +2052,7 @@
     }
     closeModal('modalEditBoard'); 
     openModal('modalPengurusanStaf'); 
-    rahJ91ZuNL8Y2px8iYciYeHN8sfSh5eXH8();
+    renderSenaraiStaf();
   }
 
   function formatTarikhDMY(t) { 
@@ -2245,6 +2364,7 @@
   function renderStaffStrip() {
     const container = document.getElementById('staffStrip');
     if (!senaraiStaf || senaraiStaf.length === 0) { container.innerHTML = '<i>No users. Open Settings to add users.</i>'; return; }
+    const activeBoard = boards.find(board => board.id === activeBoardId);
 
     const sortedStaf = [...senaraiStaf].sort((a, b) => {
       return getRoleLevel(a.kumpulan) - getRoleLevel(b.kumpulan);
@@ -2253,6 +2373,9 @@
     let hasUnreadAlerts = false;
     container.innerHTML = sortedStaf.map((staf, index) => {
       const img = staf.gambar ? `<img src="${staf.gambar}" class="staff-avatar">` : `<span class="avatar-empty"></span>`;
+      const isBoardAdminProfile = !!activeBoard && (activeBoard.adminEmail
+        ? (staf.email || '').trim().toLowerCase() === activeBoard.adminEmail.trim().toLowerCase()
+        : !!activeBoard.adminNama && staf.nama === activeBoard.adminNama);
       
       const myRoleLevel = getRoleLevel(staf.kumpulan);
       const adaMenungguUntukUserIni = rekodPergerakan.some(r => {
@@ -2281,6 +2404,7 @@
       return `<div class="profile-chip" style="margin-right: ${marginRight}; cursor: pointer; min-width: 110px;" onclick="bukaModulStaf('${staf.nama}')">
         <span class="profile-photo-wrap ${showBadge ? 'has-notif' : ''}">
           ${img}
+          ${isBoardAdminProfile ? '<span class="board-admin-badge" title="Admin Board" aria-label="Admin Board"><span class="material-symbols-outlined">admin_panel_settings</span></span>' : ''}
           <span class="notification-badge"></span>
         </span>
         <span style="font-weight: 700; text-align: center; word-break: break-word; line-height: 1.2; width: 100%; margin-top: 4px;">${staf.nama}</span>
@@ -2493,7 +2617,12 @@
       return;
     }
     if (stafObj.email.trim().toLowerCase() !== firebaseUser.email.trim().toLowerCase()) {
-      showMsg('Email akaun Firebase ini tidak sepadan dengan pengguna tersebut.');
+      showMsg('Akaun Firebase semasa bukan pengguna ini. Log keluar dan tukar akaun?', async confirmed => {
+        if (!confirmed) return;
+        pendingProfileName = nama;
+        await auth.signOut();
+        paparBorangAuth();
+      }, true);
       return;
     }
     teruskanBukaModulStaf(nama);
@@ -2507,14 +2636,8 @@
     const stafObj = senaraiStaf.find(s => s.nama === pemohonAktif);
     const myRoleLevel = getRoleLevel(stafObj?.kumpulan);
 
-    const btnManageNote = document.getElementById('btnMenuManageNote');
-    if (btnManageNote) {
-      if (myRoleLevel <= 25) {
-        btnManageNote.style.display = 'flex';
-      } else {
-        btnManageNote.style.display = 'none';
-      }
-    }
+    const btnBoardSettings = document.getElementById('btnMenuBoardSettings');
+    if (btnBoardSettings) btnBoardSettings.style.display = isAdminBoardSession() ? 'flex' : 'none';
 
     const senaraiMenunggu = rekodPergerakan.filter(r => {
       if (!r || r.status !== 'Menunggu') return false;
@@ -2578,7 +2701,7 @@
       pemohonAktif = '';
       closeModal('modalMenuProfil');
       await simpanKeLocalStorage();
-      rahJ91ZuNL8Y2px8iYciYeHN8sfSh5eXH8();
+      renderSenaraiStaf();
       if (activeBoardId) kemaskiniPaparan();
       showMsg('Your user profile and activity records have been deleted.');
     }, true);
@@ -2657,14 +2780,28 @@
   }
 
   function bukaPopUpAddNote() {
+    if (!isAdminBoardSession()) {
+      showMsg('Hanya Admin Board boleh mengurus board note.');
+      return;
+    }
     if (cekDanPaparPopupRenew()) return;
     closeModal('modalMenuProfil');
+    closeModal('modalEditBoard');
     const b = boards.find(x => x.id === activeBoardId);
     document.getElementById('inputNotaTeks').value = b.boardNote || '';
     openModal('modalAddNotePopUp');
   }
 
+  function kembaliKeTetapanAdminBoard() {
+    closeModal('modalAddNotePopUp');
+    openModal('modalEditBoard');
+  }
+
   async function simpanNotaBoard() {
+    if (!isAdminBoardSession()) {
+      showMsg('Hanya Admin Board boleh menyimpan board note.');
+      return;
+    }
     if (cekDanPaparPopupRenew()) return;
     const teksNota = document.getElementById('inputNotaTeks').value.trim();
     const bIndex = boards.findIndex(x => x.id === activeBoardId);
@@ -2675,7 +2812,8 @@
 
     await simpanKeLocalStorage();
     kemaskiniPaparan();
-    kembaliKeMenuProfil('modalAddNotePopUp');
+    closeModal('modalAddNotePopUp');
+    openModal('modalEditBoard');
   }
 
   function bukaPopUpKehadiran() {
