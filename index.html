@@ -157,6 +157,7 @@
     #mainDashboard .header-title-container { width: 100%; text-align: center; }
     #mainDashboard #appTitle { text-align: center; font-size: 40px; line-height: 1.2; }
     h1 { font-size: 1.35rem; color: var(--text-color); font-weight: 700; word-break: break-word; line-height: 1.3; text-align: center; }
+    .view-title-header { display: flex; align-items: center; justify-content: center; width: 100%; min-height: 24px; margin-bottom: 14px; color: var(--text-color); font-family: inherit; font-size: 1.15rem; font-weight: 700; line-height: 1.3; text-align: center; text-transform: uppercase; }
     .header-action-container { display: flex; align-items: center; }
     #mainDashboard .header-action-container { justify-content: flex-end; }
 
@@ -376,7 +377,7 @@
 
   <!-- DESKTOP TODAY VIEW -->
   <div id="viewTodayContainer" style="display: flex; flex-direction: column; width: 100%;">
-    <div id="todayDateHeader" style="text-align: center; font-size: 1.15rem; font-weight: 700; margin-bottom: 14px; color: var(--text-color);"></div>
+    <div id="todayDateHeader" class="view-title-header"></div>
 
     <div id="viewHariIni" class="columns-container" style="display: grid;">
       <div class="column col-pejabat">
@@ -400,7 +401,7 @@
 
   <!-- VIEW PLANNER -->
   <div id="viewList" class="list-pergerakan-container" style="display: none;">
-    <div id="plannerTitleHeader" style="text-align: center; font-size: 1.15rem; font-weight: 700; margin-bottom: 14px; color: var(--text-color); text-transform: uppercase;"></div>
+    <div id="plannerTitleHeader" class="view-title-header"></div>
     <div id="listPergerakanContent" style="width: 100%;"></div>
   </div>
 
