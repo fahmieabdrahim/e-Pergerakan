@@ -439,10 +439,6 @@
         <span class="material-symbols-outlined">add_circle</span>
         <span>New Board</span>
       </button>
-      <button class="clean-menu-item" onclick="tukarKataLaluanAdmin(); closeModal('modalTetapanUtama');">
-        <span class="material-symbols-outlined">key</span>
-        <span>Tukar Kata Laluan</span>
-      </button>
     </div>
   </div>
 </div>
@@ -910,7 +906,6 @@
   let tempGambarB64 = '';
   let currentMonthOffset = 0;
   let renewingBoardId = null;
-  let adminPassword = '';
   let firebaseUser = null;
   let authLoadedUid = '';
   let pendingProfileName = '';
@@ -1402,45 +1397,9 @@
         }
       }, true);
     } else {
-      if (!adminPassword) {
-        showMsg('Kata laluan Admin tidak dapat dimuatkan dari Firebase. Semak Firebase Rules untuk adminData/adminPassword.');
-        return;
-      }
-      showPrompt("Sila masukkan kata laluan Admin:", "", (pwd) => {
-        if (pwd === null) return;
-        if (pwd === adminPassword) {
-          sessionStorage.setItem('isAdmin', 'true');
-          checkAdminStatus();
-        } else {
-          showMsg("Kata laluan salah!");
-        }
-      }, true);
+      sessionStorage.setItem('isAdmin', 'true');
+      checkAdminStatus();
     }
-  }
-
-  function tukarKataLaluanAdmin() {
-    const isAdmin = sessionStorage.getItem('isAdmin') === 'true';
-    if (!isAdmin) {
-      showMsg("Sila log masuk sebagai Admin terlebih dahulu untuk menukar kata laluan.");
-      return;
-    }
-    showPrompt("Masukkan kata laluan Admin semasa:", "", (oldPwd) => {
-      if (oldPwd === null) return;
-      if (oldPwd !== adminPassword) {
-        showMsg("Kata laluan semasa salah!");
-        return;
-      }
-      showPrompt("Masukkan kata laluan Admin baru:", "", async (newPwd) => {
-        if (newPwd === null) return;
-        if (newPwd.trim() === "") {
-          showMsg("Kata laluan tidak boleh kosong!");
-          return;
-        }
-        adminPassword = newPwd.trim();
-        const saved = await simpanKeLocalStorage();
-        if (saved) showMsg("✅ Kata laluan admin berjaya ditukar!");
-      }, true);
-    }, true);
   }
 
   function checkAdminStatus() {
@@ -1484,18 +1443,12 @@
   }
 
   async function muatTurunDataAwan(awam = false) {
-    let appDataWujud = false;
-    let dataAppLama = null;
-    let kataLaluanLama = '';
     try {
       const snapshot = await db.ref(awam ? 'publicData/boards' : 'appData').once('value');
       if (snapshot.exists()) {
         const result = snapshot.val();
-        appDataWujud = !awam;
         boards = awam ? result || [] : result.boards || [];
         if (!awam) {
-          dataAppLama = result;
-          kataLaluanLama = result.adminPassword || '';
           localStorage.setItem('boards', JSON.stringify(boards));
         }
       } else {
@@ -1505,29 +1458,20 @@
       console.error("Ralat muat turun data Firebase:", error);
       if (error.code === 'PERMISSION_DENIED' && !awam) throw error;
       boards = JSON.parse(localStorage.getItem(awam ? 'publicBoards' : 'boards')) || [];
-      dataAppLama = null;
       showMsg(awam ? 'Data board awam tidak dapat dimuatkan. Semak Firebase Rules dan sambungan internet.' : 'Firebase tidak dapat dicapai. Salinan setempat dimuatkan; perubahan mungkin tidak disegerakkan.');
     }
 
-    adminPassword = '';
     if (!awam && firebaseUser && firebaseUser.uid === ADMIN_UID) {
       try {
-        const passwordSnapshot = await db.ref('adminData/adminPassword').once('value');
-        if (passwordSnapshot.exists()) {
-          adminPassword = passwordSnapshot.val();
-        } else {
-          adminPassword = kataLaluanLama || 'admin';
-          await db.ref('adminData/adminPassword').set(adminPassword);
-        }
-        if (appDataWujud && kataLaluanLama) {
-          delete dataAppLama.adminPassword;
-          await db.ref('appData').set(dataAppLama);
-        }
+        await Promise.all([
+          db.ref('adminData/adminPassword').remove(),
+          db.ref('appData/adminPassword').remove()
+        ]);
       } catch (error) {
-        console.error('Ralat mengakses kata laluan Admin di Firebase:', error);
-        adminPassword = '';
+        console.warn('Tidak dapat membersihkan data kata laluan Admin lama:', error);
       }
     }
+
     const todayStr = getLocalDateString();
     let kataLaluanStafLamaDibuang = false;
     boards.forEach(b => {
@@ -1579,19 +1523,10 @@
     localStorage.setItem('boards', JSON.stringify(boards));
     
     try {
-      const appData = { boards: boards };
-      if (!firebaseUser || firebaseUser.uid !== ADMIN_UID) {
-        const legacyPasswordSnapshot = await db.ref('appData/adminPassword').once('value');
-        if (legacyPasswordSnapshot.exists()) appData.adminPassword = legacyPasswordSnapshot.val();
-      }
-      const writes = [
-        db.ref('appData').set(appData),
+      await Promise.all([
+        db.ref('appData').set({ boards: boards }),
         db.ref('publicData/boards').set(binaDataAwam())
-      ];
-      if (firebaseUser && firebaseUser.uid === ADMIN_UID && adminPassword) {
-        writes.push(db.ref('adminData/adminPassword').set(adminPassword));
-      }
-      await Promise.all(writes);
+      ]);
       localStorage.setItem('publicBoards', JSON.stringify(binaDataAwam()));
       return true;
     } catch (e) {
@@ -1688,24 +1623,22 @@
                       Delete
                     </button>
                   </td>
-                </tr>
-              `;
+                </tr>`;
             }).join('')}
           </tbody>
         </table>
-      </div>
-    `;
+      </div>`;
   }
 
   function bukaRenewBoard(id, event) {
-    if(event) event.stopPropagation();
+    if (event) event.stopPropagation();
     const isAdmin = sessionStorage.getItem('isAdmin') === 'true';
     if (!isAdmin) {
       showMsg("⚠️ Anda perlu log masuk sebagai Admin untuk renew tarikh tamat tempoh board.");
       return;
     }
     const b = boards.find(x => x.id === id);
-    if(!b) return;
+    if (!b) return;
 
     renewingBoardId = id;
     document.getElementById('inputTarikhRenew').value = b.tarikhFreez || getLocalDateString();
