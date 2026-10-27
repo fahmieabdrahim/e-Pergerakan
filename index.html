@@ -12,6 +12,7 @@
   
   <!-- Firebase App (Core) & Realtime Database SDK -->
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
 
   <style>
@@ -112,6 +113,7 @@
     }
 
     .top-right-nav { position: absolute; top: 16px; right: 16px; display: flex; gap: 8px; }
+    .app-footer { width: 100%; margin-top: auto; padding: 32px 0 4px; color: var(--grey-text); font-size: 0.8rem; text-align: center; }
     .welcome-header { width: 100%; max-width: 850px; padding: 20px 10px; text-align: center; }
     .welcome-header h1 { font-size: 2.5rem; color: #0f172a; margin-bottom: 15px; font-weight: 700; text-align: center; }
     .welcome-desc { font-size: 1.05rem; color: var(--grey-text); line-height: 1.6; max-width: 700px; margin: 0 auto 25px auto; text-align: center; }
@@ -125,9 +127,13 @@
     @media (max-width: 768px) { #mainDashboard { padding: 16px 16px; } }
 
     header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; gap: 15px; position: relative; }
+    #mainDashboard > header { flex-direction: column; align-items: stretch; gap: 4px; }
     .header-title-container { flex: 1; min-width: 0; text-align: center; }
+    #mainDashboard .header-title-container { width: 100%; text-align: center; }
+    #mainDashboard #appTitle { text-align: center; }
     h1 { font-size: 1.35rem; color: var(--text-color); font-weight: 700; word-break: break-word; line-height: 1.3; text-align: center; }
     .header-action-container { display: flex; align-items: center; }
+    #mainDashboard .header-action-container { justify-content: flex-end; }
 
     /* BOARD NOTE ANNOUNCEMENT / PROMO SECTION */
     .board-note-box {
@@ -243,7 +249,7 @@
 
     .form-group { margin-bottom: 14px; text-align: left; }
     .form-group label { display: block; font-size: 0.95rem; font-weight: 600; margin-bottom: 6px; color: var(--text-color); text-align: left; }
-    .form-group input[type="text"], .form-group input[type="date"], .form-group input[type="time"], .form-group input[type="password"], .form-group input[type="file"], .form-group select, .form-group textarea { width: 100%; padding: 12px; border: 1px solid var(--card-border); border-radius: 8px; font: inherit; font-size: 0.95rem; background: #ffffff; color: var(--text-color); }
+    .form-group input[type="text"], .form-group input[type="email"], .form-group input[type="date"], .form-group input[type="time"], .form-group input[type="password"], .form-group input[type="file"], .form-group select, .form-group textarea { width: 100%; padding: 12px; border: 1px solid var(--card-border); border-radius: 8px; font: inherit; font-size: 0.95rem; background: #ffffff; color: var(--text-color); }
     
     .checkbox-group-container { display: flex; flex-direction: column; gap: 10px; margin-top: 8px; text-align: left; }
     .checkbox-item { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border: 1px solid var(--card-border); border-radius: 8px; cursor: pointer; transition: background 0.2s; text-align: left; background: #ffffff; }
@@ -278,19 +284,20 @@
     </p>
     <div id="mainBoardsListContainer" style="width: 100%; display: none; flex-direction: column; margin-top: 20px;"></div>
   </div>
+  <footer class="app-footer">© 2026 ePergerakan · Sistem Pengurusan Pergerakan dan Kehadiran Staf</footer>
 </div>
 
 <!-- ================= MAIN DASHBOARD ================= -->
 <div id="mainDashboard">
   <header>
-    <div class="header-title-container">
-      <h1 id="appTitle">ePergerakan</h1>
-    </div>
-    
     <div class="header-action-container">
       <button class="plain-icon-btn" onclick="bukaTetapanDalamBoard()" title="Board Settings">
         <span class="material-symbols-outlined">more_vert</span>
       </button>
+    </div>
+
+    <div class="header-title-container">
+      <h1 id="appTitle">ePergerakan</h1>
     </div>
   </header>
 
@@ -417,6 +424,7 @@
       <div id="calendarDays" class="calendar-grid-body"></div>
     </div>
   </div>
+  <footer class="app-footer">© 2026 ePergerakan · Sistem Pengurusan Pergerakan dan Kehadiran Staf</footer>
 </div>
 
 <!-- ================= SETTINGS MENU MODAL (ADMIN ONLY) ================= -->
@@ -576,6 +584,11 @@
     <input type="hidden" id="editIndexStaf" value="-1">
     
     <div class="form-group"><label>Nama *</label><input type="text" id="stafNamaInput" required></div>
+    <div class="form-group">
+      <label>Email Aktif *</label>
+      <input type="email" id="stafEmailInput" autocomplete="email" required>
+      <small style="display:block; color:var(--grey-text); margin-top:5px;">Gunakan email aktif yang boleh menerima pautan pengesahan untuk membuka profil ini.</small>
+    </div>
     
     <div class="form-group"><label>Jawatan</label><input type="text" id="stafJawatanInput" placeholder="cth. Pegawai Grafik"></div>
     
@@ -647,10 +660,6 @@
       <button class="clean-menu-item" onclick="bukaPopUpHBH()">
         <span class="material-symbols-outlined">home_work</span>
         <span>Hari Bekerja Hibrid (HBH)</span>
-      </button>
-      <button id="btnMenuPassword" class="clean-menu-item" onclick="bukaModalKataLaluanStaf()">
-        <span class="material-symbols-outlined">lock</span>
-        <span id="teksMenuPassword">Aktif kata laluan</span>
       </button>
       <button class="clean-menu-item" style="color: #dc2626;" onclick="padamAkaunSendiri()">
         <span class="material-symbols-outlined">delete</span>
@@ -800,6 +809,51 @@
 </div>
 
 <!-- ================= CUSTOM MESSAGE BOX / MODAL ================= -->
+<div id="modalFirebaseAuth" class="modal" style="z-index: 230;">
+  <div class="modal-content" style="max-width: 400px;">
+    <button class="modal-exit-btn" onclick="tutupModalAuth()" title="Close">
+      <span class="material-symbols-outlined">close</span>
+    </button>
+    <div class="modal-title-head">Akaun ePergerakan</div>
+    <div id="authFormContainer">
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="authEmailInput" autocomplete="email" required>
+      </div>
+      <div class="form-group">
+        <label>Kata laluan</label>
+        <input type="password" id="authPasswordInput" autocomplete="current-password" required>
+      </div>
+      <div class="form-group" id="authConfirmPasswordGroup" style="display:none;">
+        <label>Sahkan kata laluan</label>
+        <input type="password" id="authConfirmPasswordInput" autocomplete="new-password">
+      </div>
+      <div id="authErrorMessage" style="display:none; margin-bottom:12px; color:#b91c1c; font-size:0.9rem; text-align:left;"></div>
+      <div class="clean-menu-list" style="gap:8px;">
+        <button id="btnAuthSubmit" class="clean-menu-item" style="justify-content:center; font-weight:600;" onclick="hantarAuthForm()">Log Masuk</button>
+        <button id="btnAuthRegisterMode" class="clean-menu-item" style="justify-content:center;" onclick="setAuthMode('register')">Daftar Akaun</button>
+        <button id="btnAuthLoginMode" class="clean-menu-item" style="display:none; justify-content:center;" onclick="setAuthMode('login')">Kembali ke Log Masuk</button>
+        <button id="btnAuthReset" class="clean-menu-item" style="justify-content:center;" onclick="hantarResetKataLaluan()">Lupa kata laluan?</button>
+      </div>
+    </div>
+    <div id="authVerificationContainer" style="display:none; text-align:left;">
+      <p id="authVerificationMessage" style="margin-bottom:14px; line-height:1.5;"></p>
+      <div class="clean-menu-list" style="gap:8px;">
+        <button class="clean-menu-item" style="justify-content:center; font-weight:600;" onclick="semakPengesahanEmail()">Saya sudah sahkan email</button>
+        <button class="clean-menu-item" style="justify-content:center;" onclick="hantarSemulaPengesahanEmail()">Hantar semula email pengesahan</button>
+        <button class="clean-menu-item" style="justify-content:center;" onclick="logKeluarAkaun()">Log keluar / tukar akaun</button>
+      </div>
+    </div>
+    <div id="authDatabaseErrorContainer" style="display:none; text-align:left;">
+      <p id="authDatabaseErrorMessage" style="margin-bottom:14px; line-height:1.5; color:#b91c1c;"></p>
+      <div class="clean-menu-list" style="gap:8px;">
+        <button class="clean-menu-item" style="justify-content:center; font-weight:600;" onclick="cubaMuatSemulaDataAuth()">Cuba Lagi</button>
+        <button class="clean-menu-item" style="justify-content:center;" onclick="logKeluarAkaun()">Log keluar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div id="modalCustomMsg" class="modal" style="z-index: 250;">
   <div class="modal-content" style="max-width: 360px; text-align: center; padding: 24px;">
     <div id="customMsgText" style="margin-bottom: 20px; font-size: 1rem; color: var(--text-color); font-weight: 500; text-align: center; line-height: 1.5;"></div>
@@ -842,6 +896,7 @@
   if (!firebase.apps.length) {
     firebase.initializeApp(firebaseConfig);
   }
+  const auth = firebase.auth();
   const db = firebase.database();
 
   let boards = [];
@@ -855,6 +910,10 @@
   let currentMonthOffset = 0;
   let renewingBoardId = null;
   let adminPassword = 'admin'; 
+  let firebaseUser = null;
+  let authLoadedUid = '';
+  let pendingProfileName = '';
+  let authMode = 'login';
 
   let audioCtx = null;
   let audioInterval = null;
@@ -915,6 +974,243 @@
       clearInterval(audioInterval);
       audioInterval = null;
     }
+  }
+
+  function setAuthMode(mode) {
+    authMode = mode;
+    const registering = mode === 'register';
+    document.getElementById('authConfirmPasswordGroup').style.display = registering ? 'block' : 'none';
+    document.getElementById('btnAuthSubmit').innerText = registering ? 'Daftar Akaun' : 'Log Masuk';
+    document.getElementById('btnAuthRegisterMode').style.display = registering ? 'none' : 'flex';
+    document.getElementById('btnAuthLoginMode').style.display = registering ? 'flex' : 'none';
+    document.getElementById('btnAuthReset').style.display = registering ? 'none' : 'flex';
+    document.getElementById('authPasswordInput').autocomplete = registering ? 'new-password' : 'current-password';
+    setAuthError('');
+  }
+
+  function setAuthError(message) {
+    const element = document.getElementById('authErrorMessage');
+    element.innerText = message || '';
+    element.style.display = message ? 'block' : 'none';
+  }
+
+  function describeAuthError(error) {
+    const messages = {
+      'auth/email-already-in-use': 'Email ini sudah mempunyai akaun. Sila log masuk.',
+      'auth/invalid-email': 'Format email tidak sah.',
+      'auth/invalid-credential': 'Email atau kata laluan tidak betul.',
+      'auth/user-not-found': 'Akaun tidak dijumpai. Sila daftar dahulu.',
+      'auth/wrong-password': 'Email atau kata laluan tidak betul.',
+      'auth/weak-password': 'Kata laluan Firebase mesti sekurang-kurangnya 6 aksara.',
+      'auth/too-many-requests': 'Terlalu banyak cubaan. Cuba lagi kemudian.',
+      'auth/network-request-failed': 'Sambungan rangkaian gagal. Sila cuba lagi.',
+      'auth/operation-not-allowed': 'Daftar email/kata laluan belum diaktifkan dalam Firebase Console.'
+    };
+    return messages[error.code] || `Pengesahan gagal: ${error.message || error.code || 'Ralat tidak diketahui.'}`;
+  }
+
+  function paparPengesahanEmail(email) {
+    document.getElementById('authFormContainer').style.display = 'none';
+    document.getElementById('authVerificationContainer').style.display = 'block';
+    document.getElementById('authDatabaseErrorContainer').style.display = 'none';
+    document.getElementById('authVerificationMessage').innerText =
+      `Firebase telah menghantar pautan pengesahan ke ${email}. Sahkan email untuk menggunakan profil staf. Selepas klik pautan, kembali ke halaman ini dan tekan “Saya sudah sahkan email”.`;
+    openModal('modalFirebaseAuth');
+  }
+
+  function tutupModalAuth() {
+    pendingProfileName = '';
+    closeModal('modalFirebaseAuth');
+  }
+
+  function teruskanProfilTertangguh() {
+    if (!pendingProfileName) return;
+    const nama = pendingProfileName;
+    pendingProfileName = '';
+    bukaModulStaf(nama);
+  }
+
+  function paparBorangAuth() {
+    document.getElementById('authFormContainer').style.display = 'block';
+    document.getElementById('authVerificationContainer').style.display = 'none';
+    document.getElementById('authDatabaseErrorContainer').style.display = 'none';
+    setAuthMode('login');
+    openModal('modalFirebaseAuth');
+  }
+
+  function paparRalatAksesDataAuth(error) {
+    document.getElementById('authFormContainer').style.display = 'none';
+    document.getElementById('authVerificationContainer').style.display = 'none';
+    document.getElementById('authDatabaseErrorContainer').style.display = 'block';
+    document.getElementById('authDatabaseErrorMessage').innerText =
+      `Akaun telah disahkan, tetapi Firebase tidak membenarkan data dimuatkan. Semak Realtime Database Rules dan pastikan akses pengguna yang log masuk dibenarkan. ${describeAuthError(error)}`;
+    openModal('modalFirebaseAuth');
+  }
+
+  async function hantarAuthForm() {
+    const email = document.getElementById('authEmailInput').value.trim().toLowerCase();
+    const password = document.getElementById('authPasswordInput').value;
+    if (!email || !password) {
+      setAuthError('Sila isi email dan kata laluan.');
+      return;
+    }
+
+    setAuthError('');
+    try {
+      if (authMode === 'register') {
+        const confirmation = document.getElementById('authConfirmPasswordInput').value;
+        if (password !== confirmation) {
+          setAuthError('Pengesahan kata laluan tidak sepadan.');
+          return;
+        }
+        const credential = await auth.createUserWithEmailAndPassword(email, password);
+        await credential.user.sendEmailVerification();
+        paparPengesahanEmail(email);
+      } else {
+        await auth.signInWithEmailAndPassword(email, password);
+      }
+    } catch (error) {
+      console.error('Ralat Firebase Authentication:', error);
+      if (auth.currentUser && !auth.currentUser.emailVerified) {
+        paparPengesahanEmail(auth.currentUser.email);
+        showMsg(`Akaun telah dibuat tetapi email pengesahan tidak dapat dihantar. ${describeAuthError(error)}`);
+      } else {
+        setAuthError(describeAuthError(error));
+      }
+    }
+  }
+
+  async function hantarResetKataLaluan() {
+    const email = document.getElementById('authEmailInput').value.trim().toLowerCase();
+    if (!email) {
+      setAuthError('Masukkan email untuk menerima pautan reset kata laluan.');
+      return;
+    }
+    try {
+      await auth.sendPasswordResetEmail(email);
+      setAuthError('');
+      showMsg(`Firebase telah menghantar pautan reset kata laluan ke ${email}.`);
+    } catch (error) {
+      console.error('Ralat reset kata laluan Firebase:', error);
+      setAuthError(describeAuthError(error));
+    }
+  }
+
+  async function hantarSemulaPengesahanEmail() {
+    if (!auth.currentUser) return;
+    try {
+      await auth.currentUser.sendEmailVerification();
+      showMsg('Pautan pengesahan email telah dihantar semula.');
+    } catch (error) {
+      console.error('Ralat menghantar semula pengesahan email:', error);
+      showMsg(describeAuthError(error));
+    }
+  }
+
+  async function semakPengesahanEmail() {
+    if (!auth.currentUser) return;
+    try {
+      await auth.currentUser.reload();
+      if (!auth.currentUser.emailVerified) {
+        showMsg('Email belum disahkan. Buka pautan dalam email dahulu.');
+        return;
+      }
+      firebaseUser = auth.currentUser;
+      await firebaseUser.getIdToken(true);
+      await muatTurunDataAwan();
+      authLoadedUid = firebaseUser.uid;
+      document.getElementById('modalFirebaseAuth').style.display = 'none';
+      teruskanProfilTertangguh();
+    } catch (error) {
+      console.error('Ralat menyemak pengesahan email:', error);
+      if (auth.currentUser && auth.currentUser.emailVerified) paparRalatAksesDataAuth(error);
+      else showMsg(describeAuthError(error));
+    }
+  }
+
+  async function cubaMuatSemulaDataAuth() {
+    if (!auth.currentUser || !auth.currentUser.emailVerified) return;
+    try {
+      await auth.currentUser.getIdToken(true);
+      await muatTurunDataAwan();
+      authLoadedUid = auth.currentUser.uid;
+      document.getElementById('modalFirebaseAuth').style.display = 'none';
+      teruskanProfilTertangguh();
+    } catch (error) {
+      console.error('Ralat memuat semula data Firebase:', error);
+      paparRalatAksesDataAuth(error);
+    }
+  }
+
+  async function logKeluarAkaun() {
+    try {
+      await auth.signOut();
+    } catch (error) {
+      console.error('Ralat log keluar Firebase:', error);
+      showMsg(describeAuthError(error));
+    }
+  }
+
+  function resetForSignedOutUser() {
+    firebaseUser = null;
+    authLoadedUid = '';
+    activeBoardId = null;
+    boards = [];
+    senaraiStaf = [];
+    rekodPergerakan = [];
+    rekodKehadiran = {};
+    pemohonAktif = '';
+    document.getElementById('welcomeScreen').style.display = 'block';
+    document.getElementById('mainDashboard').style.display = 'none';
+    sessionStorage.removeItem('isAdmin');
+    checkAdminStatus();
+  }
+
+  function mulaFirebaseAuth() {
+    auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).then(() => {
+      auth.onAuthStateChanged(async user => {
+        if (!user) {
+          resetForSignedOutUser();
+          await muatTurunDataAwan(true);
+          return;
+        }
+
+        firebaseUser = user;
+        try {
+          await user.reload();
+          firebaseUser = auth.currentUser;
+          if (!firebaseUser.emailVerified) {
+            await muatTurunDataAwan(true);
+            if (pendingProfileName) paparPengesahanEmail(firebaseUser.email);
+            return;
+          }
+          if (authLoadedUid === firebaseUser.uid) return;
+          await firebaseUser.getIdToken(true);
+          await muatTurunDataAwan();
+          authLoadedUid = firebaseUser.uid;
+          document.getElementById('modalFirebaseAuth').style.display = 'none';
+          teruskanProfilTertangguh();
+        } catch (error) {
+          console.error('Ralat memulakan sesi Firebase:', error);
+          if (firebaseUser && firebaseUser.emailVerified) paparRalatAksesDataAuth(error);
+          else {
+            firebaseUser = null;
+            await muatTurunDataAwan(true);
+            if (pendingProfileName) {
+              paparBorangAuth();
+              setAuthError(describeAuthError(error));
+            }
+          }
+        }
+      }, error => {
+        console.error('Ralat status Firebase Authentication:', error);
+        resetForSignedOutUser();
+        muatTurunDataAwan(true);
+      });
+    }).catch(error => {
+      console.error('Ralat menetapkan sesi Firebase:', error);
+      muatTurunDataAwan(true);
+    });
   }
 
   function showMsg(message, callback = null, showCancel = false) {
@@ -1063,6 +1359,10 @@
   }
 
   function toggleAdminLogin() {
+    if (!firebaseUser || !firebaseUser.emailVerified) {
+      showMsg('Log masuk melalui ikon staf dahulu untuk mengakses fungsi Admin.');
+      return;
+    }
     const isAdmin = sessionStorage.getItem('isAdmin') === 'true';
     if (isAdmin) {
       showMsg("Adakah anda pasti untuk log keluar dari mod Admin?", (confirmed) => {
@@ -1110,10 +1410,16 @@
   }
 
   function checkAdminStatus() {
-    const isAdmin = sessionStorage.getItem('isAdmin') === 'true';
+    const isSignedIn = !!(firebaseUser && firebaseUser.emailVerified);
+    const isAdmin = isSignedIn && sessionStorage.getItem('isAdmin') === 'true';
     const btnSettings = document.getElementById('btnSettingsMain');
+    const btnAdminLogin = document.getElementById('btnAdminLogin');
+    const boardSettings = document.querySelector('#mainDashboard .header-action-container');
     const adminIcon = document.getElementById('adminLockIcon');
     const descEl = document.getElementById('welcomeDescText');
+
+    if (btnAdminLogin) btnAdminLogin.style.display = isSignedIn ? 'inline-flex' : 'none';
+    if (boardSettings) boardSettings.style.display = isSignedIn ? 'flex' : 'none';
 
     if (isAdmin) {
       if(btnSettings) btnSettings.style.display = 'inline-flex';
@@ -1136,26 +1442,38 @@
     }
   }
 
-  async function muatTurunDataAwan() {
+  function binaDataAwam() {
+    return boards.map(board => ({
+      ...board,
+      senaraiStaf: (board.senaraiStaf || []).map(({ email, ...staf }) => staf)
+    }));
+  }
+
+  async function muatTurunDataAwan(awam = false) {
     try {
-      const snapshot = await db.ref('appData').once('value');
+      const snapshot = await db.ref(awam ? 'publicData/boards' : 'appData').once('value');
       if (snapshot.exists()) {
         const result = snapshot.val();
-        boards = result.boards || [];
-        adminPassword = result.adminPassword || localStorage.getItem('adminPassword') || 'admin';
-        localStorage.setItem('boards', JSON.stringify(boards));
-        localStorage.setItem('adminPassword', adminPassword);
+        boards = awam ? result || [] : result.boards || [];
+        if (!awam) {
+          adminPassword = result.adminPassword || localStorage.getItem('adminPassword') || 'admin';
+          localStorage.setItem('boards', JSON.stringify(boards));
+          localStorage.setItem('adminPassword', adminPassword);
+        }
       } else {
-        boards = JSON.parse(localStorage.getItem('boards')) || [];
-        adminPassword = localStorage.getItem('adminPassword') || 'admin';
+        boards = JSON.parse(localStorage.getItem(awam ? 'publicBoards' : 'boards')) || [];
+        if (!awam) adminPassword = localStorage.getItem('adminPassword') || 'admin';
       }
     } catch (error) {
       console.error("Ralat muat turun data Firebase:", error);
-      boards = JSON.parse(localStorage.getItem('boards')) || [];
-      adminPassword = localStorage.getItem('adminPassword') || 'admin';
+      if (error.code === 'PERMISSION_DENIED' && !awam) throw error;
+      boards = JSON.parse(localStorage.getItem(awam ? 'publicBoards' : 'boards')) || [];
+      if (!awam) adminPassword = localStorage.getItem('adminPassword') || 'admin';
+      showMsg(awam ? 'Data board awam tidak dapat dimuatkan. Semak Firebase Rules dan sambungan internet.' : 'Firebase tidak dapat dicapai. Salinan setempat dimuatkan; perubahan mungkin tidak disegerakkan.');
     }
     
     const todayStr = getLocalDateString();
+    let kataLaluanStafLamaDibuang = false;
     boards.forEach(b => {
       if (!b.tarikhMula) b.tarikhMula = todayStr;
       if (!b.tarikhFreez) {
@@ -1167,8 +1485,23 @@
       if (!b.soundType) b.soundType = 'bell';
       if (!b.theme) b.theme = '0';
       if (!b.rekodKehadiran) b.rekodKehadiran = {};
+      (b.senaraiStaf || []).forEach(staf => {
+        if (Object.prototype.hasOwnProperty.call(staf, 'password')) {
+          delete staf.password;
+          kataLaluanStafLamaDibuang = true;
+        }
+      });
     });
 
+    if (kataLaluanStafLamaDibuang && !awam) await simpanKeLocalStorage();
+    localStorage.setItem('publicBoards', JSON.stringify(binaDataAwam()));
+    if (!awam) {
+      try {
+        await db.ref('publicData/boards').set(binaDataAwam());
+      } catch (error) {
+        console.error('Ralat menerbitkan data board awam:', error);
+      }
+    }
     checkAdminStatus();
 
     const urlParams = new URLSearchParams(window.location.search);
@@ -1191,12 +1524,14 @@
     localStorage.setItem('adminPassword', adminPassword);
     
     try {
-      await db.ref('appData').set({ 
-        boards: boards, 
-        adminPassword: adminPassword 
-      });
+      await Promise.all([
+        db.ref('appData').set({ boards: boards, adminPassword: adminPassword }),
+        db.ref('publicData/boards').set(binaDataAwam())
+      ]);
+      localStorage.setItem('publicBoards', JSON.stringify(binaDataAwam()));
     } catch (e) {
       console.error("Ralat menyimpan ke Firebase:", e);
+      showMsg('Perubahan disimpan pada peranti ini tetapi gagal disegerakkan ke Firebase. Semak sambungan dan Realtime Database Rules.');
     }
   }
 
@@ -1495,6 +1830,7 @@
     
     if(idx === -1) { 
       document.getElementById('stafNamaInput').value = ''; 
+      document.getElementById('stafEmailInput').value = '';
       document.getElementById('stafJawatanInput').value = ''; 
       document.getElementById('stafKumpulanInput').value = ''; 
       document.getElementById('stafReportToInput').value = '';
@@ -1503,6 +1839,7 @@
     } else { 
       const s = senaraiStaf[idx]; 
       document.getElementById('stafNamaInput').value = s.nama; 
+      document.getElementById('stafEmailInput').value = s.email || '';
       document.getElementById('stafJawatanInput').value = s.jawatan || ''; 
       document.getElementById('stafKumpulanInput').value = s.kumpulan || ''; 
       document.getElementById('stafReportToInput').value = s.reportTo || ''; 
@@ -1523,17 +1860,21 @@
     if (cekDanPaparPopupRenew()) return;
     const idx = parseInt(document.getElementById('editIndexStaf').value);
     const nama = document.getElementById('stafNamaInput').value.trim();
+    const email = document.getElementById('stafEmailInput').value.trim().toLowerCase();
     if(!nama) { showMsg('User name is required.'); return; }
-    
-    const existingPassword = (idx > -1 && senaraiStaf[idx]) ? (senaraiStaf[idx].password || '') : '';
+    if(!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showMsg('A valid email address is required.'); return; }
+    const emailAlreadyUsed = senaraiStaf.some((s, userIndex) =>
+      userIndex !== idx && (s.email || '').trim().toLowerCase() === email
+    );
+    if (emailAlreadyUsed) { showMsg('This email is already assigned to another user on this board.'); return; }
 
     const objBaru = { 
-      nama, 
+      nama,
+      email,
       jawatan: document.getElementById('stafJawatanInput').value.trim(), 
       kumpulan: document.getElementById('stafKumpulanInput').value, 
       reportTo: document.getElementById('stafReportToInput').value, 
-      gambar: tempGambarB64,
-      password: existingPassword
+      gambar: tempGambarB64
     };
 
     if(idx === -1) {
@@ -1572,7 +1913,7 @@
       return `<div style="display:flex; justify-content:space-between; align-items:center; padding:10px; background:#ffffff; border:1px solid var(--card-border); border-radius:8px; margin-bottom:8px;">
         <div style="display:flex; align-items:center; gap:10px;">
           ${avatarHTML}
-          <div><strong>${s.nama}</strong><br><span style="font-size:0.8rem; color:var(--grey-text);">${s.jawatan || '-'} (${s.kumpulan ? 'Level ' + s.kumpulan : 'Standard'})</span></div>
+          <div><strong>${s.nama}</strong><br><span style="font-size:0.8rem; color:var(--grey-text);">${s.email || 'Email belum ditetapkan'}<br>${s.jawatan || '-'} (${s.kumpulan ? 'Level ' + s.kumpulan : 'Standard'})</span></div>
         </div>
         <div style="display:flex; gap:6px;">
           <button class="clean-menu-item" style="padding:4px 8px; border:1px solid var(--card-border); border-radius:6px;" onclick="bukaFormStafModal(${idx})">Edit</button>
@@ -2135,24 +2476,30 @@
     return hData && hbhRec;
   }
 
-  function bukaModulStaf(nama, bypassPassword = false) { 
+  function bukaModulStaf(nama) { 
     const stafObj = senaraiStaf.find(s => s.nama === nama);
     if (!stafObj) return;
-
-    const hasPassword = stafObj.password && stafObj.password.trim() !== '';
-
-    if (hasPassword && !bypassPassword) {
-      showPrompt(`Sila masukkan kata laluan untuk ${nama}:`, "", (pwd) => {
-        if (pwd === null) return;
-        if (pwd !== stafObj.password) {
-          showMsg("❌ Kata laluan salah!");
-          return;
-        }
-        teruskanBukaModulStaf(nama);
-      }, true);
-    } else {
-      teruskanBukaModulStaf(nama);
+    if (!firebaseUser || !firebaseUser.emailVerified) {
+      pendingProfileName = nama;
+      if (auth.currentUser && !auth.currentUser.emailVerified) {
+        paparPengesahanEmail(auth.currentUser.email);
+      } else {
+        paparBorangAuth();
+      }
+      return;
     }
+    if (!stafObj.email) {
+      showMsg('Email pengguna ini belum ditetapkan. Minta pengurus papan mengemas kini profil pengguna.', () => {
+        const stafIndex = senaraiStaf.findIndex(staf => staf.nama === nama);
+        if (stafIndex > -1) bukaFormStafModal(stafIndex);
+      });
+      return;
+    }
+    if (stafObj.email.trim().toLowerCase() !== firebaseUser.email.trim().toLowerCase()) {
+      showMsg('Email akaun Firebase ini tidak sepadan dengan pengguna tersebut.');
+      return;
+    }
+    teruskanBukaModulStaf(nama);
   }
 
   function teruskanBukaModulStaf(nama) {
@@ -2170,13 +2517,6 @@
       } else {
         btnManageNote.style.display = 'none';
       }
-    }
-
-    const teksMenuPwd = document.getElementById('teksMenuPassword');
-    if (stafObj && stafObj.password && stafObj.password.trim() !== '') {
-      teksMenuPwd.innerText = 'Matikan kata laluan';
-    } else {
-      teksMenuPwd.innerText = 'Aktif kata laluan';
     }
 
     const senaraiMenunggu = rekodPergerakan.filter(r => {
@@ -2218,39 +2558,6 @@
 
     renderSenaraiAktivitiPeribadiModal();
     openModal('modalMenuProfil'); 
-  }
-
-  function bukaModalKataLaluanStaf() {
-    const stafObj = senaraiStaf.find(s => s.nama === pemohonAktif);
-    if (!stafObj) return;
-
-    const hasPassword = stafObj.password && stafObj.password.trim() !== '';
-
-    if (hasPassword) {
-      showPrompt("Masukkan kata laluan semasa untuk mematikan kata laluan:", "", async (oldPwd) => {
-        if (oldPwd === null) return;
-        if (oldPwd !== stafObj.password) {
-          showMsg("❌ Kata laluan semasa salah!");
-          return;
-        }
-        stafObj.password = "";
-        await simpanKeLocalStorage();
-        showMsg("✅ Kata laluan berjaya dimatikan!");
-        bukaModulStaf(pemohonAktif, true);
-      }, true);
-    } else {
-      showPrompt("Masukkan kata laluan baru:", "", async (newPwd) => {
-        if (newPwd === null) return;
-        if (newPwd.trim() === "") {
-          showMsg("Kata laluan tidak boleh kosong!");
-          return;
-        }
-        stafObj.password = newPwd.trim();
-        await simpanKeLocalStorage();
-        showMsg("✅ Kata laluan berjaya diaktifkan!");
-        bukaModulStaf(pemohonAktif, true);
-      }, true);
-    }
   }
 
   function padamAkaunSendiri() {
@@ -2895,7 +3202,7 @@
   }
 
   window.onload = function() {
-    muatTurunDataAwan();
+    mulaFirebaseAuth();
   };
 </script>
 </body>
