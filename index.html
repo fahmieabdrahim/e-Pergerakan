@@ -898,6 +898,7 @@
   }
   const auth = firebase.auth();
   const db = firebase.database();
+  const ADMIN_UID = 'Q03mWGRaa1OAIN5GMWao9ZTd9oQ2';
 
   let boards = [];
   let activeBoardId = null;
@@ -909,10 +910,11 @@
   let tempGambarB64 = '';
   let currentMonthOffset = 0;
   let renewingBoardId = null;
-  let adminPassword = 'admin'; 
+  let adminPassword = '';
   let firebaseUser = null;
   let authLoadedUid = '';
   let pendingProfileName = '';
+  let pendingAdminLogin = false;
   let authMode = 'login';
 
   let audioCtx = null;
@@ -1020,6 +1022,7 @@
 
   function tutupModalAuth() {
     pendingProfileName = '';
+    pendingAdminLogin = false;
     closeModal('modalFirebaseAuth');
   }
 
@@ -1030,12 +1033,27 @@
     bukaModulStaf(nama);
   }
 
+  function teruskanAdminLoginTertangguh() {
+    if (!pendingAdminLogin || !firebaseUser || !firebaseUser.emailVerified) return;
+    pendingAdminLogin = false;
+    if (firebaseUser.uid !== ADMIN_UID) {
+      showMsg('Akaun Firebase ini tiada akses Admin.');
+      return;
+    }
+    toggleAdminLogin();
+  }
+
   function paparBorangAuth() {
     document.getElementById('authFormContainer').style.display = 'block';
     document.getElementById('authVerificationContainer').style.display = 'none';
     document.getElementById('authDatabaseErrorContainer').style.display = 'none';
     setAuthMode('login');
     openModal('modalFirebaseAuth');
+  }
+
+  function paparBorangAuthAdmin() {
+    paparBorangAuth();
+    document.getElementById('btnAuthRegisterMode').style.display = 'none';
   }
 
   function paparRalatAksesDataAuth(error) {
@@ -1121,6 +1139,7 @@
       authLoadedUid = firebaseUser.uid;
       document.getElementById('modalFirebaseAuth').style.display = 'none';
       teruskanProfilTertangguh();
+      teruskanAdminLoginTertangguh();
     } catch (error) {
       console.error('Ralat menyemak pengesahan email:', error);
       if (auth.currentUser && auth.currentUser.emailVerified) paparRalatAksesDataAuth(error);
@@ -1136,6 +1155,7 @@
       authLoadedUid = auth.currentUser.uid;
       document.getElementById('modalFirebaseAuth').style.display = 'none';
       teruskanProfilTertangguh();
+      teruskanAdminLoginTertangguh();
     } catch (error) {
       console.error('Ralat memuat semula data Firebase:', error);
       paparRalatAksesDataAuth(error);
@@ -1181,7 +1201,7 @@
           firebaseUser = auth.currentUser;
           if (!firebaseUser.emailVerified) {
             await muatTurunDataAwan(true);
-            if (pendingProfileName) paparPengesahanEmail(firebaseUser.email);
+            if (pendingProfileName || pendingAdminLogin) paparPengesahanEmail(firebaseUser.email);
             return;
           }
           if (authLoadedUid === firebaseUser.uid) return;
@@ -1190,13 +1210,14 @@
           authLoadedUid = firebaseUser.uid;
           document.getElementById('modalFirebaseAuth').style.display = 'none';
           teruskanProfilTertangguh();
+          teruskanAdminLoginTertangguh();
         } catch (error) {
           console.error('Ralat memulakan sesi Firebase:', error);
           if (firebaseUser && firebaseUser.emailVerified) paparRalatAksesDataAuth(error);
           else {
             firebaseUser = null;
             await muatTurunDataAwan(true);
-            if (pendingProfileName) {
+            if (pendingProfileName || pendingAdminLogin) {
               paparBorangAuth();
               setAuthError(describeAuthError(error));
             }
@@ -1295,23 +1316,22 @@
   function populateRoleDropdowns() {
     const kumpulanSelect = document.getElementById('stafKumpulanInput');
     const reportToSelect = document.getElementById('stafReportToInput');
-    
-    if (kumpulanSelect && reportToSelect) {
-      let kOptions = '<option value="">Tiada (Standard)</option>';
-      let rOptions = '<option value="">Tiada</option>';
-      for (let i = 1; i <= 25; i++) {
-        kOptions += `<option value="${i}">${i}</option>`;
-        rOptions += `<option value="${i}">${i}</option>`;
-      }
-      kumpulanSelect.innerHTML = kOptions;
-      reportToSelect.innerHTML = rOptions;
+    if (!kumpulanSelect || !reportToSelect) return;
+
+    let kumpulanOptions = '<option value="">Tiada (Standard)</option>';
+    let reportToOptions = '<option value="">Tiada</option>';
+    for (let role = 1; role <= 25; role++) {
+      kumpulanOptions += `<option value="${role}">${role}</option>`;
+      reportToOptions += `<option value="${role}">${role}</option>`;
     }
+    kumpulanSelect.innerHTML = kumpulanOptions;
+    reportToSelect.innerHTML = reportToOptions;
   }
 
   function getRoleLevel(role) {
-    if (!role || role === '') return 99; 
-    const num = parseInt(role);
-    return isNaN(num) ? 99 : num;
+    if (!role || role === '') return 99;
+    const level = parseInt(role, 10);
+    return Number.isNaN(level) ? 99 : level;
   }
 
   function getLocalDateString(dateObj = new Date()) {
@@ -1325,16 +1345,12 @@
     if (!dateStr || !dateStr.includes('-')) return dateStr;
     const parts = dateStr.split('-');
     if (parts.length !== 3) return dateStr;
-    const year = parts[0];
-    const month = parts[1];
-    const day = parts[2];
-    return `${day}-${month}-${year}`;
+    return `${parts[2]}-${parts[1]}-${parts[0]}`;
   }
 
-  function isBoardExpired(b) {
-    if (!b.tarikhFreez) return false;
-    const today = getLocalDateString();
-    return today > b.tarikhFreez;
+  function isBoardExpired(board) {
+    if (!board.tarikhFreez) return false;
+    return getLocalDateString() > board.tarikhFreez;
   }
 
   function applyBoardTheme(themeVal) {
@@ -1359,8 +1375,22 @@
   }
 
   function toggleAdminLogin() {
-    if (!firebaseUser || !firebaseUser.emailVerified) {
-      showMsg('Log masuk melalui ikon staf dahulu untuk mengakses fungsi Admin.');
+    if (!firebaseUser || !firebaseUser.emailVerified || firebaseUser.uid !== ADMIN_UID) {
+      pendingAdminLogin = true;
+      if (firebaseUser && firebaseUser.emailVerified && firebaseUser.uid !== ADMIN_UID) {
+        showMsg('Akaun Firebase semasa bukan akaun Admin. Log keluar dan masuk menggunakan akaun Admin?', async confirmed => {
+          if (!confirmed) {
+            pendingAdminLogin = false;
+            return;
+          }
+          await auth.signOut();
+          paparBorangAuthAdmin();
+        }, true);
+      } else if (auth.currentUser && !auth.currentUser.emailVerified) {
+        paparPengesahanEmail(auth.currentUser.email);
+      } else {
+        paparBorangAuthAdmin();
+      }
       return;
     }
     const isAdmin = sessionStorage.getItem('isAdmin') === 'true';
@@ -1372,6 +1402,10 @@
         }
       }, true);
     } else {
+      if (!adminPassword) {
+        showMsg('Kata laluan Admin tidak dapat dimuatkan dari Firebase. Semak Firebase Rules untuk adminData/adminPassword.');
+        return;
+      }
       showPrompt("Sila masukkan kata laluan Admin:", "", (pwd) => {
         if (pwd === null) return;
         if (pwd === adminPassword) {
@@ -1396,30 +1430,30 @@
         showMsg("Kata laluan semasa salah!");
         return;
       }
-      showPrompt("Masukkan kata laluan Admin baru:", "", (newPwd) => {
+      showPrompt("Masukkan kata laluan Admin baru:", "", async (newPwd) => {
         if (newPwd === null) return;
         if (newPwd.trim() === "") {
           showMsg("Kata laluan tidak boleh kosong!");
           return;
         }
         adminPassword = newPwd.trim();
-        simpanKeLocalStorage();
-        showMsg("✅ Kata laluan admin berjaya ditukar!");
+        const saved = await simpanKeLocalStorage();
+        if (saved) showMsg("✅ Kata laluan admin berjaya ditukar!");
       }, true);
     }, true);
   }
 
   function checkAdminStatus() {
-    const isSignedIn = !!(firebaseUser && firebaseUser.emailVerified);
-    const isAdmin = isSignedIn && sessionStorage.getItem('isAdmin') === 'true';
+    const isAdminUid = !!(firebaseUser && firebaseUser.emailVerified && firebaseUser.uid === ADMIN_UID);
+    const isAdmin = isAdminUid && sessionStorage.getItem('isAdmin') === 'true';
     const btnSettings = document.getElementById('btnSettingsMain');
     const btnAdminLogin = document.getElementById('btnAdminLogin');
     const boardSettings = document.querySelector('#mainDashboard .header-action-container');
     const adminIcon = document.getElementById('adminLockIcon');
     const descEl = document.getElementById('welcomeDescText');
 
-    if (btnAdminLogin) btnAdminLogin.style.display = isSignedIn ? 'inline-flex' : 'none';
-    if (boardSettings) boardSettings.style.display = isSignedIn ? 'flex' : 'none';
+    if (btnAdminLogin) btnAdminLogin.style.display = 'inline-flex';
+    if (boardSettings) boardSettings.style.display = isAdmin ? 'flex' : 'none';
 
     if (isAdmin) {
       if(btnSettings) btnSettings.style.display = 'inline-flex';
@@ -1450,28 +1484,50 @@
   }
 
   async function muatTurunDataAwan(awam = false) {
+    let appDataWujud = false;
+    let dataAppLama = null;
+    let kataLaluanLama = '';
     try {
       const snapshot = await db.ref(awam ? 'publicData/boards' : 'appData').once('value');
       if (snapshot.exists()) {
         const result = snapshot.val();
+        appDataWujud = !awam;
         boards = awam ? result || [] : result.boards || [];
         if (!awam) {
-          adminPassword = result.adminPassword || localStorage.getItem('adminPassword') || 'admin';
+          dataAppLama = result;
+          kataLaluanLama = result.adminPassword || '';
           localStorage.setItem('boards', JSON.stringify(boards));
-          localStorage.setItem('adminPassword', adminPassword);
         }
       } else {
         boards = JSON.parse(localStorage.getItem(awam ? 'publicBoards' : 'boards')) || [];
-        if (!awam) adminPassword = localStorage.getItem('adminPassword') || 'admin';
       }
     } catch (error) {
       console.error("Ralat muat turun data Firebase:", error);
       if (error.code === 'PERMISSION_DENIED' && !awam) throw error;
       boards = JSON.parse(localStorage.getItem(awam ? 'publicBoards' : 'boards')) || [];
-      if (!awam) adminPassword = localStorage.getItem('adminPassword') || 'admin';
+      dataAppLama = null;
       showMsg(awam ? 'Data board awam tidak dapat dimuatkan. Semak Firebase Rules dan sambungan internet.' : 'Firebase tidak dapat dicapai. Salinan setempat dimuatkan; perubahan mungkin tidak disegerakkan.');
     }
-    
+
+    adminPassword = '';
+    if (!awam && firebaseUser && firebaseUser.uid === ADMIN_UID) {
+      try {
+        const passwordSnapshot = await db.ref('adminData/adminPassword').once('value');
+        if (passwordSnapshot.exists()) {
+          adminPassword = passwordSnapshot.val();
+        } else {
+          adminPassword = kataLaluanLama || 'admin';
+          await db.ref('adminData/adminPassword').set(adminPassword);
+        }
+        if (appDataWujud && kataLaluanLama) {
+          delete dataAppLama.adminPassword;
+          await db.ref('appData').set(dataAppLama);
+        }
+      } catch (error) {
+        console.error('Ralat mengakses kata laluan Admin di Firebase:', error);
+        adminPassword = '';
+      }
+    }
     const todayStr = getLocalDateString();
     let kataLaluanStafLamaDibuang = false;
     boards.forEach(b => {
@@ -1521,17 +1577,27 @@
       }
     }
     localStorage.setItem('boards', JSON.stringify(boards));
-    localStorage.setItem('adminPassword', adminPassword);
     
     try {
-      await Promise.all([
-        db.ref('appData').set({ boards: boards, adminPassword: adminPassword }),
+      const appData = { boards: boards };
+      if (!firebaseUser || firebaseUser.uid !== ADMIN_UID) {
+        const legacyPasswordSnapshot = await db.ref('appData/adminPassword').once('value');
+        if (legacyPasswordSnapshot.exists()) appData.adminPassword = legacyPasswordSnapshot.val();
+      }
+      const writes = [
+        db.ref('appData').set(appData),
         db.ref('publicData/boards').set(binaDataAwam())
-      ]);
+      ];
+      if (firebaseUser && firebaseUser.uid === ADMIN_UID && adminPassword) {
+        writes.push(db.ref('adminData/adminPassword').set(adminPassword));
+      }
+      await Promise.all(writes);
       localStorage.setItem('publicBoards', JSON.stringify(binaDataAwam()));
+      return true;
     } catch (e) {
       console.error("Ralat menyimpan ke Firebase:", e);
       showMsg('Perubahan disimpan pada peranti ini tetapi gagal disegerakkan ke Firebase. Semak sambungan dan Realtime Database Rules.');
+      return false;
     }
   }
 
@@ -2252,7 +2318,6 @@
     });
 
     let hasUnreadAlerts = false;
-
     container.innerHTML = sortedStaf.map((staf, index) => {
       const img = staf.gambar ? `<img src="${staf.gambar}" class="staff-avatar">` : `<span class="avatar-empty"></span>`;
       
@@ -2275,7 +2340,6 @@
       const currRole = getRoleLevel(staf.kumpulan);
       const nextStaf = sortedStaf[index + 1];
       const nextRole = nextStaf ? getRoleLevel(nextStaf.kumpulan) : 99;
-
       let marginRight = '3px';
       if (currRole <= 25 && nextRole === 99) {
         marginRight = '9px';
@@ -3164,7 +3228,6 @@
       console.error("Ralat semasa render kalendar:", err);
     }
   }
-
   function tukarBulan(direction) {
     currentMonthOffset += direction;
     renderCalendar();
