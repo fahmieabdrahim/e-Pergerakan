@@ -114,9 +114,46 @@
 
     .top-right-nav { position: absolute; top: 16px; right: 16px; display: flex; gap: 8px; }
     .app-footer { box-sizing: border-box; width: 100%; flex-shrink: 0; margin-top: auto; padding: 16px 16px calc(16px + env(safe-area-inset-bottom, 0px)); color: var(--grey-text); font-size: 0.8rem; text-align: center; }
-    .welcome-header { display: flex; flex-direction: column; align-items: center; width: 100%; max-width: 850px; margin-left: auto; margin-right: auto; padding: 20px 10px; text-align: center; }
-    .welcome-header h1 { font-size: 2.5rem; color: #0f172a; margin-bottom: 15px; font-weight: 700; text-align: center; }
-    .welcome-desc { display: block; width: 100%; max-width: 700px; align-self: center; font-size: 1.05rem; color: var(--grey-text); line-height: 1.6; margin: 0 auto 25px; text-align: center; }
+    .welcome-header { display: flex; flex-direction: column; align-items: center; width: 100%; max-width: 1040px; margin-left: auto; margin-right: auto; padding: 12px 10px 0; text-align: center; }
+    .welcome-hero { width: 100%; max-width: 820px; display: flex; flex-direction: column; align-items: center; gap: 12px; margin-bottom: 8px; }
+    .welcome-badge { display: block; padding: 0; background: transparent; color: #35556a; border: 0; border-radius: 0; font-size: 1.18rem; font-weight: 700; line-height: 1.35; letter-spacing: 0; text-transform: none; }
+    .welcome-header h1 { font-size: 3.4rem; color: #102a36; margin-bottom: 0; font-weight: 800; text-align: center; letter-spacing: 0; line-height: 1.1; }
+    .welcome-desc { display: block; width: 100%; max-width: 680px; align-self: center; font-size: 1.02rem; color: var(--grey-text); line-height: 1.6; margin: 0 auto; text-align: center; }
+    .welcome-actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 12px; margin-top: 4px; }
+    .primary-cta { display: inline-flex; align-items: center; justify-content: center; min-height: 48px; border: none; border-radius: 8px; padding: 13px 22px; font: inherit; font-weight: 800; cursor: pointer; transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease; background: #087f68; color: #ffffff; box-shadow: 0 8px 18px rgba(8, 127, 104, 0.2); }
+    .primary-cta:hover { transform: translateY(-1px); }
+    .welcome-feature-grid { width: 100%; max-width: 980px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin: 14px auto 0; }
+    .feature-card { min-height: 168px; padding: 18px; background: #ffffff; border: 1px solid #dbe4e6; border-radius: 8px; box-shadow: 0 4px 14px rgba(16,42,54,0.04); text-align: left; transition: border-color 0.2s ease, box-shadow 0.2s ease; }
+    .feature-card:hover { border-color: #9dc9bf; box-shadow: 0 8px 20px rgba(16,42,54,0.08); }
+    .feature-card .material-symbols-outlined { display: grid; place-items: center; width: 40px; height: 40px; margin: 0 0 12px; border-radius: 8px; background: #e3f2ee; color: #087f68; font-size: 1.4rem; }
+    .feature-card:nth-child(2) .material-symbols-outlined { background: #e9effb; color: #355a9b; }
+    .feature-card:nth-child(3) .material-symbols-outlined { background: #fff0dd; color: #9b5b13; }
+    .feature-card h3 { font-size: 1rem; font-weight: 750; margin-bottom: 7px; color: #102a36; }
+    .feature-card p { font-size: 0.88rem; line-height: 1.55; color: var(--grey-text); }
+    .welcome-workflow { width: 100%; max-width: 980px; margin: 28px auto 18px; }
+    .workflow-header { font-size: 1.4rem; font-weight: 800; color: var(--text-color); margin-bottom: 16px; text-align: center; }
+    .welcome-final-cta { width: 100%; max-width: 980px; box-sizing: border-box; margin: 20px auto 0; padding: 20px 18px; border: 1px solid #dbe4e6; border-radius: 8px; background: #ffffff; box-shadow: 0 4px 14px rgba(16,42,54,0.04); color: #102a36; text-align: center; }
+    .welcome-final-cta h2 { margin: 0 0 7px; color: #102a36; font-size: 1.3rem; font-weight: 800; }
+    .welcome-final-cta p { margin: 0; color: var(--grey-text); font-size: 0.94rem; line-height: 1.55; }
+    .welcome-final-cta .welcome-actions { margin-top: 12px; }
+    .welcome-final-cta .primary-cta { background: #173b56; color: #ffffff; box-shadow: 0 6px 14px rgba(23,59,86,0.16); }
+    @media (max-width: 700px) {
+      .welcome-header { padding: 48px 0 0; }
+      .welcome-hero { gap: 10px; }
+      .welcome-header h1 { font-size: 2.4rem; }
+      .welcome-badge { font-size: 1.05rem; }
+      .welcome-desc { font-size: 0.96rem; }
+      .welcome-feature-grid { grid-template-columns: 1fr; gap: 10px; margin-top: 12px; }
+      .feature-card { min-height: 0; padding: 16px; }
+      .feature-card .material-symbols-outlined { margin-bottom: 9px; }
+      .welcome-final-cta { padding: 20px 18px 22px; }
+      .welcome-final-cta h2 { font-size: 1.15rem; }
+    }
+    .workflow-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+    .workflow-step { background: rgba(255,255,255,0.7); border: 1px solid var(--card-border); border-radius: 16px; padding: 20px 18px; text-align: left; }
+    .workflow-step .step-num { display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 50%; background: #0f766e; color: #fff; font-weight: 700; margin-bottom: 10px; }
+    .workflow-step h4 { font-size: 1rem; font-weight: 700; margin-bottom: 8px; }
+    .workflow-step p { color: var(--grey-text); font-size: 0.9rem; line-height: 1.6; }
     .admin-board-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%; margin: 2px 0 16px; }
     .admin-board-toolbar h2 { margin: 0; color: var(--text-color); font-size: 1.25rem; font-weight: 700; text-align: left; }
     .admin-board-new-button { display: inline-flex; align-items: center; justify-content: center; gap: 7px; min-height: 40px; padding: 8px 13px; border: 0; border-radius: 6px; background: #087f5b; color: #fff; font: inherit; font-size: 0.9rem; font-weight: 600; cursor: pointer; }
@@ -303,11 +340,41 @@
   </div>
 
   <div class="welcome-header">
-    <h1 id="welcomeTitleText">ePergerakan</h1>
-    <p class="welcome-desc" id="welcomeDescText">
-      <strong>ePergerakan</strong> Platform digital interaktif untuk pengurusan status dan lokasi harian staf. Menggantikan papan putih fizikal dengan sistem kemas kini kendiri yang pantas, mudah diakses oleh semua, dan memastikan maklumat keberadaan pegawai sentiasa dipantau oleh penyelia.
-    </p>
-    <div id="mainBoardsListContainer" style="width: 100%; display: none; flex-direction: column; margin-top: 20px;"></div>
+    <div class="welcome-hero">
+      <h1 id="welcomeTitleText">ePergerakan</h1>
+      <div class="welcome-badge">Pengurusan pergerakan dan kehadiran staf</div>
+      <p class="welcome-desc" id="welcomeDescText">
+        Urus pergerakan dan kehadiran staf dengan lebih mudah. Simpan rekod, pantau seluruh pasukan dan kongsi laporan melalui WhatsApp.
+      </p>
+    </div>
+
+    <div id="welcomeFeatures" class="welcome-feature-grid">
+      <div class="feature-card">
+        <span class="material-symbols-outlined">cloud_done</span>
+        <h3>Data tersimpan</h3>
+        <p>Kemas kini status, pergerakan dan kehadiran direkodkan supaya maklumat pasukan kekal tersusun.</p>
+      </div>
+      <div class="feature-card">
+        <span class="material-symbols-outlined">visibility</span>
+        <h3>Pantau seluruh pasukan</h3>
+        <p>Lihat pergerakan harian dan bulanan, serta semak rekod kehadiran mengikut tarikh.</p>
+      </div>
+      <div class="feature-card">
+        <span class="material-symbols-outlined">share</span>
+        <h3>Kongsi laporan WhatsApp</h3>
+        <p>Kongsikan ringkasan pergerakan bulanan atau laporan kehadiran harian dengan mudah.</p>
+      </div>
+    </div>
+
+    <div class="welcome-final-cta">
+      <h2>Mula urus pergerakan staf</h2>
+      <p>Sediakan papan pergerakan pasukan anda dan urus maklumat di satu tempat.</p>
+      <div class="welcome-actions">
+        <button class="primary-cta" onclick="ciptaBoardBaru()"><span class="material-symbols-outlined" style="font-size: 18px; vertical-align: middle; margin-right: 6px;">add</span>Cipta papan pergerakan</button>
+      </div>
+    </div>
+
+    <div id="mainBoardsListContainer" style="width: 100%; display: none; flex-direction: column; margin-top: 10px;"></div>
   </div>
   <footer class="app-footer">© 2026 ePergerakan · Sistem Pengurusan Pergerakan dan Kehadiran Staf</footer>
 </div>
@@ -1103,7 +1170,11 @@
         await credential.user.sendEmailVerification();
         paparPengesahanEmail(email);
       } else {
-        await auth.signInWithEmailAndPassword(email, password);
+        const credential = await auth.signInWithEmailAndPassword(email, password);
+        const targetPersistence = credential.user.uid === ADMIN_UID
+          ? firebase.auth.Auth.Persistence.NONE
+          : firebase.auth.Auth.Persistence.LOCAL;
+        await auth.setPersistence(targetPersistence);
       }
     } catch (error) {
       console.error('Ralat Firebase Authentication:', error);
@@ -1182,6 +1253,7 @@
 
   async function logKeluarAkaun() {
     try {
+      sessionStorage.removeItem('isAdmin');
       await auth.signOut();
     } catch (error) {
       console.error('Ralat log keluar Firebase:', error);
@@ -1217,6 +1289,10 @@
         try {
           await user.reload();
           firebaseUser = auth.currentUser;
+          const targetPersistence = firebaseUser.uid === ADMIN_UID
+            ? firebase.auth.Auth.Persistence.NONE
+            : firebase.auth.Auth.Persistence.LOCAL;
+          await auth.setPersistence(targetPersistence);
           if (!firebaseUser.emailVerified) {
             await muatTurunDataAwan(true);
             if (pendingProfileName || pendingAdminLogin) paparPengesahanEmail(firebaseUser.email);
@@ -1439,24 +1515,22 @@
     const isAdmin = isAdminUid && sessionStorage.getItem('isAdmin') === 'true';
     const btnAdminLogin = document.getElementById('btnAdminLogin');
     const adminIcon = document.getElementById('adminLockIcon');
-    const welcomeTitle = document.getElementById('welcomeTitleText');
-    const descEl = document.getElementById('welcomeDescText');
+    const marketingSections = document.querySelectorAll('.welcome-hero, #welcomeFeatures, .welcome-final-cta');
 
     if (btnAdminLogin) btnAdminLogin.style.display = 'inline-flex';
+    marketingSections.forEach(section => {
+      section.style.display = isAdmin ? 'none' : '';
+    });
     if (isAdmin) {
-      if (welcomeTitle) welcomeTitle.style.display = 'none';
       if(adminIcon) {
         adminIcon.innerText = 'admin_panel_settings';
         adminIcon.style.color = 'var(--text-color)'; 
       }
-      if(descEl) descEl.style.display = 'none';
     } else {
-      if (welcomeTitle) welcomeTitle.style.display = 'block';
       if(adminIcon) {
         adminIcon.innerText = 'admin_panel_settings';
         adminIcon.style.color = 'var(--grey-text)';
       }
-      if(descEl) descEl.style.display = 'block';
     }
     renderMainBoardsList();
     if (document.getElementById('staffStrip')) {
@@ -1611,24 +1685,24 @@
         <tr onclick="masukKeBoard('${b.id}')">
           <td class="admin-board-number">${index + 1}</td>
           <td class="admin-board-name">${b.name}</td>
-          <td><button class="admin-board-admin-button" onclick="bukaPilihAdminBoard('${b.id}', event)" title="Tukar Admin Board">${adminName}</button></td>
+          <td><button class="admin-board-admin-button" onclick="bukaPilihAdminBoard('${b.id}', event)" title="Tukar pentadbir papan">${adminName}</button></td>
           <td>${userCount}</td>
           <td><button class="admin-board-expiry-button" onclick="bukaRenewBoard('${b.id}', event)" title="Tukar tarikh tamat tempoh">${formattedExpiry}</button></td>
-          <td><button class="admin-board-delete-button" onclick="event.stopPropagation(); padamBoardPantas('${b.id}')" title="Padam Board">Delete</button></td>
+          <td><button class="admin-board-delete-button" onclick="event.stopPropagation(); padamBoardPantas('${b.id}')" title="Padam papan">Padam</button></td>
         </tr>`;
     }).join('');
 
     const boardContent = boards.length
       ? `<div class="admin-board-table-wrap"><table class="admin-board-table">
-          <thead><tr><th>No.</th><th>Nama Board</th><th>Admin</th><th>User</th><th>Expires On</th><th>Actions</th></tr></thead>
+          <thead><tr><th>Bil.</th><th>Nama papan</th><th>Pentadbir</th><th>Pengguna</th><th>Tamat tempoh</th><th>Tindakan</th></tr></thead>
           <tbody>${boardRows}</tbody>
         </table></div>`
-      : '<div class="admin-board-empty">Belum ada board. Pilih New Board untuk bermula.</div>';
+      : '<div class="admin-board-empty">Belum ada papan. Pilih Papan baharu untuk bermula.</div>';
 
     container.innerHTML = `
       <div class="admin-board-toolbar">
-        <h2>Senarai Board</h2>
-        <button class="admin-board-new-button" onclick="ciptaBoardBaru()"><span class="material-symbols-outlined">add</span>New Board</button>
+        <h2>Senarai papan</h2>
+        <button class="admin-board-new-button" onclick="ciptaBoardBaru()"><span class="material-symbols-outlined">add</span>Papan baharu</button>
       </div>
       <div class="admin-board-panel">${boardContent}</div>`;
   }
@@ -1732,37 +1806,58 @@
   }
 
   function ciptaBoardBaru() {
-    const isAdmin = !!(firebaseUser && firebaseUser.emailVerified && firebaseUser.uid === ADMIN_UID && sessionStorage.getItem('isAdmin') === 'true');
-    if (!isAdmin) return;
-    showPrompt("Enter Board Name (e.g., Board1):", "", async (namabaru) => {
-      if(namabaru && namabaru.trim() !== "") {
-        const todayStr = getLocalDateString();
-        const freezeDateObj = new Date();
-        freezeDateObj.setDate(freezeDateObj.getDate() + 14);
-        const freezeStr = getLocalDateString(freezeDateObj);
-
-        boards.push({ 
-          id: 'board_' + Date.now(), 
-          name: namabaru.trim(), 
-          adminEmail: '',
-          adminNama: '',
-          senaraiStaf: [], 
-          rekodPergerakan: [], 
-          rekodKehadiran: {},
-          boardNote: '',
-          tarikhMula: todayStr,
-          tarikhFreez: freezeStr,
-          soundEnabled: true,
-          soundType: 'bell',
-          theme: '0'
-        });
-        const newBoardId = boards[boards.length - 1].id;
-        await simpanKeLocalStorage();
-        renderMainBoardsList();
-        masukKeBoard(newBoardId);
-        openModal('modalPengurusanStaf');
-        bukaFormStafModal(-1);
+    showPrompt("Nama papan (contoh: Papan1):", "", (namabaru) => {
+      if (namabaru === null) return;
+      const boardName = (namabaru || '').trim();
+      if (!boardName) {
+        showMsg('Nama papan wajib diisi sebelum papan baharu dicipta.');
+        return;
       }
+
+      showPrompt("Nama pentadbir papan:", "", (adminNama) => {
+        if (adminNama === null) return;
+        const adminName = (adminNama || '').trim();
+        if (!adminName) {
+          showMsg('Nama pentadbir papan wajib diisi.');
+          return;
+        }
+
+        showPrompt("E-mel pentadbir papan:", "", async (adminEmail) => {
+          if (adminEmail === null) return;
+          const email = (adminEmail || '').trim().toLowerCase();
+          if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            showMsg('E-mel pentadbir papan wajib diisi dengan format yang sah.');
+            return;
+          }
+
+          const todayStr = getLocalDateString();
+          const freezeDateObj = new Date();
+          freezeDateObj.setDate(freezeDateObj.getDate() + 14);
+          const freezeStr = getLocalDateString(freezeDateObj);
+
+          boards.push({
+            id: 'board_' + Date.now(),
+            name: boardName,
+            adminEmail: email,
+            adminNama: adminName,
+            senaraiStaf: [],
+            rekodPergerakan: [],
+            rekodKehadiran: {},
+            boardNote: '',
+            tarikhMula: todayStr,
+            tarikhFreez: freezeStr,
+            soundEnabled: true,
+            soundType: 'bell',
+            theme: '0'
+          });
+
+          const newBoardId = boards[boards.length - 1].id;
+          await simpanKeLocalStorage();
+          renderMainBoardsList();
+          masukKeBoard(newBoardId);
+          showMsg(`Board "${boardName}" berjaya dicipta dengan Board Admin ${adminName}.`);
+        });
+      });
     });
   }
 
